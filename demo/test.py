@@ -95,10 +95,6 @@ class Character(pygame.sprite.Sprite):
             return True
         return False
 
-    
-
-
-        
 
 #meX=0
 #meY=0
@@ -150,8 +146,6 @@ win = pygame.display.set_mode((WIN_WIDTH,WIN_HEIGHT))
 
 
 draw()
-
-
 while True:
     clock.tick(FPS) # 控制循环刷新频率,每秒刷新FPS对应的值的次数
     for event in pygame.event.get():
