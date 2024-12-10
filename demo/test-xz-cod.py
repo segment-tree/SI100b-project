@@ -45,8 +45,11 @@ class Block(pygame.sprite.Sprite):
 dirs={'':(0,0),'lr':(0,0),'l':(-1,0),'r':(1,0)}#,'u':(0,-1),'d':(0,1)}
 gravy=1#重力加速度
 horizontal_a=2
-initial_velocity=30#跳跃初速度
+initial_velocity=10#跳跃初速度
+delta_velocity=3
 max_speed=40
+lock=0#锁键，在刚刚起跳的瞬间禁止横向移动
+jumpcnt=0#让短按跳跃键与长按跳跃键有区别
 class Character(pygame.sprite.Sprite):
     def __init__(self,x,y,image,height=CELL_SIZE,width=CELL_SIZE,speedratio=18):
         self.x,self.y=x,y
@@ -100,7 +103,9 @@ class Character(pygame.sprite.Sprite):
             #print(dir,self.cr[0],self.cr[1],'#',next_r,next_c)
             return True
         self.upv=0
-        horizontal_mov=0
+        self.horizontal_mov=0
+        global jumpcnt
+        jumpcnt=0#顶头重置大跳（长按跳）
         return False
         '''
         flag=False
@@ -130,24 +135,40 @@ def draw():
 
 def move_me():
     s=''
-    if event.type == pygame.KEYDOWN or event.type == pygame.TEXTINPUT:
-        print(pygame.key.get_pressed(),type(pygame.key.get_pressed()))
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[ord('a')] or keys[ord('k')]:
-            s+='l'
-        if keys[pygame.K_RIGHT] or keys[ord('d')] or keys[ord(';')]:
-            s+='r'
-        if keys[pygame.K_SPACE] or keys[ord('z')]:#jump
+    global jumpcnt,lock
+    print(lock)
+    #if event.type == pygame.KEYDOWN or event.type == pygame.TEXTINPUT:
+    #print(pygame.key.get_pressed(),type(pygame.key.get_pressed()))
+    keys = pygame.key.get_pressed()
+    if lock==0 and (keys[pygame.K_LEFT] or keys[ord('a')] or keys[ord('k')]):
+        #lock=2
+        s+='l'
+    if lock==0 and (keys[pygame.K_RIGHT] or keys[ord('d')] or keys[ord(';')]):
+        #lock=2
+        s+='r'
+    if keys[pygame.K_SPACE] or keys[ord('z')]:#jump
+        if jumpcnt>0 :
+            myblock.upv+=delta_velocity
+        else:
             if myblock.onground :
+                jumpcnt=8
+                lock=6
                 myblock.upv=initial_velocity
                 #if not myblock.onground and not myblock.onwall:
                 #    myblock.jump_num-=1
             if myblock.onleftwall :
+                jumpcnt=8
+                lock=6
                 myblock.upv=initial_velocity
                 myblock.horizontal_mov=24
             if myblock.onrightwall :
+                jumpcnt=8
+                lock=6
                 myblock.upv=initial_velocity
                 myblock.horizontal_mov=-24
+
+    if jumpcnt>0 : jumpcnt-=1
+    if lock >0 : lock-=1
 
     myblock.move(s)
 
