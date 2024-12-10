@@ -4,10 +4,12 @@ import numpy as np
 
 #refer https://www.cnblogs.com/BigShuang/p/17683261.html
 
+#https://blog.csdn.net/goxingman/article/details/103695979
+
 C, R = 15, 15  # 11列， 20行
 CELL_SIZE = 90  # 格子尺寸 !Better even number
 
-FPS=20  # 游戏帧率
+FPS=30  # 游戏帧率
 WIN_WIDTH = CELL_SIZE * C  # 窗口宽度
 WIN_HEIGHT = CELL_SIZE * R  # 窗口高度
 back_ground_color = (200, 200, 200)
@@ -59,7 +61,7 @@ class Block(pygame.sprite.Sprite):
         return False
 
 class Character(pygame.sprite.Sprite):
-    def __init__(self,x,y,image,height=CELL_SIZE,width=CELL_SIZE,speedratio=12):
+    def __init__(self,x,y,image,height=CELL_SIZE,width=CELL_SIZE,speedratio=10):
         self.x,self.y=x,y
         self.height,self.width=height,width
         self.image = pygame.image.load(image)
@@ -80,7 +82,7 @@ class Character(pygame.sprite.Sprite):
         next_y = self.y + move_y*self.speedratio
 
 
-        print(next_x,next_y,move_x,move_y)
+        #print(next_x,next_y,move_x,move_y)
 
         epsx=5
         epsy=5
@@ -99,7 +101,7 @@ class Character(pygame.sprite.Sprite):
 #meX=0
 #meY=0
 # myblock = Block(0, 0, 'sb_big.png',1)
-myblock = Character(CELL_SIZE//2, CELL_SIZE//2, 'sb_big.png',70,98)
+myblock = Character(CELL_SIZE//2, CELL_SIZE//2, './assets/sb_big.png',70,98)
 
 def draw():
     # global meX
@@ -116,20 +118,18 @@ def draw():
     win.blit(myblock.image, myblock.rect)
 
 def move_me():
-    if event.type == pygame.KEYDOWN:
-        #print(event.key)
-        if event.key == pygame.K_LEFT or event.key == ord('a'):
+    if event.type == pygame.KEYDOWN or event.type == pygame.TEXTINPUT:
+        print(pygame.key.get_pressed(),type(pygame.key.get_pressed()))
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[ord('a')]:
             myblock.move("l")
-        if event.key == pygame.K_RIGHT or event.key == ord('d'):
+        if keys[pygame.K_RIGHT] or keys[ord('d')]:
             myblock.move("r")
-        if event.key == pygame.K_UP or event.key == ord('w'):
+        if keys[pygame.K_UP] or keys[ord('w')]:
             myblock.move("u")
-        if event.key == pygame.K_DOWN or event.key == ord('s'):
+        if keys[pygame.K_DOWN] or keys[ord('s')]:
             myblock.move("d")
 
-def test():
-    test_img=pygame.image.load('0.png').convert()
-    win.blit(test_img, (10,10))
 
 pygame.init() # pygame初始化，必须有，且必须在开头
 
