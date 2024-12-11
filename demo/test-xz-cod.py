@@ -7,7 +7,7 @@ import numpy as np
 #https://blog.csdn.net/goxingman/article/details/103695979
 
 C, R = 15, 15  # 11列， 20行
-CELL_SIZE = 90  # 格子尺寸 !Better even number
+CELL_SIZE = 45  # 格子尺寸 !Better even number
 
 FPS=40  # 游戏帧率
 WIN_WIDTH = CELL_SIZE * C  # 窗口宽度
@@ -117,7 +117,7 @@ class Character(pygame.sprite.Sprite):
             self.resetxy(self.x,next_y)
         if not flag : self.upv=0
         '''
-myblock = Character(CELL_SIZE//2, CELL_SIZE//2, './assets/sb_big.png',70,98)
+myblock = Character(CELL_SIZE//2, CELL_SIZE//2, './assets/sb_big.png',36,50)
 
 def draw():
     # global meX
