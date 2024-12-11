@@ -7,7 +7,8 @@ import numpy as np
 #https://blog.csdn.net/goxingman/article/details/103695979
 
 C, R = 15, 15  # 11列， 20行
-CELL_SIZE = 90  # 格子尺寸 !Better even number
+CELL_RATIO = 1
+CELL_SIZE = 90 // CELL_RATIO  # 格子尺寸 !Better even number
 
 FPS=40  # 游戏帧率
 WIN_WIDTH = CELL_SIZE * C  # 窗口宽度
@@ -43,21 +44,25 @@ class Block(pygame.sprite.Sprite):
         self.rect.top = self.y
 
 dirs={'':(0,0),'lr':(0,0),'l':(-1,0),'r':(1,0)}#,'u':(0,-1),'d':(0,1)}
-gravy=1#重力加速度
-horizontal_a=2
-initial_velocity=10#跳跃初速度
-delta_velocity=3
-max_speed=40
+gravy=1/CELL_RATIO # 重力加速度
+horizontal_a=2/CELL_RATIO # 爬墙跳水平速度衰减速度
+initial_velocity=8/CELL_RATIO # 跳跃初速度
+speedratio=18/CELL_RATIO # 水平移速
+max_speed=40/CELL_RATIO # 最大下落速度
+initial_horizontal_speed=24/CELL_RATIO#用于爬墙跳
 lock=0#锁键，在刚刚起跳的瞬间禁止横向移动
+delta_velocity=3/CELL_RATIO #短按跳跃键与长按跳跃键每一帧变化的deta_v
 jumpcnt=0#让短按跳跃键与长按跳跃键有区别
 class Character(pygame.sprite.Sprite):
-    def __init__(self,x,y,image,height=CELL_SIZE,width=CELL_SIZE,speedratio=18):
+    def __init__(self,x,y,image,height=CELL_SIZE,width=CELL_SIZE):
         self.x,self.y=x,y
         self.height,self.width=height,width
+
         self.image = pygame.image.load(image)
+        if CELL_RATIO!=1:
+            self.image = pygame.transform.scale(self.image,(width,height))
         self.rect = self.image.get_rect()
         self.rect.move_ip(self.x-width//2, self.y-height//2)
-        self.speedratio=speedratio # 水平移速
         self.upv=0 #竖直方向速度
         self.onwall=False #是否贴墙
         self.onground=False #是否在地上
@@ -73,8 +78,8 @@ class Character(pygame.sprite.Sprite):
     def move(self, dir=''):
         move_x, move_y = dirs[dir]
 
-        next_x = self.x + (move_x)*self.speedratio+self.horizontal_mov
-        next_y = self.y - self.upv + move_y*self.speedratio
+        next_x = self.x + (move_x)*int(speedratio)+int(self.horizontal_mov)
+        next_y = self.y - int(self.upv) + move_y*int(speedratio)
         self.upv-=gravy
         if(self.horizontal_mov>0):self.horizontal_mov-=horizontal_a
         if(self.horizontal_mov<0):self.horizontal_mov+=horizontal_a
@@ -117,7 +122,7 @@ class Character(pygame.sprite.Sprite):
             self.resetxy(self.x,next_y)
         if not flag : self.upv=0
         '''
-myblock = Character(CELL_SIZE//2, CELL_SIZE//2, './assets/sb_big.png',70,98)
+myblock = Character(CELL_SIZE//2, CELL_SIZE//2, './assets/sb_big.png',70//CELL_RATIO,98//CELL_RATIO)
 
 def draw():
     # global meX
@@ -160,12 +165,12 @@ def move_me():
                 jumpcnt=8
                 lock=6
                 myblock.upv=initial_velocity
-                myblock.horizontal_mov=24
+                myblock.horizontal_mov=initial_horizontal_speed
             if myblock.onrightwall :
                 jumpcnt=8
                 lock=6
                 myblock.upv=initial_velocity
-                myblock.horizontal_mov=-24
+                myblock.horizontal_mov=-initial_horizontal_speed
 
     if jumpcnt>0 : jumpcnt-=1
     if lock >0 : lock-=1
