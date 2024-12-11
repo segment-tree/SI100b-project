@@ -49,10 +49,10 @@ horizontal_a=2/CELL_RATIO # 爬墙跳水平速度衰减速度
 initial_velocity=8/CELL_RATIO # 跳跃初速度
 speedratio=18/CELL_RATIO # 水平移速
 max_speed=40/CELL_RATIO # 最大下落速度
-initial_horizontal_speed=24/CELL_RATIO#用于爬墙跳
-lock=0#锁键，在刚刚起跳的瞬间禁止横向移动
-delta_velocity=3/CELL_RATIO #短按跳跃键与长按跳跃键每一帧变化的deta_v
-jumpcnt=0#让短按跳跃键与长按跳跃键有区别
+initial_horizontal_speed=24/CELL_RATIO # 用于爬墙跳
+lock=0 # 锁键，在刚刚起跳的瞬间禁止横向移动
+delta_velocity=3/CELL_RATIO # 短按跳跃键与长按跳跃键每一帧变化的deta_v
+jumpcnt=0 # 让短按跳跃键与长按跳跃键有区别
 class Character(pygame.sprite.Sprite):
     def __init__(self,x,y,image,height=CELL_SIZE,width=CELL_SIZE):
         self.x,self.y=x,y
