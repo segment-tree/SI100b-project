@@ -6,9 +6,10 @@ import numpy as np
 
 #https://blog.csdn.net/goxingman/article/details/103695979
 
-C, R = 15, 15  # 11列， 20行
+C, R = 15, 15  # 显示C列R行
+N, M = 24, 20 # 总地图N列M行
 CELL_RATIO = 1
-CELL_SIZE = 90 // CELL_RATIO  # 格子尺寸 !Better even number
+CELL_SIZE = 88 // CELL_RATIO  # 格子尺寸 !Better even number
 
 FPS=40  # 游戏帧率
 WIN_WIDTH = CELL_SIZE * C  # 窗口宽度
@@ -16,16 +17,16 @@ WIN_HEIGHT = CELL_SIZE * R  # 窗口高度
 back_ground_color = (200, 200, 200)
 obstacle_color =  (139, 69, 19)
 me_color = (50, 50, 50)
-mp=np.array([[0]*(R+1)]*(C+1))
-obstacle_locations=[(2,1),(2,2),(2,3),(3,1),(5,5),(6,5),(7,5),(8,5),(8,6),(8,7),(8,8),(8,9),(8,10)]
+mp=np.array([[0]*(M+1)]*(N+1))
+obstacle_locations=[(2,1),(2,2),(2,3),(3,1),(5,5),(6,5),(7,5),(8,5),(8,6),(8,7),(8,8),(8,9),(8,10),(9,10),(9,13),(9,14),(9,15),(9,16),(15,14),(16,14),(17,14),(18,14),(15,8),(16,8),(17,8),(18,8)]
 
 class Block(pygame.sprite.Sprite):
-    def __init__(self, c, r, color, mod=0):
+    def __init__(self, c, r, color, basex=0,basey=0,mod=0):
         super().__init__()
 
         self.cr = [c, r]
-        self.x = c * CELL_SIZE
-        self.y = r * CELL_SIZE
+        self.x = c * CELL_SIZE - basex
+        self.y = r * CELL_SIZE - basey
         if mod==0 :
             self.image = pygame.Surface((CELL_SIZE, CELL_SIZE))
             self.image.fill(color)
@@ -35,13 +36,13 @@ class Block(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
         self.rect.move_ip(self.x, self.y)
-    def resetxy(self, x, y):
-        self.cr[0] = x
-        self.cr[1] = y
-        self.x = x * CELL_SIZE
-        self.y = y * CELL_SIZE
-        self.rect.left = self.x
-        self.rect.top = self.y
+    # def resetxy(self, x, y,basex,basey):
+    #     self.cr[0] = x
+    #     self.cr[1] = y
+    #     self.x = x * CELL_SIZE
+    #     self.y = y * CELL_SIZE
+    #     self.rect.left = self.x
+    #     self.rect.top = self.y
 
 dirs={'':(0,0),'lr':(0,0),'l':(-1,0),'r':(1,0)}#,'u':(0,-1),'d':(0,1)}
 gravy=1/CELL_RATIO # 重力加速度
@@ -96,14 +97,14 @@ class Character(pygame.sprite.Sprite):
         y1=(next_y-self.height//2+epsy)//CELL_SIZE
         y2=(next_y+self.height//2-epsy)//CELL_SIZE
 
-        self.onground = (y2>=R or mp[xm][y2]==-1)
+        self.onground = (y2>=M or mp[xm][y2]==-1)
         self.onleftwall = (x1<0 or mp[x1][ym]==-1)
-        self.onrightwall= (x2 >= C or mp[x2][ym]==-1)
+        self.onrightwall= (x2 >= N or mp[x2][ym]==-1)
         onsky= (y1<0 or mp[xm][y1]==-1)
 
         # if self.onground or self.onwall : self.jump_num=1 #刷新二段跳
 
-        if 0 <= x1 < C and 0 <= x2 < C and 0 <= y1 < R and 0 <= y2 < R and mp[x1][y1]!=-1 and mp[x1][y2]!=-1 and mp[x2][y1]!=-1 and mp[x2][y2]!=-1:
+        if 0 <= x1 < N and 0 <= x2 < N and 0 <= y1 < M and 0 <= y2 < M and mp[x1][y1]!=-1 and mp[x1][y2]!=-1 and mp[x2][y1]!=-1 and mp[x2][y2]!=-1:
             self.resetxy(next_x,next_y)
             #print(dir,self.cr[0],self.cr[1],'#',next_r,next_c)
             return True
@@ -129,14 +130,31 @@ def draw():
     # global meY
     global myblock
     #test()
+
+    basex,basey=myblock.x,myblock.y
+    if basex-WIN_WIDTH//2<0:
+        basex=WIN_WIDTH//2
+    if basex+WIN_WIDTH//2>=CELL_SIZE*N:
+        basex=CELL_SIZE*N-WIN_WIDTH//2
+    if basey-WIN_HEIGHT//2<0:
+        basey=WIN_HEIGHT//2
+    if basey+WIN_HEIGHT//2>=CELL_SIZE*M:
+        basey=CELL_SIZE*M-WIN_HEIGHT//2
+    basex-=WIN_WIDTH//2
+    basey-=WIN_HEIGHT//2
+    # x :[basex,basex+WIN_WIDTH//2]
+    # y :[basey,basey+WIN_HEIGHT//2]
+    
     win.fill(back_ground_color)
-    for i in range(C):
-        for j in range(R):
+    for i in range(N):
+        for j in range(M):
             if(mp[i][j]==-1):
-                block_obstacle=Block(i,j,obstacle_color)
+                block_obstacle=Block(i,j,obstacle_color,basex,basey)
                 win.blit(block_obstacle.image, block_obstacle.rect)
     #myblock = Block(meX, meY, me_color)
+    myblock.resetxy(myblock.x-basex,myblock.y-basey)
     win.blit(myblock.image, myblock.rect)
+    myblock.resetxy(myblock.x+basex,myblock.y+basey)
 
 def move_me():
     s=''
