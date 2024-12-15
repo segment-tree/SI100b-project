@@ -3,13 +3,13 @@ import sys
 import numpy as np
 from enum import Enum
 
-
+WINDOWSRATIO = 2
 C, R = 15, 15  # C列，R行
-CELL_SIZE = 90  # 格子尺寸 !Better even number
+CELL_SIZE = 88//WINDOWSRATIO  # 格子尺寸 !Better even number
 WIN_WIDTH = CELL_SIZE * C  # 窗口宽度
 WIN_HEIGHT = CELL_SIZE * R  # 窗口高度
 FPS = 30 # 实际帧数
-logicFPS = 10 # 逻辑上一帧对应的实际帧数
+logicFPS = 8 # 逻辑上一帧对应的实际帧数
 BOMB_BOOM_count = 6 # 炸弹起爆时间
 BURNING_time = 3 # 爆炸持续时间
 class gridTP(Enum):
@@ -28,12 +28,12 @@ class MAP:
         self.values=[[0   for i in range(M+1)] for j in range(N+1)]
         # values存:
         #   Field: undefined
-        #   Bomb:起爆时间
+        #   Bomb:[起爆时间,起爆范围,bomb_author(实现类似于指针)]
         #   Burn:[起爆时间,(last_types,last_values)]
         #   Obstacle: content?
         #   Wall: undeifined
         #   Object: content?
-        #  content? 0:空的 other:道具
+        #  content? 0:空的 other:道具 1:炸弹数+1
     def invaild_coord(self,x,y):
         return x<0 or x >= self.N or y<0 or y >= self.M
     def reachable(self,x,y):
@@ -49,6 +49,7 @@ class MAP:
                     self.values[i][j][0]-=1
                     if self.values[i][j][0]==0:
                         self.types[i][j]=gridTP.Field
+                        self.values[i][j][2].bomb_num+=1 # release bomb_num
                         acts.append([gridTP.Bomb,i,j,self.values[i][j][1]]) # append起爆信息
                 if(self.types[i][j]==gridTP.Burn):
                     self.values[i][j][0]-=1
@@ -88,6 +89,11 @@ for i in range(10):
     thismap.types[5][i]=gridTP.Obstacle
     if(i%2==0):thismap.values[5][i]=1
 
+for i in range(10):
+    thismap.types[i][10]=gridTP.Wall
+
+pass
+
 
 dirs={'l':(0,-1),'r':(0,1),'u':(-1,0),'d':(1,0),'!':(0,0)}
 def mksum(dirs,keys):
@@ -101,13 +107,15 @@ class Chara:
     def __init__(self,x,y,hp=1):
         self.x,self.y=x,y
         self.dx=self.dy=0 # used for smooth move
-        self.pack=[]
+        self.pack={}
+        self.bomb_num=1
         self.hp=hp
-        self.bomb_damage=3
+        self.bomb_damage=3 # 起爆范围
     def move(self,keys):
-        if keys.get('!'): # put BOMB
+        if keys.get('!') and self.bomb_num>0 : # put BOMB
+            self.bomb_num-=1
             thismap.types[self.x][self.y]=gridTP.Bomb
-            thismap.values[self.x][self.y]=[BOMB_BOOM_count,self.bomb_damage] # 
+            thismap.values[self.x][self.y]=[BOMB_BOOM_count,self.bomb_damage,self] # 
 
         self.dx,self.dy = mksum(dirs,keys)
         nx = self.x + self.dx
@@ -119,6 +127,10 @@ class Chara:
         else: self.dx=self.dy=0
         if thismap.types[self.x][self.y]==gridTP.Object:
             thismap.types[self.x][self.y]=gridTP.Field
+            if thismap.values[self.x][self.y]==1:
+                print('bomb num increased')##
+                self.bomb_num+=1
+            #if thismap.values[self.x][self.y]==2:
             thismap.values[self.x][self.y]=0
             pass
         if thismap.types[self.x][self.y]==gridTP.Burn: # 伤害判定
