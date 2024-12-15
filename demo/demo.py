@@ -1,9 +1,12 @@
 import pygame
 import sys
 import numpy as np
+import os
 from enum import Enum
 
 WINDOWSRATIO = 2
+if os.name=='posix':
+    WINDOWSRATIO = 1
 C, R = 15, 15  # C列，R行
 CELL_SIZE = 88//WINDOWSRATIO  # 格子尺寸 !Better even number
 WIN_WIDTH = CELL_SIZE * C  # 窗口宽度
@@ -112,7 +115,8 @@ class Chara:
         self.hp=hp
         self.bomb_damage=3 # 起爆范围
     def move(self,keys):
-        if keys.get('!') and self.bomb_num>0 : # put BOMB
+        if keys.get('!') and self.bomb_num>0 and\
+          not thismap.types[self.x][self.y]==gridTP.Bomb: # put BOMB
             self.bomb_num-=1
             thismap.types[self.x][self.y]=gridTP.Bomb
             thismap.values[self.x][self.y]=[BOMB_BOOM_count,self.bomb_damage,self] # 
