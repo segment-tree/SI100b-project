@@ -7,7 +7,7 @@ import numpy as np
 #https://blog.csdn.net/goxingman/article/details/103695979
 
 C, R = 15, 15  # 显示C列R行
-N, M = 24, 20 # 总地图N列M行
+N, M = 28, 20 # 总地图N列M行
 CELL_RATIO = 1
 CELL_SIZE = 88 // CELL_RATIO  # 格子尺寸 !Better even number
 
@@ -18,7 +18,8 @@ back_ground_color = (200, 200, 200)
 obstacle_color =  (139, 69, 19)
 me_color = (50, 50, 50)
 mp=np.array([[0]*(M+1)]*(N+1))
-obstacle_locations=[(2,1),(2,2),(2,3),(3,1),(5,5),(6,5),(7,5),(8,5),(8,6),(8,7),(8,8),(8,9),(8,10),(9,10),(9,13),(9,14),(9,15),(9,16),(15,14),(16,14),(17,14),(18,14),(15,8),(16,8),(17,8),(18,8)]
+obstacle_locations=[(2,1),(2,2),(2,3),(3,1),(5,5),(6,5),(7,5),(8,5),(8,6),(8,7),(8,8),(8,9),(8,10),(9,10),(9,13),(9,14),(9,15),(9,16),(15,14),(16,14),(17,14),(18,14),(15,8),(16,8),(17,8),(18,8), \
+                    (24,15),(24,14),(24,13),(24,12),(24,11),(24,10),(24,9),(24,8),(24,7),(24,6),(24,5),(24,4)]
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, c, r, color, basex=0,basey=0,mod=0):
@@ -49,7 +50,7 @@ gravy=1/CELL_RATIO # 重力加速度
 horizontal_a=2/CELL_RATIO # 爬墙跳水平速度衰减速度
 initial_velocity=8/CELL_RATIO # 跳跃初速度
 speedratio=18/CELL_RATIO # 水平移速
-max_speed=40/CELL_RATIO # 最大下落速度
+max_speed=400/CELL_RATIO # 最大下落速度
 initial_horizontal_speed=24/CELL_RATIO # 用于爬墙跳
 lock=0 # 锁键，在刚刚起跳的瞬间禁止横向移动
 delta_velocity=3/CELL_RATIO # 短按跳跃键与长按跳跃键每一帧变化的deta_v
