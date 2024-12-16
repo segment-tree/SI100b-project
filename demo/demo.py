@@ -239,7 +239,7 @@ def loop():
         
         cnt+=1
         keys = pygame.key.get_pressed()
-        if flag==0:
+        if flag==0 and cnt<=logicFPS*2//3:
             if keys[pygame.K_LEFT] or keys[ord('a')]:
                 dic['l']=True
             elif keys[pygame.K_RIGHT] or keys[ord('d')]:
