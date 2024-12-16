@@ -227,6 +227,7 @@ def loop():
     win = pygame.display.set_mode((WIN_WIDTH,WIN_HEIGHT))
     cnt=0
     dic={}
+    nxtdic={}
     flag=0
     dx,dy=0,0
     while(True):
@@ -247,6 +248,17 @@ def loop():
                 dic['u']=True
             elif keys[pygame.K_DOWN] or keys[ord('s')]:
                 dic['d']=True
+        '''
+        elif len(nxtdic)==0 :# optional
+            if keys[pygame.K_LEFT] or keys[ord('a')]:
+                if dic.get('u') or dic.get('d'):nxtdic['l']=True
+            elif keys[pygame.K_RIGHT] or keys[ord('d')]:
+                if dic.get('u') or dic.get('d'):nxtdic['r']=True
+            elif keys[pygame.K_UP] or keys[ord('w')]:
+                if dic.get('l') or dic.get('r'):nxtdic['u']=True
+            elif keys[pygame.K_DOWN] or keys[ord('s')]:
+                if dic.get('l') or dic.get('r'):nxtdic['d']=True
+        '''
         if keys[pygame.K_SPACE]:
             dic['!']=True
         
@@ -256,8 +268,9 @@ def loop():
         if(cnt==logicFPS):
             action(dic)
             cnt=0
-            dic={}
-            flag=0
+            dic=nxtdic
+            nxtdic={}
+            flag= 0 if len(dic)==0 else 1
             dx,dy=0,0
         #print(flag,'$')##
         draw(win,cnt,dx,dy,flag)
