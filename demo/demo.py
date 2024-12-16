@@ -65,14 +65,18 @@ class MAP:
                 def __set(x,y):
                     if(self.invaild_coord(x,y)):return False
                     if(self.reachable(x,y)):
-                        if(self.types[x][y]!=gridTP.Burn):#防止多次burn造成嵌套
-                            self.values[x][y]=[3,(self.types[x][y],self.values[x][y])]#暂存，防止炸弹炸毁掉落物
+                        if(self.types[x][y]!=gridTP.Burn):# 防止多次burn造成嵌套
+                            self.values[x][y]=[3,(self.types[x][y],self.values[x][y])]# 暂存，防止炸弹炸毁掉落物
                         else: self.values[x][y][0]=BURNING_time
                         self.types[x][y]=gridTP.Burn
                         return True
+                    if(self.types[x][y]==gridTP.Bomb):# 碰到炸弹，直接跳过，或者更好的是引爆碰到的炸弹，但是暂时懒得写了
+                        return True # do nothing and return True
                     if(self.types[x][y]==gridTP.Obstacle):
-                        if(self.values[x][y]!=0):self.types[x][y]=gridTP.Object
-                        else: self.types[x][y]=gridTP.Field
+                        self.types[x][y]=gridTP.Burn
+                        if(self.values[x][y]!=0):
+                            self.values[x][y]=[3,(gridTP.Object,self.values[x][y])]# 暂存，防止炸弹炸毁掉落物
+                        else: self.values[x][y]=[3,(gridTP.Field,self.values[x][y])]
                     return False
                 
                 for _x in range(xx,xx+stp+1):
