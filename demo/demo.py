@@ -115,11 +115,16 @@ def mksum(dirs,keys):
 class Chara:
     def __init__(self,x,y,hp=1):
         self.x,self.y=x,y
-        self.dx=self.dy=0 # used for smooth move
+        # self.dx=self.dy=0 # used for smooth move
         self.pack={}
         self.bomb_num=1
         self.hp=hp
         self.bomb_damage=3 # 起爆范围
+    def move_check(self,keys): # 渲染时使用
+        dx,dy=mksum(dirs,keys)
+        if thismap.reachable(self.x+dx,self.y+dy):
+            return (dx,dy,True)
+        return (0,0,False)
     def move(self,keys):
         if keys.get('!') and self.bomb_num>0 and\
           not thismap.types[self.x][self.y]==gridTP.Bomb: # put BOMB
@@ -127,14 +132,14 @@ class Chara:
             thismap.types[self.x][self.y]=gridTP.Bomb
             thismap.values[self.x][self.y]=[BOMB_BOOM_count,self.bomb_damage,self] # 
 
-        self.dx,self.dy = mksum(dirs,keys)
-        nx = self.x + self.dx
-        ny = self.y + self.dy
+        dx,dy = mksum(dirs,keys)
+        nx = self.x + dx
+        ny = self.y + dy
         flag=False
         if thismap.reachable(nx,ny):
             self.x,self.y=nx,ny
             flag=True
-        else: self.dx=self.dy=0
+        else: dx=dy=0
         if thismap.types[self.x][self.y]==gridTP.Object:
             thismap.types[self.x][self.y]=gridTP.Field
             if thismap.values[self.x][self.y]==1:
@@ -156,6 +161,7 @@ monsters=[]
 # x行 y列
 def action(keys):
     me.move(keys)
+    #print(keys,me.x,me.y)##
     for i in monsters:
         pass
     thismap.clock()
@@ -165,7 +171,8 @@ def action(keys):
             if(thismap.types[i][j]==gridTP.Bomb):print(i,j)##
     '''
 
-def draw(win,cnt):
+def draw(win,cnt,dx,dy,waste_fps):
+    speedratio=logicFPS-waste_fps
     back_ground_color=(200, 200, 200)
     wall_color =  (139, 69, 19)
     obstacle_color = (50, 50, 50)
@@ -206,8 +213,8 @@ def draw(win,cnt):
     myimage=pygame.image.load('./assets/sb_big.png')
     myimage=pygame.transform.scale(myimage,(CELL_SIZE,CELL_SIZE))
     myrect=myimage.get_rect()
-    myrect.move_ip((me.y-me.dy)*CELL_SIZE+me.dy*cnt*CELL_SIZE//logicFPS,\
-                   (me.x-me.dx)*CELL_SIZE+me.dx*cnt*CELL_SIZE//logicFPS)
+    myrect.move_ip(me.y*CELL_SIZE+dy*(cnt-waste_fps)*CELL_SIZE//speedratio,\
+                   me.x*CELL_SIZE+dx*(cnt-waste_fps)*CELL_SIZE//speedratio)
     win.blit(myimage,myrect)
 
     pygame.display.update()
@@ -220,6 +227,8 @@ def loop():
     win = pygame.display.set_mode((WIN_WIDTH,WIN_HEIGHT))
     cnt=0
     dic={}
+    flag=0
+    dx,dy=0,0
     while(True):
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -229,21 +238,29 @@ def loop():
         
         cnt+=1
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[ord('a')]:
-            if(dic.get('u')==None and dic.get('d')==None):dic['l']=True
-        if keys[pygame.K_RIGHT] or keys[ord('d')]:
-            if(dic.get('u')==None and dic.get('d')==None):dic['r']=True
-        if keys[pygame.K_UP] or keys[ord('w')]:
-            if(dic.get('l')==None and dic.get('r')==None):dic['u']=True
-        if keys[pygame.K_DOWN] or keys[ord('s')]:
-            if(dic.get('l')==None and dic.get('r')==None):dic['d']=True
+        if flag==0:
+            if keys[pygame.K_LEFT] or keys[ord('a')]:
+                dic['l']=True
+            elif keys[pygame.K_RIGHT] or keys[ord('d')]:
+                dic['r']=True
+            elif keys[pygame.K_UP] or keys[ord('w')]:
+                dic['u']=True
+            elif keys[pygame.K_DOWN] or keys[ord('s')]:
+                dic['d']=True
         if keys[pygame.K_SPACE]:
             dic['!']=True
+        
+        if(len(dic)!=0 and flag==0):
+            dx,dy,_=me.move_check(dic)
+            flag=cnt
         if(cnt==logicFPS):
             action(dic)
             cnt=0
             dic={}
-        draw(win,cnt)
+            flag=0
+            dx,dy=0,0
+        #print(flag,'$')##
+        draw(win,cnt,dx,dy,flag)
         
         
 pygame.init() # pygame初始化，必须有，且必须在开头
