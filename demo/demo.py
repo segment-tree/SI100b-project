@@ -174,23 +174,30 @@ def draw(win,cnt):
 
     for i in range(thismap.N):
         for j in range(thismap.M):
+            imagebg=pygame.image.load('./assets/Field0.png')
+            imagebg=pygame.transform.scale(imagebg,(CELL_SIZE,CELL_SIZE))
             image=pygame.Surface((CELL_SIZE, CELL_SIZE))
             match thismap.types[i][j]:
                 case gridTP.Field:
-                    image=pygame.image.load('./assets/Field0.png')
-                    image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
+                    image=pygame.Surface((0, 0))
                 case gridTP.Burn:
                     image.fill(burn_color)
                 case gridTP.Bomb:
-                    image.fill(bomb_color)
+                    image=pygame.image.load('./assets/Bomb0.png')
+                    image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
                 case gridTP.Obstacle:
                     image.fill(obstacle_color)
                 case gridTP.Wall:
-                    image.fill(wall_color)
+                    #image.fill(wall_color)
+                    image=pygame.image.load('./assets/Wall0.png')
+                    image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
                 case gridTP.Object:
                     image.fill(object_color)
+            rectbg = imagebg.get_rect()
             rect = image.get_rect()
+            rectbg.move_ip(j*CELL_SIZE,i*CELL_SIZE)
             rect.move_ip(j*CELL_SIZE,i*CELL_SIZE)
+            win.blit(imagebg,rectbg)
             win.blit(image,rect)
     
     myimage=pygame.image.load('./assets/sb_big.png')
