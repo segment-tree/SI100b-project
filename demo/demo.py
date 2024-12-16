@@ -177,7 +177,8 @@ def draw(win,cnt):
             image=pygame.Surface((CELL_SIZE, CELL_SIZE))
             match thismap.types[i][j]:
                 case gridTP.Field:
-                    image.fill(back_ground_color)
+                    image=pygame.image.load('./assets/Field0.png')
+                    image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
                 case gridTP.Burn:
                     image.fill(burn_color)
                 case gridTP.Bomb:
