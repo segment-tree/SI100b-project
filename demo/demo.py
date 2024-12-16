@@ -29,6 +29,7 @@ class MAP:
         self.M=M
         self.types =[[ttt for i in range(M+1)] for j in range(N+1)]
         self.values=[[0   for i in range(M+1)] for j in range(N+1)]
+        self.render=[[0   for i in range(M+1)] for j in range(N+1)]
         # values存:
         #   Field: undefined
         #   Bomb:[起爆时间,起爆范围,bomb_author(实现类似于指针)]
@@ -94,6 +95,7 @@ thismap=MAP(20,20)
 
 for i in range(10):
     thismap.types[5][i]=gridTP.Obstacle
+    thismap.render[5][i]=i
     if(i%2==0):thismap.values[5][i]=1
 
 for i in range(10):
@@ -186,7 +188,8 @@ def draw(win,cnt):
                     image=pygame.image.load('./assets/Bomb0.png')
                     image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
                 case gridTP.Obstacle:
-                    image.fill(obstacle_color)
+                    image=pygame.image.load(f'./assets/Obstacle0.{thismap.render[i][j]}.png')
+                    image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
                 case gridTP.Wall:
                     #image.fill(wall_color)
                     image=pygame.image.load('./assets/Wall0.png')
