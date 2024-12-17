@@ -187,8 +187,7 @@ def draw(win,cnt,dx,dy,waste_fps):
             imagebg=pygame.transform.scale(imagebg,(CELL_SIZE,CELL_SIZE))
             image=pygame.Surface((CELL_SIZE, CELL_SIZE))
             match thismap.types[i][j]:
-                case gridTP.Field:
-                    image=pygame.Surface((0, 0))
+                # case gridTP.Field:pass
                 case gridTP.Burn:
                     image.fill(burn_color)
                 case gridTP.Bomb:
@@ -203,6 +202,8 @@ def draw(win,cnt,dx,dy,waste_fps):
                     image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
                 case gridTP.Object:
                     image.fill(object_color)
+                case _:
+                    image=pygame.Surface((0, 0))
             rectbg = imagebg.get_rect()
             rect = image.get_rect()
             rectbg.move_ip(j*CELL_SIZE,i*CELL_SIZE)
@@ -248,8 +249,8 @@ def loop():
                 dic['u']=True
             elif keys[pygame.K_DOWN] or keys[ord('s')]:
                 dic['d']=True
-        '''
-        elif len(nxtdic)==0 :# optional
+        
+        elif len(nxtdic)==0 :# optional 如果在一逻辑帧内先后按下左，下，将下作为下一逻辑帧的方向
             if keys[pygame.K_LEFT] or keys[ord('a')]:
                 if dic.get('u') or dic.get('d'):nxtdic['l']=True
             elif keys[pygame.K_RIGHT] or keys[ord('d')]:
@@ -258,21 +259,19 @@ def loop():
                 if dic.get('l') or dic.get('r'):nxtdic['u']=True
             elif keys[pygame.K_DOWN] or keys[ord('s')]:
                 if dic.get('l') or dic.get('r'):nxtdic['d']=True
-        '''
-        if keys[pygame.K_SPACE]:
-            dic['!']=True
+        
         
         if(len(dic)!=0 and flag==0):
             dx,dy,_=me.move_check(dic)
             flag=cnt
+        if keys[pygame.K_SPACE]:
+            dic['!']=True
         if(cnt==logicFPS):
             action(dic)
             cnt=0
             dic=nxtdic
             nxtdic={}
-            flag= 0 if len(dic)==0 else 1
-            dx,dy=0,0
-        #print(flag,'$')##
+            flag,dx,dy=0,0,0
         draw(win,cnt,dx,dy,flag)
         
         
