@@ -92,17 +92,20 @@ class MAP:
 
                         
 
-thismap=MAP(20,20)
+thismap=MAP(20,20) # 类似于全局变量声明？MAP(20,20) 相当于占位符
+def temp_map_generater():
+    global thismap
+    thismap=MAP(22,22)
+    for i in range(10):
+        thismap.types[5][i]=gridTP.Obstacle
+        thismap.render[5][i]=i
+        if(i%2==0):thismap.values[5][i]=1
 
-for i in range(10):
-    thismap.types[5][i]=gridTP.Obstacle
-    thismap.render[5][i]=i
-    if(i%2==0):thismap.values[5][i]=1
+    for i in range(10):
+        thismap.types[i][10]=gridTP.Wall
 
-for i in range(10):
-    thismap.types[i][10]=gridTP.Wall
-
-pass
+    thismap.monsters.append(Chara(1,1,1))
+    pass
 
 
 dirs={'l':(0,-1),'r':(0,1),'u':(-1,0),'d':(1,0),'!':(0,0)}
@@ -114,7 +117,8 @@ def mksum(dirs,keys):
         _2+=i[1]
     return (_1,_2)
 class Chara:
-    def __init__(self,x,y,hp=1):
+    def __init__(self,x,y,id=0,hp=1):
+        self.id=id
         self.x,self.y=x,y
         # self.dx=self.dy=0 # used for smooth move
         self.pack={}
@@ -163,7 +167,7 @@ def action(keys):
     me.move(keys)
     #print(keys,me.x,me.y)##
     for i in thismap.monsters:
-        pass
+        i.move({'r':True})
     thismap.clock()
     '''
     for i in range(thismap.N):
@@ -174,22 +178,29 @@ def action(keys):
 def draw(win,cnt,dx,dy,waste_fps):
     speedratio=logicFPS-waste_fps
     back_ground_color=(200, 200, 200)
-    wall_color =  (139, 69, 19)
-    obstacle_color = (50, 50, 50)
     burn_color=(255,192,203)
-    bomb_color=(0,0,0)
     object_color=(255,215,0)
     win.fill(back_ground_color)
 
     for i in range(thismap.N):
         for j in range(thismap.M):
-            imagebg=pygame.image.load('./assets/Field0.png')
-            imagebg=pygame.transform.scale(imagebg,(CELL_SIZE,CELL_SIZE))
-            image=pygame.Surface((CELL_SIZE, CELL_SIZE))
+            # 1, 渲染背景
+            image=pygame.Surface((0, 0))
             match thismap.types[i][j]:
-                # case gridTP.Field:pass
                 case gridTP.Burn:
+                    image=pygame.Surface((CELL_SIZE, CELL_SIZE))
                     image.fill(burn_color)
+                case _:
+                    image=pygame.image.load('./assets/Field0.png')
+                    image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
+            rect = image.get_rect()
+            rect.move_ip(j*CELL_SIZE,i*CELL_SIZE)
+            win.blit(image,rect)
+            # 2, 渲染角色
+            # 角色是在这一图层渲染还是渲染到最顶端呢
+            # 3, 渲染物品
+            image=pygame.Surface((0, 0))
+            match thismap.types[i][j]:
                 case gridTP.Bomb:
                     image=pygame.image.load('./assets/Bomb0.png')
                     image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
@@ -201,17 +212,18 @@ def draw(win,cnt,dx,dy,waste_fps):
                     image=pygame.image.load('./assets/Wall0.png')
                     image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
                 case gridTP.Object:
+                    image=pygame.Surface((CELL_SIZE, CELL_SIZE))
                     image.fill(object_color)
-                case _:
-                    image=pygame.Surface((0, 0))
-            rectbg = imagebg.get_rect()
             rect = image.get_rect()
-            rectbg.move_ip(j*CELL_SIZE,i*CELL_SIZE)
             rect.move_ip(j*CELL_SIZE,i*CELL_SIZE)
-            win.blit(imagebg,rectbg)
             win.blit(image,rect)
-    
-    myimage=pygame.image.load('./assets/sb_big.png')
+    for i in thismap.monsters:
+        image=pygame.image.load(f'./assets/chara.{i.id}.gif')
+        image=pygame.transform.scale(image,(CELL_SIZE,CELL_SIZE))
+        rect=image.get_rect()
+        rect.move_ip(i.y*CELL_SIZE,i.x*CELL_SIZE)
+        win.blit(image,rect)
+    myimage=pygame.image.load('./assets/sb.png')
     myimage=pygame.transform.scale(myimage,(CELL_SIZE,CELL_SIZE))
     myrect=myimage.get_rect()
     myrect.move_ip(me.y*CELL_SIZE+dy*(cnt-waste_fps)*CELL_SIZE//speedratio,\
@@ -282,5 +294,6 @@ def loop():
         
         
 pygame.init() # pygame初始化，必须有，且必须在开头
+temp_map_generater()
 
 loop()
