@@ -30,6 +30,7 @@ class MAP:
         self.types =[[ttt for i in range(M+1)] for j in range(N+1)]
         self.values=[[0   for i in range(M+1)] for j in range(N+1)]
         self.render=[[0   for i in range(M+1)] for j in range(N+1)]
+        self.monsters=[]
         # values存:
         #   Field: undefined
         #   Bomb:[起爆时间,起爆范围,bomb_author(实现类似于指针)]
@@ -140,7 +141,7 @@ class Chara:
             self.x,self.y=nx,ny
             flag=True
         else: dx=dy=0
-        if thismap.types[self.x][self.y]==gridTP.Object:
+        if thismap.types[self.x][self.y]==gridTP.Object:# 捡东西
             thismap.types[self.x][self.y]=gridTP.Field
             if thismap.values[self.x][self.y]==1:
                 print('bomb num increased')##
@@ -155,14 +156,13 @@ class Chara:
 
 me=Chara(1,1)
 
-monsters=[]
 
 
 # x行 y列
 def action(keys):
     me.move(keys)
     #print(keys,me.x,me.y)##
-    for i in monsters:
+    for i in thismap.monsters:
         pass
     thismap.clock()
     '''
@@ -231,6 +231,8 @@ def loop():
     nxtdic={}
     flag=0
     dx,dy=0,0
+    def emptydir(a:dict):
+        return len(a)==0 or len(a)==1 and a.get('!')
     while(True):
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -240,33 +242,37 @@ def loop():
         
         cnt+=1
         keys = pygame.key.get_pressed()
-        if flag==0 and cnt<=logicFPS*2//3:
-            if keys[pygame.K_LEFT] or keys[ord('a')]:
+        if flag==0 and cnt<=logicFPS*1//3:
+            if emptydir(dic) and (keys[pygame.K_LEFT] or keys[ord('a')]):
                 dic['l']=True
-            elif keys[pygame.K_RIGHT] or keys[ord('d')]:
+            elif emptydir(dic) and (keys[pygame.K_RIGHT] or keys[ord('d')]):
                 dic['r']=True
-            elif keys[pygame.K_UP] or keys[ord('w')]:
+            elif emptydir(dic) and (keys[pygame.K_UP] or keys[ord('w')]):
                 dic['u']=True
-            elif keys[pygame.K_DOWN] or keys[ord('s')]:
+            elif emptydir(dic) and (keys[pygame.K_DOWN] or keys[ord('s')]):
                 dic['d']=True
+            if keys[pygame.K_SPACE]:
+                dic['!']=True
         
-        elif len(nxtdic)==0 :# optional 如果在一逻辑帧内先后按下左，下，将下作为下一逻辑帧的方向
-            if keys[pygame.K_LEFT] or keys[ord('a')]:
-                if dic.get('u') or dic.get('d'):nxtdic['l']=True
-            elif keys[pygame.K_RIGHT] or keys[ord('d')]:
-                if dic.get('u') or dic.get('d'):nxtdic['r']=True
-            elif keys[pygame.K_UP] or keys[ord('w')]:
-                if dic.get('l') or dic.get('r'):nxtdic['u']=True
-            elif keys[pygame.K_DOWN] or keys[ord('s')]:
-                if dic.get('l') or dic.get('r'):nxtdic['d']=True
+        elif emptydir(nxtdic) :# optional 如果在一逻辑帧内先后按下左，下，将下作为下一逻辑帧的方向
+            if emptydir(nxtdic) and (keys[pygame.K_LEFT] or keys[ord('a')]):
+                if not dic.get('l'):nxtdic['l']=True
+            elif emptydir(nxtdic) and (keys[pygame.K_RIGHT] or keys[ord('d')]):
+                if not dic.get('r'):nxtdic['r']=True
+            elif emptydir(nxtdic) and (keys[pygame.K_UP] or keys[ord('w')]):
+                if not dic.get('u'):nxtdic['u']=True
+            elif emptydir(nxtdic) and (keys[pygame.K_DOWN] or keys[ord('s')]):
+                if not dic.get('d'):nxtdic['d']=True
+            if keys[pygame.K_SPACE]:
+                nxtdic['!']=True
         
         
-        if(len(dic)!=0 and flag==0):
+        if(not emptydir(dic) and flag==0):
             dx,dy,_=me.move_check(dic)
             flag=cnt
-        if keys[pygame.K_SPACE]:
-            dic['!']=True
+        
         if(cnt==logicFPS):
+            print(dic,nxtdic)##
             action(dic)
             cnt=0
             dic=nxtdic
