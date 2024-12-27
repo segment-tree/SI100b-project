@@ -22,20 +22,20 @@ class entityLike:
     def rxy2gxy(self):
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
-    def __init__(self,id:int,gx:int,gy:int,speed:int=c.IntialSpeed,layer=9):
+    def __init__(self, id:int, gx:int, gy:int, speed:int=c.IntialSpeed, layer=9):
         self.id,self.gx,self.gy = id,gx,gy
         self.speed=speed
         self.gxy2rxy()
         self.dx,self.dy,self.moving=0,0,0
         self.allowOverlap=True # temp
         self.layer=layer
-    def tryMove(self,dx:int,dy:int,func:callable)->bool:
+    def tryMove(self, dx:int, dy:int, allowF:callable)->bool:
         # 其中func为地图的检测函数
-        # func(x,y,id)->bool:
-        # x y 表示要求的坐标，id表示请求发出者的entity_id
+        # allowF(x,y,id)->bool:
+        # x y 表示要求的坐标，id表示请求发出者的~entity_id~地址
         if self.moving>0 : return False
         self.dx,self.dy=dx,dy # 无论是否允许移动(但不在移动)，都要改变entity的朝向
-        if func(self.gx+dx,self.gy+dy,self.id) :
+        if allowF(self.gx+dx,self.gy+dy,self) :
             self.moving=c.CellSize//self.speed
             return True
         return False
@@ -62,8 +62,8 @@ class creature(entityLike):
     immune:int # 标记受击后的无敌时间
     imagesMoving:Dict[(int,int),List[myImage]]
     imagesStanding:Dict[(int,int)]
-    def __init__(self,id:int,gx:int,gy:int,imagesdir:str,speed:int=c.IntialSpeed,hp=c.IntialHp):
-        super().__init__(id,gx,gy,speed)
+    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, speed:int=c.IntialSpeed, hp=c.IntialHp, layer=9):
+        super().__init__(id,gx,gy,speed,layer)
         self.hp=hp
         self.immune=0
         self.imagesStanding,self.imagesMoving={},{}
