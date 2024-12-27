@@ -1,10 +1,11 @@
 import pygame
 # 常量用大驼峰命名法吧
 CellSize=42*2
+CellRatio=2
 FPS=20
 WinHeight=10 # 这里表示格子数，而非像素数
 WinWidth=14
-IntialSpeed=6 # 所有entity的速度初值
+IntialSpeed=8 # 所有entity的速度初值
 IntialHp=2
 ImmuneFrame=4 # 受击后无敌帧数
 WalkingFpsLoop=8 # 走路完整完成一步的帧数

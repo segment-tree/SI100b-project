@@ -12,7 +12,7 @@ class Mapper: # Map is some keyword use Mapper instead
     R:int # Row
     me:Any #指向玩家实体
     style:int # 0 森林， ？ boss房
-    def __init__(self,c,r):
+    def __init__(self,c,r): # It's in CHAOS!
         self.C,self.R=c,r
         self.style=0
         self.fieldimg=myImage(f'./assets/scene/field{self.style}.png')
@@ -24,8 +24,11 @@ class Mapper: # Map is some keyword use Mapper instead
             "entity":set(),
             "entity_locked":set(),
             "content":0,
-            "render":self.fieldimg}
-        self.mp =[[copy.copy(ttt) for i in range(c+1)] for j in range(r+1)]
+            "render":None}
+        self.mp =[[copy.deepcopy(ttt) for i in range(c+1)] for j in range(r+1)]
+        for i in self.mp:
+            for j in i:
+                j["render"]=self.fieldimg
         pass
     def invaild_coord(self,x,y):
         return x<0 or x >= self.C or y<0 or y >= self.R
@@ -45,6 +48,7 @@ class Mapper: # Map is some keyword use Mapper instead
         for i in self.mp[x][y]["entity_locked"]:
             if not i.walkInto(entity) : return False
         # create lock
+        print(x,y)###
         self.mp[x][y]["entity_locked"].add(entity)
         return True
     
@@ -64,6 +68,11 @@ class Mapper: # Map is some keyword use Mapper instead
                         case "wall":nowlay=3#5
                         case "obstacle":nowlay=2
                         case "object":nowlay=2
+                    '''
+                    if len(self.mp[i][j]["entity_locked"])!=0:
+                        nowlay=100###
+                        print(i,j,self.mp[i][j]["entity_locked"])###
+                    '''
                     if layer==nowlay:
                         self.mp[i][j]["render"].drawG(i,j,camera,win)
                     elif layer==0:

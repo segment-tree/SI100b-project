@@ -51,9 +51,10 @@ if __name__ == "__main__":
     tempMagGener(thisMap)
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
-    win = pygame.display.set_mode((c.WinWidth*c.CellSize,c.WinHeight*c.CellSize))
+    win = pygame.display.set_mode((c.WinWidth*c.CellSize//c.CellRatio,c.WinHeight*c.CellSize//c.CellRatio))
     fpscnt=0
-    me=player(id=0,gx=2,gy=2,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=1,gy=1,imagesdir='./assets/player/',layer=3)
+    print('#',me.rx,me.ry)
     thisMap.me=me
     while True:
         win.fill(back_ground_color)
@@ -70,7 +71,7 @@ if __name__ == "__main__":
         # me.draw(3,fpscnt,(0,0),win)
         car=thisMap.genCamera()
         thisMap.draw(fpscnt,car,win)
-        print(car)
-        #print(me.rx,me.ry)
+        #print(car)
+        print(me.rx,me.ry)
         fpscnt+=1
         pygame.display.update()

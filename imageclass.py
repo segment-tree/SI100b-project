@@ -7,20 +7,25 @@ class myImage:
     def __init__(self,imgdir):
         self.image=pygame.image.load(imgdir)
         rect_t=self.image.get_rect()
-        h=rect_t.height*c.CellSize//rect_t.width
-        self.image=pygame.transform.scale(self.image,(c.CellSize,h))
+        h=(rect_t.height*c.CellSize//rect_t.width)//c.CellRatio
+        self.image=pygame.transform.scale(self.image,(c.CellSize//c.CellRatio,h))
         self.rect=self.image.get_rect()
 
     def reload(self,imgdir):
         self.__init__(imgdir)
     def draw(self,rx:int,ry:int,camera:Tuple[int,int],win):
         self.rect=self.image.get_rect()
-        self.rect.move_ip(rx-c.CellSize//2 -camera[0],ry+c.CellSize//2-self.rect.height -camera[1])
+        self.rect.move_ip(
+            ( rx-c.CellSize//2 -camera[0] )//c.CellRatio,
+            ( ry+c.CellSize//2-self.rect.height*c.CellRatio -camera[1] )//c.CellRatio
+        )
         win.blit(self.image,self.rect)
-        self.rect.move_ip(0,0)
     def drawG(self,gx:int,gy:int,camera:Tuple[int,int],win): # 按网格坐标渲染
         self.rect=self.image.get_rect()
-        self.rect.move_ip(gx*c.CellSize -camera[0],(gy+1)*c.CellSize-self.rect.height -camera[1])
+        self.rect.move_ip(
+            ( gx*c.CellSize -camera[0] )//c.CellRatio,
+            ( (gy+1)*c.CellSize-self.rect.height*c.CellRatio -camera[1] )//c.CellRatio
+        )
         win.blit(self.image,self.rect)
 
 #test

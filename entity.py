@@ -18,7 +18,7 @@ class entityLike:
     #image
     def gxy2rxy(self): # 通过gxy生成rxy
         self.rx=self.gx*c.CellSize+c.CellSize//2
-        self.ry=self.gx*c.CellSize+c.CellSize//2
+        self.ry=self.gy*c.CellSize+c.CellSize//2
     def rxy2gxy(self):
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
@@ -33,10 +33,10 @@ class entityLike:
         # 其中func为地图的检测函数
         # allowF(x,y,id)->bool:
         # x y 表示要求的坐标，id表示请求发出者的~entity_id~地址
-        if self.moving>0 : return False
+        if self.moving>1 : return False
         self.dx,self.dy=dx,dy # 无论是否允许移动(但不在移动)，都要改变entity的朝向
         if allowF(self.gx+dx,self.gy+dy,self) :
-            self.moving=c.CellSize//self.speed
+            self.moving=c.CellSize//self.speed+1
             return True
         return False
     def clock(self,moveUpdate:callable):
@@ -44,10 +44,11 @@ class entityLike:
             self.moving-=1
             self.rx+=self.dx*self.speed
             self.ry+=self.dy*self.speed
-        oldx,oldy=self.gx,self.gy
-        self.rxy2gxy()
-        if self.gx!=oldx or self.gy!=oldy:
-            moveUpdate(oldx,oldy,self.gx,self.gy,self)
+            oldx,oldy=self.gx,self.gy
+            self.rxy2gxy()
+            if self.gx!=oldx or self.gy!=oldy:
+                moveUpdate(oldx,oldy,self.gx,self.gy,self)
+        if self.moving<=1:self.gxy2rxy()#及时跑一下这个转换，试图消除一些左键和下键交替按有盖率卡在两个格中间
     def draw(self,layer:int,fpscnt:int,camera:Tuple[int,int],win):...
         # do nothing
     def walkInto(self,other:entityLike)->bool:
