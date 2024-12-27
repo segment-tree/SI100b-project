@@ -50,9 +50,9 @@ class player(creature):
 def tempMagGener(nowmp):
     # nowmp.C=30
     # nowmp.R=30
-    def genWall(x,y):
+    def genWall(x,y,iid=1):
         nowmp.mp[x][y]["type"]="wall"
-        nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/wall{nowmp.style}.1.png')
+        nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/wall{nowmp.style}.{iid}.png')
     def genObject(x,y,iid):
         nowmp.mp[x][y]["type"]="object"
         nowmp.mp[x][y]["content"]=iid
@@ -63,8 +63,12 @@ def tempMagGener(nowmp):
     genWall(7,7)
     genObject(10,13,3)
     genObject(10,4,5)
+    genObject(15,14,2);genObject(18,20,4)
     for i in range(0,30):
         genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
+    
+    for i in range(8,12):
+        genWall(i,10,5)
     
 if __name__ == "__main__":
     pygame.init()

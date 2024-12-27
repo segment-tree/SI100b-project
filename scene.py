@@ -79,10 +79,13 @@ class Mapper: # Map is some keyword use Mapper instead
                         self.mp[i][j]["render"].drawG(i,j,camera,win)
                     elif layer==0:
                        self.fieldimg.drawG(i,j,camera,win)
-                        
-            for i in self.entities:
-                i.draw(layer,fpscnt,camera,win)
-            self.me.draw(layer,fpscnt,camera,win)
+                    for k in self.mp[i][j]["entity"]:
+                        k.draw(layer,fpscnt,camera,win)
+                                    
+            #for i in self.entities:
+            #    i.draw(layer,fpscnt,camera,win)
+            #self.me.draw(layer,fpscnt,camera,win)
+            #^这么画图层会出问题
 
 
     def clock(self):
