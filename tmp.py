@@ -1,5 +1,4 @@
 import constants as c
-import copy
 from imageclass import(myImage)
 from typing import *
 # from __future__ import annotations
@@ -17,20 +16,16 @@ class Mapper: # Map is some keyword use Mapper instead
         self.style=0
         self.fieldimg=myImage(f'./assets/scene/field{self.style}.png')
         wall=myImage(f'./assets/scene/wall{self.style}.1.png')
-        self.entities=[]
         ttt={
             "type":"Field",
             "burning":0,
             "entity":set(),
             "entity_locked":set(),
             "content":0,
-            "render":self.fieldimg}
-        self.mp =[[copy.copy(ttt) for i in range(c+1)] for j in range(r+1)]
+            "render":field}
+        self.mp =[[ttt for i in range(c+1)] for j in range(r+1)]
         pass
-    def invaild_coord(self,x,y):
-        return x<0 or x >= self.C or y<0 or y >= self.R
     def moveRequest(self,x:int,y:int,entity:entityLike):
-        if self.invaild_coord(x,y):return False
         if self.mp[x][y]["type"] in ["wall","obstacle"]:
             return False
         for i in self.mp[x][y]["entity"]:
@@ -51,20 +46,10 @@ class Mapper: # Map is some keyword use Mapper instead
         for layer in range(6):
             for i in range(self.R):
                 for j in range(self.C):
-                    nowlay=0
-                    match self.mp[i][j]["type"]:
-                        case "field":nowlay=0
-                        case "wall":nowlay=3#5
-                        case "obstacle":nowlay=2
-                        case "object":nowlay=2
-                    if layer==nowlay:
-                        self.mp[i][j]["render"].drawG(i,j,camera,win)
-                    elif layer==0:
-                       self.fieldimg.drawG(i,j,camera,win)
-                        
+                    self.mp[i][j]["render"].drawG(i,j,camera,win)
             for i in self.entities:
                 i.draw(layer,fpscnt,camera,win)
-            self.me.draw(layer,fpscnt,camera,win)
+            me.draw(layer,fpscnt,camera,win)
 
 
     def clock(self):
