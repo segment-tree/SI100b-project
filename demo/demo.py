@@ -68,7 +68,7 @@ class MAP:
                     if(self.invaild_coord(x,y)):return False
                     if(self.reachable(x,y)):
                         if(self.types[x][y]!=gridTP.Burn):# 防止多次burn造成嵌套
-                            self.values[x][y]=[3,(self.types[x][y],self.values[x][y])]# 暂存，防止炸弹炸毁掉落物
+                            self.values[x][y]=[BURNING_time,(self.types[x][y],self.values[x][y])]# 暂存，防止炸弹炸毁掉落物
                         else: self.values[x][y][0]=BURNING_time
                         self.types[x][y]=gridTP.Burn
                         return True
@@ -77,8 +77,8 @@ class MAP:
                     if(self.types[x][y]==gridTP.Obstacle):
                         self.types[x][y]=gridTP.Burn
                         if(self.values[x][y]!=0):
-                            self.values[x][y]=[3,(gridTP.Object,self.values[x][y])]# 暂存，防止炸弹炸毁掉落物
-                        else: self.values[x][y]=[3,(gridTP.Field,self.values[x][y])]
+                            self.values[x][y]=[BURNING_time,(gridTP.Object,self.values[x][y])]# 暂存，防止炸弹炸毁掉落物
+                        else: self.values[x][y]=[BURNING_time,(gridTP.Field,self.values[x][y])]
                     return False
                 
                 for _x in range(xx,xx+stp+1):
@@ -223,8 +223,8 @@ def draw(win,cnt,dx,dy,waste_fps):
         rect=image.get_rect()
         rect.move_ip(i.y*CELL_SIZE,i.x*CELL_SIZE)
         win.blit(image,rect)
-    myimage=pygame.image.load('./assets/sb.png')
-    myimage=pygame.transform.scale(myimage,(CELL_SIZE,CELL_SIZE))
+    myimage=pygame.image.load('./assets/playerRight2.png')
+    myimage=pygame.transform.scale(myimage,(CELL_SIZE,1.6*CELL_SIZE))
     myrect=myimage.get_rect()
     myrect.move_ip(me.y*CELL_SIZE+dy*(cnt-waste_fps)*CELL_SIZE//speedratio,\
                    me.x*CELL_SIZE+dx*(cnt-waste_fps)*CELL_SIZE//speedratio)
@@ -254,7 +254,7 @@ def loop():
         
         cnt+=1
         keys = pygame.key.get_pressed()
-        if flag==0 and cnt<=logicFPS*1//3:
+        if flag==0 and cnt<=logicFPS*2//3:
             if emptydir(dic) and (keys[pygame.K_LEFT] or keys[ord('a')]):
                 dic['l']=True
             elif emptydir(dic) and (keys[pygame.K_RIGHT] or keys[ord('d')]):
