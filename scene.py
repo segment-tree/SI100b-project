@@ -60,11 +60,13 @@ class Mapper: # Map is some keyword use Mapper instead
     
     def draw(self,fpscnt,camera,win):
         for layer in range(6):
-            for i in range(self.R):
-                for j in range(self.C):
+            for j in range(self.R):
+                for i in range(self.C):
                     nowlay=0
                     match self.mp[i][j]["type"]:
-                        case "field":nowlay=0
+                        case "field":
+                            nowlay=0
+                            self.mp[i][j]["render"]=self.fieldimg
                         case "wall":nowlay=3#5
                         case "obstacle":nowlay=2
                         case "object":nowlay=2
@@ -84,6 +86,9 @@ class Mapper: # Map is some keyword use Mapper instead
 
 
     def clock(self):
-        for  i in self.entities:
+        for i in self.entities:
             pass
+        for j in range(self.R):
+            for i in range(self.C):
+                pass
 

@@ -63,10 +63,14 @@ class creature(entityLike):
     immune:int # 标记受击后的无敌时间
     imagesMoving:Dict[(int,int),List[myImage]]
     imagesStanding:Dict[(int,int)]
+    bombSum:int
+    bombRange:int
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, speed:int=c.IntialSpeed, hp=c.IntialHp, layer=9):
         super().__init__(id,gx,gy,speed,layer)
         self.hp=hp
         self.immune=0
+        self.bombSum=1
+        self.bombRange=c.IntialBombRange
         self.imagesStanding,self.imagesMoving={},{}
         for tx in range(-1,2):
             for ty in range(-1,2):
@@ -80,6 +84,9 @@ class creature(entityLike):
         self.hp-=n
         if self.hp<0 : self.delete()
         else : self.immune=c.ImmuneFrame
+    def hpPlus(self,n:int=1):
+        self.hp+=n
+        self.immune=0# 清理无敌帧
     def draw(self,layer:int,fpscnt:int,camera:Tuple[int,int],win):
         if(self.layer==layer):
             t=None
