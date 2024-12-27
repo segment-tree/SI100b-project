@@ -4,6 +4,7 @@ from typing import *
 from entity import *
 class Map:
     mp:List[List[Dict[str,Any]]]
+    entities:List[Any]
     C:int # Column
     R:int # Row
     def __init__(self,c,r):
@@ -24,7 +25,17 @@ class Map:
             if not i.walkInto(entity) : return False
         for i in self.mp[x][y]["entity_locked"]:
             if not i.walkInto(entity) : return False
+        # create lock
+        self.mp[x][y]["entity_locked"].add(entity)
         return True
     
+    def moveUpdate(self,oldx:int,oldy:int,newx:int,newy:int,entity:entityLike):
+        # set 移除元素： remove 不存在会返回错误；discard不会
+        self.mp[oldx][oldy]["entity"].remove(entity)
+        self.mp[newx][newy]["entity_locked"].remove(entity)
+        self.mp[newx][newy]["entity"].add(entity)
     
+    def clock(self,player):
+        for  i in self.entities:
+            pass
 
