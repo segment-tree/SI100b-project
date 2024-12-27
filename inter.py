@@ -39,10 +39,11 @@ def tempMagGener(nowmp):
     def genWall(x,y):
         nowmp.mp[x][y]["type"]="wall"
         nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/wall{nowmp.style}.1.png')
-
+    nowmp.C=31
+    nowmp.R=31
     genWall(7,7)
     for i in range(0,30):
-        genWall(0,i);genWall(i,0);genWall(nowmp.C,i);genWall(i,nowmp.R)
+        genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
     
 if __name__ == "__main__":
     pygame.init()
@@ -67,7 +68,9 @@ if __name__ == "__main__":
         me.keyboard()
         me.clock()
         # me.draw(3,fpscnt,(0,0),win)
-        thisMap.draw(fpscnt,(0,0),win)
+        car=thisMap.genCamera()
+        thisMap.draw(fpscnt,car,win)
+        print(car)
         #print(me.rx,me.ry)
         fpscnt+=1
         pygame.display.update()

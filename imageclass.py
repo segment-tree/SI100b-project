@@ -15,12 +15,12 @@ class myImage:
         self.__init__(imgdir)
     def draw(self,rx:int,ry:int,camera:Tuple[int,int],win):
         self.rect=self.image.get_rect()
-        self.rect.move_ip(rx-c.CellSize//2 +camera[0],ry+c.CellSize//2-self.rect.height +camera[1])
+        self.rect.move_ip(rx-c.CellSize//2 -camera[0],ry+c.CellSize//2-self.rect.height -camera[1])
         win.blit(self.image,self.rect)
         self.rect.move_ip(0,0)
     def drawG(self,gx:int,gy:int,camera:Tuple[int,int],win): # 按网格坐标渲染
         self.rect=self.image.get_rect()
-        self.rect.move_ip(gx*c.CellSize +camera[0],(gy+1)*c.CellSize-self.rect.height +camera[1])
+        self.rect.move_ip(gx*c.CellSize -camera[0],(gy+1)*c.CellSize-self.rect.height -camera[1])
         win.blit(self.image,self.rect)
 
 #test

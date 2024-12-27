@@ -19,7 +19,7 @@ class Mapper: # Map is some keyword use Mapper instead
         wall=myImage(f'./assets/scene/wall{self.style}.1.png')
         self.entities=[]
         ttt={
-            "type":"Field",
+            "type":"field",
             "burning":0,
             "entity":set(),
             "entity_locked":set(),
@@ -29,6 +29,13 @@ class Mapper: # Map is some keyword use Mapper instead
         pass
     def invaild_coord(self,x,y):
         return x<0 or x >= self.C or y<0 or y >= self.R
+    def genCamera(self):
+        basex=self.me.rx-c.WinWidth*c.CellSize//2
+        basey=self.me.ry-c.WinHeight*c.CellSize//2
+        basex=min(max(basex,0),self.C*c.CellSize-c.WinWidth *c.CellSize)
+        basey=min(max(basey,0),self.R*c.CellSize-c.WinHeight*c.CellSize)
+        return (basex,basey)
+
     def moveRequest(self,x:int,y:int,entity:entityLike):
         if self.invaild_coord(x,y):return False
         if self.mp[x][y]["type"] in ["wall","obstacle"]:

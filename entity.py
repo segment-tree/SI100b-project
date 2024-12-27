@@ -111,13 +111,13 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        #me.dx=1
-        #me.dy=0
-        #me.moving=10
+        me.dx=1
+        me.dy=0
+        me.moving=10
         def tmpf(a,b,c):return True
         def tmpff(a,b,c,d,e):pass
-        if(fpscnt%40==0):me.tryMove(1,0,tmpf)
-        me.clock(tmpff)
+        #if(fpscnt%40==0):me.tryMove(1,0,tmpf)
+        #me.clock(tmpff)
         me.draw(9,fpscnt,(0,0),win)
         #print(me.rx,me.ry)
         fpscnt+=1
