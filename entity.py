@@ -17,8 +17,8 @@ class entityLike:
     layer:int # 当前实体所在图层
     #image
     def gxy2rxy(self): # 通过gxy生成rxy
-        self.rx=self.gx*c.CellSize-c.CellSize//2
-        self.ry=self.gx*c.CellSize-c.CellSize//2
+        self.rx=self.gx*c.CellSize+c.CellSize//2
+        self.ry=self.gx*c.CellSize+c.CellSize//2
     def rxy2gxy(self):
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
@@ -33,8 +33,8 @@ class entityLike:
         # 其中func为地图的检测函数
         # func(x,y,id)->bool:
         # x y 表示要求的坐标，id表示请求发出者的entity_id
-        self.dx,self.dy=dx,dy # 无论是否允许移动，都要改变entity的朝向
-        if self.moving : return False
+        if self.moving>0 : return False
+        self.dx,self.dy=dx,dy # 无论是否允许移动(但不在移动)，都要改变entity的朝向
         if func(self.gx+dx,self.gy+dy,self.id) :
             self.moving=c.CellSize//self.speed
             return True
@@ -66,12 +66,15 @@ class creature(entityLike):
         super().__init__(id,gx,gy,speed)
         self.hp=hp
         self.immune=0
+        self.imagesStanding,self.imagesMoving={},{}
         for tx in range(-1,2):
             for ty in range(-1,2):
-                if(abs(tx)+abs(ty)<2):
+                if abs(tx)+abs(ty)<2:
                     self.imagesStanding[(tx,ty)]=myImage(imagesdir+f"standing-({tx},{ty}).png")
-                    for i in range(1,c.WalkingFpsLoop+1):
-                        self.imagesMoving[(tx,ty)][i]=myImage(imagesdir+f"moving-({tx},{ty})-{i}.png")
+                    if abs(tx)+abs(ty)>0:
+                        self.imagesMoving[(tx,ty)]=[]
+                        for i in range(1,c.WalkingFpsLoop+1):
+                            self.imagesMoving[(tx,ty)].append(myImage(imagesdir+f"moving-({tx},{ty})-{i}.png"))
     def hpMinus(self,n:int=1):
         self.hp-=n
         if self.hp<0 : self.delete()
@@ -80,7 +83,7 @@ class creature(entityLike):
         if(self.layer==layer):
             t=None
             if self.moving>0:
-                t=self.imagesMoving[(self.dx,self.dy)][fpscnt%c.WalkingFpsLoop+1]
+                t=self.imagesMoving[(self.dx,self.dy)][fpscnt%c.WalkingFpsLoop]
             else:t=self.imagesStanding[(self.dx,self.dy)]
             t.draw(self.rx,self.ry,camera,win)
 
@@ -96,15 +99,26 @@ if __name__ == "__main__":
     d={a,b}
     print(cc in d)
     pygame.init()
+    back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     win = pygame.display.set_mode((c.WinWidth*c.CellSize,c.WinHeight*c.CellSize))
     fpscnt=0
+    me=creature(id=1,gx=2,gy=2,imagesdir='./assets/player/')
     while True:
+        win.fill(back_ground_color)
         clock.tick(c.FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        me=creature(1,1,'./assets/player/')
+        #me.dx=1
+        #me.dy=0
+        #me.moving=10
+        def tmpf(a,b,c):return True
+        def tmpff(a,b,c,d,e):pass
+        if(fpscnt%40==0):me.tryMove(1,0,tmpf)
+        me.clock(tmpff)
         me.draw(9,fpscnt,(0,0),win)
+        #print(me.rx,me.ry)
         fpscnt+=1
+        pygame.display.update()
