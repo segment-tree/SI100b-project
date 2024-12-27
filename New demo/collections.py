@@ -131,5 +131,11 @@ class EventLike:
         """
         return self.EventPrior > other.EventPrior
 
+class ListenerLike:
+    """
+    监听者
 
+    1. ‘self.listen(event)’函数监听事件
+        (1) 首先检查事件类型和接收者集
+    """
 
