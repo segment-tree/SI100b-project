@@ -182,7 +182,7 @@ class ListenerLike:
         (2) 根据事件类型`EventLike.code`, 将事件传递到对应的被`listening`(basetools模块提供)装饰过的函数。
     2. `self.post(event)`函数可以发布事件 (发布位置取决初始化时传入的`post_api`, 推荐使用`Core().add_event`作为`post_api`)
 
-    :param
+    :param listen_receivers: set[str]
     """
     __post_api: _typing.Optional[PostEventAPILike]
     __listen_receivers: _typing.Set[str]
@@ -190,3 +190,24 @@ class ListenerLike:
         int, _typing.Set[_typing.Callable[[EventLike], None]]
     ]
 
+    def __init__(
+        self,
+        *,
+        listen_receivers: _typing.Optional[_typing.Set[str]],
+        post_api: _typing.Optional[PostEventAPILike] = None,
+    ) -> None:
+        """
+        :param listen_receivers:
+            监听者接收者集合，默认有自己和EVERYONE_RECEIVER
+        :param post_api:
+            事件发布函数，一般使用Core类的add_event
+        """
+        self.__post_api: _typing.Optional[PostEventAPILike] = post_api
+        self.__listen_receivers: _typing.Set[str] = (
+            listen_receivers | {_const.EVERYONE_RECEIVER, self.uuid}
+            if listen_receivers is not None
+            else {_const.EVERYONE_RECEIVER, self.uuid}
+        )
+        self.__listen_methods: _typing.Dict[
+            int, _typing.Set[_typing.Callable[[EventLike], None]]
+        ] = _tools.find_listening_methods(self)
