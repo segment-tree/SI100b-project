@@ -72,14 +72,14 @@ class creature(entityLike):
         self.bombSum=1
         self.bombRange=c.IntialBombRange
         self.imagesStanding,self.imagesMoving={},{}
+        t=("monster"in str(type(self)))#trick
         for tx in range(-1,2):
             for ty in range(-1,2):
                 if abs(tx)+abs(ty)<2:
-                    self.imagesStanding[(tx,ty)]=myImage(imagesdir+f"standing-({tx},{ty}).png")
-                    if abs(tx)+abs(ty)>0:
-                        self.imagesMoving[(tx,ty)]=[]
-                        for i in range(1,c.WalkingFpsLoop+1):
-                            self.imagesMoving[(tx,ty)].append(myImage(imagesdir+f"moving-({tx},{ty})-{i}.png"))
+                    if not t:self.imagesStanding[(tx,ty)]=myImage(imagesdir+f"standing-({tx},{ty}).png")
+                    self.imagesMoving[(tx,ty)]=[]
+                    for i in range(1,c.WalkingFpsLoop+1):
+                        self.imagesMoving[(tx,ty)].append(myImage(imagesdir+f"moving-({tx},{ty})-{i}.png"))
     def hpMinus(self,n:int=1):
         self.hp-=n
         if self.hp<0 : self.delete()
@@ -89,11 +89,12 @@ class creature(entityLike):
         self.immune=0# 清理无敌帧
     def draw(self,layer:int,fpscnt:int,camera:Tuple[int,int],win):
         if(self.layer==layer):
-            t=None
-            if self.moving>0:
-                t=self.imagesMoving[(self.dx,self.dy)][fpscnt%c.WalkingFpsLoop]
-            else:t=self.imagesStanding[(self.dx,self.dy)]
-            t.draw(self.rx,self.ry,camera,win)
+            w=None
+            t=("monster"in str(type(self)))#trick
+            if self.moving>0 or t:
+                w=self.imagesMoving[(self.dx,self.dy)][fpscnt%c.WalkingFpsLoop]
+            else:w=self.imagesStanding[(self.dx,self.dy)]
+            w.draw(self.rx,self.ry,camera,win)
 
 
 
