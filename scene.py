@@ -48,7 +48,7 @@ class Mapper: # Map is some keyword use Mapper instead
         for i in self.mp[x][y]["entity_locked"]:
             if not i.walkInto(entity) : return False
         # create lock
-        print(x,y)###
+        # print(x,y)###
         self.mp[x][y]["entity_locked"].add(entity)
         return True
     
