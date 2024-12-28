@@ -431,15 +431,41 @@ class GroupLike(ListenerLike):
             self.remove_listener(i)
 
 class EntityLike(ListenerLike):
-    pass
+    """
+    实体类
+    """
+    __attributes: _typing.Dict[str, _typing.Any]
+    @property
+    def attributes(self):
+        return self.__attributes
+
+    @attributes.setter
+    def attributes(self, attributes: _typing.Dict[str, _typing.Any]):
+        self.__attributes = attributes
+
+    def modify_single_attributes(self, key: str, value: _typing.Any):
+        self.__attributes[key] = value
 
 class PlayerLike(EntityLike):
+    """
+    玩家类
+    实现一些常用操作
+    :param __ability: typing.List[bool]
+        持有的能力（非数值的）
+        TODO: 几号位放什么能力？
+    """
+    __ability: _typing.List[bool]
+    # TODO: 一些和捡掉落物相关的方法，需要知道有哪些掉落物
+
     pass
 
 class MonsterLike(EntityLike):
     pass
 
-class MapLike(EntityLike):
+class SceneLike(ListenerLike):
+    pass
+
+class MapLike(SceneLike):
     pass
 
 @_typing.Final
@@ -504,8 +530,158 @@ class Core:
         while self.__event_queue:
             yield self.__event_queue.popleft()
 
+    def add_event(self, event: EventLike) -> None:
+        """
+        向事件队列添加事件
+        :param event: EventLike
+            待添加事件
+        """
+        self.__event_queue.append(event)
 
+    def clear_event(self) -> None:
+        """
+        清空事件队列 包括pygame队列
+        """
+        _pygame.event.clear()
+        self.__event_queue.clear()
+
+    def get_update_event(self) -> EventLike:
+        """
+        调用tick() 并生成UPDATE事件
+        :return: EventLike
+            UPDATE事件
+        """
+        return EventLike.update_event(self.__clock.tick() / 1000)
+
+    @property
     def winsize(self) -> float:
-        pass
+        """
+        :return:
+            窗口大小
+        """
+        return self.__winsize
 
+    @winsize.setter
+    def winsize(self, winsize: _typing.Tuple[int, int]):
+        """
+        :param winsize: tuple[int, int]
+            窗口大小
+        """
+        self.__winsize = winsize
+        self.__window = _pygame.display.set_mode(self.__winsize, _pygame.RESIZABLE)
 
+    @property
+    def title(self) -> str:
+        """
+        :return:
+            窗口标题
+        """
+        return self.__title
+
+    @title.setter
+    def title(self, title: str):
+        """
+        :param title: str
+            窗口标题
+        """
+        self.__title = title
+        _pygame.display.set_caption(self.__title)
+
+    @property
+    def window(self) -> _pygame.Surface:
+        """
+        :return:
+            窗口(画布)
+        """
+        return self.__window
+
+    @window.setter
+    def window(self, window: _pygame.Surface):
+        raise AttributeError("Setting attribute `window` is denied.")
+
+    @property
+    def clock(self) -> _pygame.time.Clock:
+        """
+        :return:
+            主时钟
+        """
+        return self.__clock
+
+    @clock.setter
+    def clock(self, clock: _pygame.time.Clock):
+        raise AttributeError("Setting attribute `clock` is denied.")
+
+    @property
+    def rate(self) -> float:
+        """
+        :return:
+            tick rate
+        """
+        return self.__rate
+
+    @rate.setter
+    def rate(self, rate: float):
+        raise AttributeError("Setting attribute `rate` is denied.")
+
+    def tick(self, tick_rate: float = None) -> int:
+        """
+        时钟调用tick
+        :param tick_rate:
+        :return:
+            距离上一次调用tick经过的时间 (ms)
+        """
+        if tick_rate is None:
+            tick_rate = self.__rate
+        return self.__clock.tick(tick_rate)
+
+    # pygame api
+    @staticmethod
+    def init() -> None:
+        """
+        初始化pygame
+        """
+        _pygame.init()
+        _pygame.mixer.init()
+
+    def blit(
+            self,
+            source: _pygame.Surface,
+            dest,
+            area=None,
+            special_flags: int = 0,
+    ) -> _pygame.Rect:
+        """
+        在self.windows上绘制
+        :param source:
+        :param dest:
+        :param area:
+        :param special_flags:
+        :return:
+        """
+        self.window.blit(source, dest, area, special_flags)
+
+    @staticmethod
+    def play_music(path: str, loop: int = -1, monotone: bool = True) -> None:
+        """
+        播放音乐
+
+        Parameters
+        ---
+        path : str
+            音乐路径
+        loop : int, default = -1
+            循环次数, `-1`为无限循环
+        monotone : bool, default = True
+            是否仅播放该音乐
+        """
+        if monotone:
+            _pygame.mixer.music.stop()
+        _pygame.mixer.music.load(path)
+        _pygame.mixer.music.play(loop)
+
+    @staticmethod
+    def stop_music() -> None:
+        """
+        停止音乐
+        """
+        _pygame.mixer.music.stop()
