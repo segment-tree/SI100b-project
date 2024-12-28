@@ -149,31 +149,35 @@ class bomb(entityLike):
     def delete(self,mapper):
         # 执行炸弹爆炸 (应该写在这里呢还是写在Mapper里？)
         xx,yy,stp=self.gx,self.gy,self.range
-        img=myImage("./assets/scene/burning_tmp.png")
-        def __set(x,y):
+        def __set(x,y,burnimg):
             if mapper.invaild_coord(x,y) : return False
             if mapper.mp[x][y]["type"] in ["field","object"]:
                 mapper.mp[x][y]["burning"]=c.BurnCount
-                mapper.burnTurn(x,y,img)
+                mapper.burnTurn(x,y,burnimg)
                 if mapper.mp[x][y]["type"]=="object":
                     mapper.mp[x][y]["content"]=0 # 炸弹炸毁掉落物
                 return True
             if mapper.mp[x][y]["type"]=="obstacle" :
                 mapper.mp[x][y]["type"]="object"
+                mapper.mp[x][y]["burning"]=c.BurnCount
+                mapper.burnTurn(x,y,burnimg)
                 mapper.mp[x][y]["content"]=random.randrange(1,21)
                 if mapper.mp[x][y]["content"]>5:mapper.mp[x][y]["content"]=5
                 mapper.mp[x][y]["render"]=\
                     myImage(f'./assets/scene/object{mapper.mp[x][y]["content"]}.png')
             return False
         
+        colimg=myImage("./assets/scene/burning3.png")
+        rowimg=myImage("./assets/scene/burning2.png")
         for _x in range(xx,xx+stp+1):
-            if not __set(_x,yy):break
+            if not __set(_x,yy,rowimg):break
         for _x in reversed(range(xx-stp,xx+1)):
-            if not __set(_x,yy):break
+            if not __set(_x,yy,rowimg):break
         for _y in range(yy,yy+stp+1):
-            if not __set(xx,_y):break
+            if not __set(xx,_y,colimg):break
         for _y in reversed(range(yy-stp,yy+1)):
-            if not __set(xx,_y):break
+            if not __set(xx,_y,colimg):break
+        __set(xx,yy,myImage("./assets/scene/burning1.png"))
         # 归还炸弹
         self.author.bombSum+=1
         super().delete()

@@ -88,6 +88,9 @@ class Mapper: # Map is some keyword use Mapper instead
                         self.mp[i][j]["render"].drawG(i,j,camera,win)
                     elif layer==0: # 即使不是空地，图层底层也要渲染空地
                        self.fieldimg.drawG(i,j,camera,win)
+                    if layer==1 and self.mp[i][j].get("render!"):
+                        print(i,j)
+                        self.mp[i][j]["render!"].drawG(i,j,camera,win)
                     for k in self.mp[i][j]["entity"]:
                         k.draw(layer,fpscnt,camera,win)
                                     
@@ -97,12 +100,14 @@ class Mapper: # Map is some keyword use Mapper instead
             #^这么画图层会出问题
 
     def burnTurn(self, gx:int, gy:int, img:myImage): # 将该地块转为受炸弹影响
-        self.mp[gx][gy]["render!"]=self.mp[gx][gy]["render"]
-        self.mp[gx][gy]["render"]=img
+        # self.mp[gx][gy]["render!"]=self.mp[gx][gy]["render"]
+        # self.mp[gx][gy]["render"]=img
+        self.mp[gx][gy]["render!"]=img
     def burnUnturn(self, gx:int, gy:int): # 将该地块解除受炸弹影响
-        if self.mp[gx][gy].get("render!"):
-            self.mp[gx][gy]["render"]=self.mp[gx][gy]["render!"]
-            self.mp[gx][gy].pop("render!")
+        # if self.mp[gx][gy].get("render!"):
+        #     self.mp[gx][gy]["render"]=self.mp[gx][gy]["render!"]
+        #     self.mp[gx][gy].pop("render!")
+        self.mp[gx][gy].pop("render!")
 
     def clock(self):
         for i in self.entities:
@@ -124,5 +129,5 @@ class Mapper: # Map is some keyword use Mapper instead
                         k.hpMinus()
                     self.mp[i][j]["burning"]-=1
                     if self.mp[i][j]["burning"]==0:
-                        self.mp[i][j]["render"]=self.fieldimg
+                        self.burnUnturn(i,j)
 
