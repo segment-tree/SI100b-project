@@ -161,7 +161,7 @@ class bomb(entityLike):
                 mapper.mp[x][y]["type"]="object"
                 mapper.mp[x][y]["burning"]=c.BurnCount
                 mapper.burnTurn(x,y,burnimg)
-                mapper.mp[x][y]["content"]=random.randrange(1,21)
+                mapper.mp[x][y]["content"]=random.randrange(1,31)
                 if mapper.mp[x][y]["content"]>5:mapper.mp[x][y]["content"]=5
                 mapper.mp[x][y]["render"]=\
                     myImage(f'./assets/scene/object{mapper.mp[x][y]["content"]}.png')
