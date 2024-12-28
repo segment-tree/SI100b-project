@@ -277,6 +277,67 @@ class ListenerLike:
         这一段的思路是：listening函数
         """
 
+class GroupLike(ListenerLike):
+    """
+    Listener群组 群组内共用post_api和receivers
+    :param listeners: _tools.DoubleKeyBarrel[ListenerLike]
+        群组内成员
+    :param listen_receivers: set[str]
+        群组接收者集合
+    :param listen_codes: set[int]
+        监听事件类型, 是群组监听类型与所有成员监听类型的并集
+    :method
+    """
+    __listeners: _tools.DoubleKeyBarrel[ListenerLike]  # 双键桶存储的Listener实例
+
+    # 双键桶键1是listen_code 键2是receivers' UUID
+    @property
+    def listen_codes(self) -> _typing.Set[int]:
+        return self.__listeners.keys1 | super().listen_codes
+    @listen_codes.setter
+    def listen_codes(self, listen_codes: _typing.Set[int]):
+        raise AttributeError("Setting attribute `listen_codes` is denied.")
+
+    @property
+    def listen_receivers(self) -> _typing.Set[str]:
+        return self.__listeners.keys2 | super().listen_receivers
+    @listen_receivers.setter
+    def listen_receivers(self, listen_receivers: _typing.Set[str]):
+        raise AttributeError("Setting attribute `listen_receivers` is denied.")
+
+    @property
+    def listeners(self) -> _tools.DoubleKeyBarrel[ListenerLike]:
+        return set(self.__listeners)
+    @listeners.setter
+    def listeners(self, listeners: _tools.DoubleKeyBarrel[ListenerLike]):
+        raise AttributeError("Setting attribute `listeners` is denied. Please use other methods.")
+
+    def __init__(
+        self,
+        *,
+        post_api: _typing.Optional[PostEventAPILike] = None,
+        listen_receivers: _typing.Optional[_typing.Set[str]] = None,
+    ):
+        """
+
+        :param post_api: (EventLike) -> None, optional, default = None
+            发布事件函数, 一般使用`Core`的`add_event`
+        :param listen_receivers: set[str], optional, default = {EVERYONE_RECEIVER, self.uuid}
+            监听的接收者集合
+        """
+        super().__init__(listen_receivers=listen_receivers, post_api=post_api)
+
+        def __get_key1(listener: ListenerLike) -> _typing.Set[int]:
+            return listener.listen_codes
+        def __get_key2(listener: ListenerLike) -> _typing.Set[str]:
+            return listener.listen_receivers
+
+        self.__listeners: _tools.DoubleKeyBarrel[ListenerLike] = _tools.DoubleKeyBarrel(
+            __get_key1, __get_key2
+        )
+        # 用listen_codes和listen_receivers作为键1和键2构建桶
+
+
 class EntityLike(ListenerLike):
     pass
 
