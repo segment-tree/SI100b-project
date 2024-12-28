@@ -26,7 +26,7 @@ def mapGener(nowmp):
     for x in range(0, 41):
         for y in range(0, 31):
             if nowmp.mp[x][y]["type"]=='field' and random.randrange(1,9)>1:
-                i = random.randrange(1,10)
+                i = random.randrange(1,12)
                 genObstacle(x,y,i)
     genField(0,28)#留出通道空位
     genField(1,27)
