@@ -2,6 +2,7 @@
 # 因为这部分代码需要访问scene所以不在entity.py里
 from entity import *
 from scene import *
+from makescene import *
 #第一个全局变量
 thisMap=Mapper(1,1)
 class player(creature):
@@ -61,30 +62,31 @@ def tempMagGener(nowmp):
         nowmp.mp[x][y]["content"]=iid
         nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/object{iid}.png')
     
-    nowmp.C=31
+    nowmp.C=41
     nowmp.R=31
-    genWall(7,7)
-    genObject(10,13,3)
-    genObject(10,4,5)
-    genObject(15,14,2);genObject(18,20,4)
-    genObject(3,4,1)
-    nowmp.mp[5][5]["burning"]=20*10
-    nowmp.mp[5][5]["render"]=myImage("./assets/scene/burning_tmp.png")
-    for i in range(0,30):
-        genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
+
+    # genWall(7,7)
+    # genObject(10,13,3)
+    # genObject(10,4,5)
+    # genObject(15,14,2);genObject(18,20,4)
+    # genObject(3,4,1)
+    # nowmp.mp[5][5]["burning"]=20*10
+    # nowmp.mp[5][5]["render"]=myImage("./assets/scene/burning_tmp.png")
+    # for i in range(0,30):
+    #     genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
     
-    for i in range(8,12):
-        genWall(i,10,5)
+    # for i in range(8,12):
+    #     genWall(i,10,5)
     
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
     thisMap=Mapper(100,100)
-    tempMagGener(thisMap)
+    mapGener(thisMap)
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=1,gy=1,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=0,gy=28,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry)
     thisMap.me=me
 
@@ -109,5 +111,6 @@ if __name__ == "__main__":
         thisMap.draw(fpscnt,car,win)
         #print(car)
         #print(me.hp)
+        # print(me.gx, me.gy)
         fpscnt+=1
         pygame.display.update()
