@@ -9,13 +9,36 @@ def mapGener(nowmp):
         nowmp.mp[x][y]["type"]="object"
         nowmp.mp[x][y]["content"]=iid
         nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/object{iid}.png')
-    
+    def genObstacle(x,y,iid):
+        nowmp.mp[x][y]["type"]="obstacle"
+        nowmp.mp[x][y]["content"]=iid
+        nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/obstacle{nowmp.style}.{iid}.png')
+    def genField(x,y):
+        nowmp.mp[x][y]["type"]="field"
+        nowmp.mp[x][y]["content"]=0
+        nowmp.mp[x][y]["render"]=None
     nowmp.C=41
     nowmp.R=31
 
     for x,y in scene0:
-        i = random.randrange(1,14)
+        i = random.randrange(1,13)
         genWall(x-1,y-1,i)
+    for x in range(0, 41):
+        for y in range(0, 31):
+            if nowmp.mp[x][y]["type"]=='field' and random.randrange(1,9)>1:
+                i = random.randrange(1,10)
+                genObstacle(x,y,i)
+    genField(0,28)#留出通道空位
+    genField(1,27)
+    genField(1,28)
+    genField(1,29)
+    genField(2,28)
+    genField(40,2)
+    genField(39,1)
+    genField(39,2)
+    genField(39,3)
+    genField(38,2)
+
 
 
 scene0 = [
@@ -45,7 +68,7 @@ scene0 = [
 [21,3],[21,5],[21,6],[21,8],[21,9],[21,11],[21,12],[21,13],[21,15],[21,17],[21,19],[21,20],[21,21],[21,23],[21,24],[21,26],[21,27],[21,29],[21,30],
 [22,9],[22,13],[22,19],[22,27],[23,2],[23,3],[23,5],[23,6],[23,7],[23,9],[23,10],[23,11],[23,13],[23,14],[23,15],[23,17],[23,18],[23,19],[23,20],[23,22],[23,23],[23,24],[23,25],[23,27],[23,29],[23,30],
 [24,9],[24,13],[24,15],[24,23],[24,25],
-[25,2],[25,3],[25,4],[25,5],[25,7],[25,8],[25,11],[25,13],[25,15],[25,16],[25,18],[25,19],[25,21],[25,22],[25,23],[25,25],[25,27],[25,28],[25,29],[25,30],
+[25,2],[25,4],[25,5],[25,7],[25,8],[25,11],[25,13],[25,15],[25,16],[25,18],[25,19],[25,21],[25,22],[25,23],[25,25],[25,27],[25,28],[25,29],[25,30],
 [26,9],[26,13],
 [27,3],[27,5],[27,6],[27,7],[27,10],[27,11],[27,13],[27,14],[27,15],[27,17],[27,18],[27,19],[27,21],[27,22],[27,23],[27,25],[27,27],[27,28],[27,29],
 [28,3],[28,9],[28,17],
