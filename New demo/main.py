@@ -1,9 +1,11 @@
 import pygame
-from . import collections as _colle
+from collections import *
+import constants as _const
 
 def init():
     pygame.init()
-    sidecore = _colle.Core()
+    player = PlayerLike()
+    sidecore = Core()
 
 if __name__ == "__main__":
     pass

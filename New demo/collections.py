@@ -293,21 +293,36 @@ class GroupLike(ListenerLike):
     # 双键桶键1是listen_code 键2是receivers' UUID
     @property
     def listen_codes(self) -> _typing.Set[int]:
+        """
+        监听事件类型, 是群组监听类型与所有成员监听类型的并集 (只读)
+        :return:
+        """
         return self.__listeners.keys1 | super().listen_codes
+
     @listen_codes.setter
     def listen_codes(self, listen_codes: _typing.Set[int]):
         raise AttributeError("Setting attribute `listen_codes` is denied.")
 
     @property
     def listen_receivers(self) -> _typing.Set[str]:
+        """
+        监听者接收者集合 是群组接收者集合与所有成员接收者集合的并集 (只读)
+        :return:
+        """
         return self.__listeners.keys2 | super().listen_receivers
+
     @listen_receivers.setter
     def listen_receivers(self, listen_receivers: _typing.Set[str]):
         raise AttributeError("Setting attribute `listen_receivers` is denied.")
 
     @property
-    def listeners(self) -> _tools.DoubleKeyBarrel[ListenerLike]:
+    def listeners(self) -> _typing.Set[ListenerLike]:
+        """
+        :return: typing.Set[ListenerLike]
+            群组中所有成员
+        """
         return set(self.__listeners)
+
     @listeners.setter
     def listeners(self, listeners: _tools.DoubleKeyBarrel[ListenerLike]):
         raise AttributeError("Setting attribute `listeners` is denied. Please use other methods.")
@@ -335,8 +350,85 @@ class GroupLike(ListenerLike):
         self.__listeners: _tools.DoubleKeyBarrel[ListenerLike] = _tools.DoubleKeyBarrel(
             __get_key1, __get_key2
         )
-        # 用listen_codes和listen_receivers作为键1和键2构建桶
+        # 用listen_codes和listen_receivers作为键1和键2构建桶 此时桶里还是空的
 
+    def group_listen(self, event: EventLike) -> None:
+        """
+        根据事件的`code`, 分配到对应的被`listening`装饰过的函数 (属于GroupLike的函数) 进行处理。
+        (除非事件的`receivers`中, 不包括此监听者。)
+        :param event: EventLike
+            待处理事件
+        """
+        super().listen(event)
+
+    def member_listen(self, event: EventLike) -> None:
+        """
+        将事件传递到群组内所有ListenerLike的listen中。
+        (如果事件代码event.code和事件接收者event.receivers合适的话)
+        :param event: EventLike
+            待处理事件
+        """
+        for l in self.get_listener({event.code}, event.receivers):
+            l.listen(event)
+
+    def get_listener(
+        self,
+        codes: _typing.Set[int],
+        receivers: _typing.Set[str],
+    ) -> _typing.Set[ListenerLike]:
+        """
+        获取群组内的所有监听者，并根据给定事件代码和接收者进行筛选
+        :param codes: set[int]
+            事件代码集合
+        :param receivers: set[str]
+            事件接收者集合
+        :return: typing.Set[ListenerLike]
+            筛选后的监听者集合
+        """
+        return self.__listeners.get(codes, receivers)
+
+    def add_listener(self, listener: ListenerLike) -> None:
+        """
+        添加监听者
+        :param listener: ListenerLike
+            待添加监听者
+        """
+        self.__listeners.add(listener)
+
+    def remove_listener(self, listener: ListenerLike) -> None:
+        """
+        移除监听者
+        :param listener: ListenerLike
+            待移除监听者
+        """
+        self.__listeners.remove(listener)
+
+    def clear_listener(self) -> None:
+        """
+        清空监听者
+        """
+        self.__listeners.clear()
+
+    def listen(self, event: EventLike) -> None:
+        """
+        群组处理事件, 且群组成员处理事件
+        :param event: EventLike
+            待处理事件
+        """
+        self.group_listen(event)
+        self.member_listen(event)
+
+    @_tools.listening(_const.EventCode.KILL)
+    def kill(self, event: EventLike) -> None:
+        """
+        根据`event.body["suicide"]`提供的UUID, 从群组中删除该成员
+        :param event: EventLike
+            待处理事件
+        """
+        body: _const.KillEventBody = event.body
+        uuid: str = body["suicide"]
+        for i in filter(lambda x: x.uuid == uuid, self.listeners):
+            self.remove_listener(i)
 
 class EntityLike(ListenerLike):
     pass
@@ -349,5 +441,71 @@ class MonsterLike(EntityLike):
 
 class MapLike(EntityLike):
     pass
+
+@_typing.Final
+@_tools.singleton
+class Core:
+    """
+    核心
+        管理事件队列，窗口，刻，pygame api
+        单例类
+    """
+
+    def __init__(self, winsize: _typing.Tuple[int, int]):
+        def get_prior(event: EventLike) -> int:
+            return event.prior
+
+        self.__winsize: _typing.Tuple[int, int] = winsize
+        self.__title: str = ""  # TODO: title
+        self.__rate: float = 60
+        self.__window: _pygame.Surface = _pygame.display.set_mode(
+            self.winsize, _pygame.RESIZABLE
+        )
+        self.__clock: _pygame.time.Clock = _pygame.time.Clock()
+        self.__event_queue: _tools.BarrelQueue[EventLike] = _tools.BarrelQueue(
+            get_prior
+        )
+
+        self.__init__()
+        _pygame.display.set_caption(self.__title)
+
+    def yield_events(
+            self,
+            *,
+            add_pygame_event: bool = True,
+            add_update_event: bool = True,
+            add_draw_event: bool = True,
+    ) -> _typing.Generator[EventLike, None, None]:
+        """
+        生成事件
+
+        将事件队列的所有事件都yield出来 (根据优先级), 直到事件队列为空
+
+        :param add_pygame_event: bool, optional, default = True
+            是否自动加入pygame事件
+        :param add_update_event: bool, optional, default = True
+            是否自动加入UPDATE事件
+        :param add_draw_event: bool, optional, default = True
+            是否自动加入DRAW事件
+        :return: typing.Generator[EventLike, None, None]
+            生成器
+        """
+        if add_pygame_event:
+            pygame_events = [
+                EventLike.from_pygame_event(i) for i in _pygame.event.get()
+            ]
+            self.__event_queue.extend(pygame_events)
+            # for event in filter(lambda x: x.code == _pygame.VIDEORESIZE, pygame_events):
+            #     self.winsize = (event.w, event.h)
+        if add_update_event:
+            self.__event_queue.append(self.get_update_event())
+        if add_draw_event:
+            self.__event_queue.append(EventLike.draw_event(self.window))
+        while self.__event_queue:
+            yield self.__event_queue.popleft()
+
+
+    def winsize(self) -> float:
+        pass
 
 

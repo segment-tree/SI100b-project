@@ -50,3 +50,9 @@ class KillEventBody(_typing.TypedDict):
     """
 
     suicide: str  # 被删除监听者的UUID
+
+
+someDefine = {
+    "渲染事件": 114514,
+    "更新事件": 12701300,
+}
