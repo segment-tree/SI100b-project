@@ -38,7 +38,7 @@ class player(creature):
                 case 1:self.bombSum+=1
                 case 2:self.hpPlus()
                 case 3:self.speed=c.IncreasedSpeed
-                case 4:self.bombRange+=2
+                case 4:self.bombRange+=1
                 case 5:self.money+=1
                 case 6:self.cankick=True
             w[self.gx][self.gy]["type"]="field"
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=0,gy=28,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=1,gy=28,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry)
     thisMap.me=me
 

@@ -28,12 +28,13 @@ def mapGener(nowmp):
             if nowmp.mp[x][y]["type"]=='field' and random.randrange(1,9)>1:
                 i = random.randrange(1,12)
                 genObstacle(x,y,i)
-    genField(0,28)#留出通道空位
-    genField(1,27)
+    genField(0,28)#后面改成通道
+    genField(40,2)
+
+    genField(1,27)#空地保证游玩正常
     genField(1,28)
     genField(1,29)
     genField(2,28)
-    genField(40,2)
     genField(39,1)
     genField(39,2)
     genField(39,3)
