@@ -80,8 +80,8 @@ class EventLike:
 
         Parameters:
         ---
-        ms: float
-            距离上次UPDATE事件经过的时间
+        second: float
+            距离上次UPDATE事件经过的时间(s)
         """
         body: _const.UpdateEventBody = {"second": second}
         body.type = "UPDATE"
@@ -172,7 +172,7 @@ class EventLike:
 
 PostEventAPILike: _typing.TypeAlias = _typing.Callable[
     [EventLike], None
-]  # 事件发布函数类型注释, 一般使用`Core`的`add_event`函数
+]  # 事件发布函数类型注释, 一般使用`Core`的`add_event`函数 接受EventLike类型的形参 返回None
 class ListenerLike:
     """
     监听者
@@ -189,6 +189,41 @@ class ListenerLike:
     __listen_methods: _typing.Dict[
         int, _typing.Set[_typing.Callable[[EventLike], None]]
     ]
+
+    @property
+    def listen_receivers(self) -> _typing.Set[str]:
+        return self.__listen_receivers
+    @listen_receivers.setter
+    def listen_receivers(self, listen_receivers: _typing.Set[str]):
+        self.__listen_receivers = listen_receivers
+
+    @property
+    def listen_codes(self) -> _typing.Set[int]:
+        """
+        获取监听者监听的事件代码集合
+        :return:
+            所有被tools.listening装饰过的函数中包含的事件代码
+        """
+        return set(self.__listen_methods)
+    @listen_codes.setter
+    def listen_codes(self, listen_codes: _typing.Set[int]):
+        raise AttributeError("Setting attribute `listen_codes` is denied.")
+
+    @property
+    def post_api(self) -> _typing.Optional[PostEventAPILike]:
+        return self.__post_api
+    @post_api.setter
+    def post_api(self, post_api: _typing.Optional[PostEventAPILike]):
+        self.__post_api = post_api
+
+    @property
+    def uuid(self) -> str:
+        """
+        监听者的UUID
+        使用对象实例的内存地址作为UUID
+        :return:
+        """
+        return str(id(self))
 
     def __init__(
         self,
@@ -211,3 +246,47 @@ class ListenerLike:
         self.__listen_methods: _typing.Dict[
             int, _typing.Set[_typing.Callable[[EventLike], None]]
         ] = _tools.find_listening_methods(self)
+
+    def post(self, event: EventLike) -> None:
+        """
+        通过post_api发布事件
+        :param event: EventLike
+            待发布事件
+        :raise AttributeError:
+            如果没有设置post_api，则抛出
+        """
+        if self.__post_api is None:
+            raise AttributeError("Post API is not set.")
+        self.__post_api(event)  # __post_api是EventLike对象的实例
+
+    def listen(self, event: EventLike) -> None:
+        """
+        根据事件code，分配至对应的被listening装饰过的函数处理 iff 事件接收者在监听者的监听接收者集合中
+        :param event: EventLike
+            待处理事件
+        """
+        listen_receivers = self.__listen_receivers
+        if not event.receiver & listen_receivers:  # 等价于 event.receiver.isdisjoint(listen_receivers)
+            return
+        listen_code_methods = self.__listen_methods
+        if not event.code in listen_code_methods:
+            return
+        for method_ in listen_code_methods[event.code]:
+            method_(event)
+        """
+        这一段的思路是：listening函数
+        """
+
+class EntityLike(ListenerLike):
+    pass
+
+class PlayerLike(EntityLike):
+    pass
+
+class MonsterLike(EntityLike):
+    pass
+
+class MapLike(EntityLike):
+    pass
+
+
