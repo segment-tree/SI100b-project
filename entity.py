@@ -4,13 +4,10 @@ import constants as c
 from imageclass import *
 class entityLike:
     id:int
-    gx:int
-    gy:int
-    rx:int
-    ry:int
+    gx:int; gy:int # 网格中的xy坐标
+    rx:int; ry:int # 渲染中的xy坐标
     # x列y行，坐标都从0开始
-    dx:int
-    dy:int
+    dx:int;dy:int # 正在移动的方向=-1/0/+1,同时表示朝向
     moving:int # 还要移动几帧
     speed:int
     allowOverlap:bool # 允许其他entity与之重叠
@@ -30,8 +27,8 @@ class entityLike:
         self.allowOverlap=True # temp
         self.layer=layer
     def tryMove(self, dx:int, dy:int, allowF:callable)->bool:
-        # 其中func为地图的检测函数
-        # allowF(x,y,id)->bool:
+        # 其中func为地图的检测函数（为了避免此文件依赖于scene.py)
+        # allowF(x:int,y:int,id:entityLike)->bool:
         # x y 表示要求的坐标，id表示请求发出者的~entity_id~地址
         if self.moving>1 : return False
         self.dx,self.dy=dx,dy # 无论是否允许移动(但不在移动)，都要改变entity的朝向
@@ -39,7 +36,9 @@ class entityLike:
             self.moving=c.CellSize//self.speed+1
             return True
         return False
-    def clock(self,moveUpdate:callable):
+    def clock(self, moveUpdate:callable):
+        # moveUpdate 为地图的更新当前实体所在网格的函数
+        # moveUpdate(oldx:int, oldy:int, newx:int, newy:int, entity:entityLike)
         if self.moving>0 :
             self.moving-=1
             self.rx+=self.dx*self.speed
@@ -48,10 +47,10 @@ class entityLike:
             self.rxy2gxy()
             if self.gx!=oldx or self.gy!=oldy:
                 moveUpdate(oldx,oldy,self.gx,self.gy,self)
-        if self.moving<=1:self.gxy2rxy()#及时跑一下这个转换，试图消除一些左键和下键交替按有盖率卡在两个格中间
-    def draw(self,layer:int,fpscnt:int,camera:Tuple[int,int],win):...
+        if self.moving<=1:self.gxy2rxy()#及时跑一下这个转换，试图消除一些左键和下键交替按有盖率卡在两个格中间的bug
+    def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):...
         # do nothing
-    def walkInto(self,other:entityLike)->bool:
+    def walkInto(self, other:entityLike)->bool:
         if self.id==other.id : return True
         if not self.allowOverlap or not other.allowOverlap:
             return False
@@ -61,8 +60,8 @@ class entityLike:
 class creature(entityLike):
     hp:int
     immune:int # 标记受击后的无敌时间
-    imagesMoving:Dict[(int,int),List[myImage]]
-    imagesStanding:Dict[(int,int)]
+    imagesMoving:Dict[(int,int),List[myImage]] # 移动时的贴图，第二维list长度为c.WalkingFpsLoop
+    imagesStanding:Dict[(int,int)] # 静止时贴图，怪物没有
     bombSum:int
     bombRange:int
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, speed:int=c.IntialSpeed, hp=c.IntialHp, layer=9):
@@ -80,14 +79,15 @@ class creature(entityLike):
                     self.imagesMoving[(tx,ty)]=[]
                     for i in range(1,c.WalkingFpsLoop+1):
                         self.imagesMoving[(tx,ty)].append(myImage(imagesdir+f"moving-({tx},{ty})-{i}.png"))
-    def hpMinus(self,n:int=1):
+    def hpMinus(self, n:int=1):
         self.hp-=n
         if self.hp<0 : self.delete()
         else : self.immune=c.ImmuneFrame
-    def hpPlus(self,n:int=1):
+    def hpPlus(self, n:int=1):
         self.hp+=n
         self.immune=0# 清理无敌帧
-    def draw(self,layer:int,fpscnt:int,camera:Tuple[int,int],win):
+    def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):
+        super().draw(layer,fpscnt,camera,win)
         if(self.layer==layer):
             w=None
             t=("monster"in str(type(self)))#trick

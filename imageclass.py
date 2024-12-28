@@ -28,6 +28,12 @@ class myImage:
         )
         win.blit(self.image,self.rect)
 
+def displayCreateWin():
+    if pygame.display.Info().current_w >= 2000:
+        c.CellRatio=1
+    win = pygame.display.set_mode((c.WinWidth*c.CellSize//c.CellRatio,c.WinHeight*c.CellSize//c.CellRatio))
+    return win
+
 #test
 import sys
 if __name__ == "__main__":

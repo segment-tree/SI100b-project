@@ -1,4 +1,4 @@
-# 包含entity player等
+# 包含属于entity player monster等
 # 因为这部分代码需要访问scene所以不在entity.py里
 from entity import *
 from scene import *
@@ -34,7 +34,7 @@ class player(creature):
         if w[self.gx][self.gy]["type"]=="object":
             match w[self.gx][self.gy]["content"]:
                 case 0:print('???a empty object???')
-                case 1:self.bomb_num+=1
+                case 1:self.bombSum+=1
                 case 2:self.hpPlus()
                 case 3:self.speed=c.IncreasedSpeed
                 case 4:self.bombRange+=2
@@ -72,11 +72,11 @@ def tempMagGener(nowmp):
     
 if __name__ == "__main__":
     pygame.init()
+    win=displayCreateWin()
     thisMap=Mapper(100,100)
     tempMagGener(thisMap)
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
-    win = pygame.display.set_mode((c.WinWidth*c.CellSize//c.CellRatio,c.WinHeight*c.CellSize//c.CellRatio))
     fpscnt=0
     me=player(id=0,gx=1,gy=1,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry)
