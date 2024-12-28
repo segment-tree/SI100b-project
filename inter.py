@@ -23,12 +23,12 @@ class player(creature):
                     for i in c.KeyboardDown:
                         if keys[i]: self.tryMove(0,1,allowF);break
         for i in c.KeyboardBomb:
-            pass
-    def __init__(self, id, gx, gy, imagesdir, speed = c.IntialSpeed, hp=c.IntialHp, layer=9):
-        super().__init__(id, gx, gy, imagesdir, speed, hp, layer)
+            if keys[i]:self.putBomb(thisMap.addEntity)
+    def __init__(self, id, gx, gy, imagesdir, initInMap:callable=None, speed = c.IntialSpeed, hp=c.IntialHp, layer=9):
+        if initInMap==None : initInMap=thisMap.addEntity# player切换地图的时候不要忘了重新在地图注册
+        super().__init__(id,gx,gy,imagesdir,initInMap,speed,hp,layer)
         self.money=0
         self.cankick=False
-        thisMap.mp[gx][gy]['entity'].add(self)
 
     def pickup(self,w):#捡东西
         if w[self.gx][self.gy]["type"]=="object":
@@ -45,6 +45,9 @@ class player(creature):
     def clock(self):
         self.pickup(thisMap.mp)
         super().clock(thisMap.moveUpdate)
+    def delete(self):
+        super().delete()
+        raise Exception("GAMEOVER")
 
 #test
 def tempMagGener(nowmp):
@@ -64,6 +67,9 @@ def tempMagGener(nowmp):
     genObject(10,13,3)
     genObject(10,4,5)
     genObject(15,14,2);genObject(18,20,4)
+    genObject(3,4,1)
+    nowmp.mp[5][5]["burning"]=20*10
+    nowmp.mp[5][5]["render"]=myImage("./assets/scene/burning_tmp.png")
     for i in range(0,30):
         genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
     
@@ -81,6 +87,10 @@ if __name__ == "__main__":
     me=player(id=0,gx=1,gy=1,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry)
     thisMap.me=me
+
+    for i in thisMap.mp[me.gx][me.gy]["entity"]:
+        print(i)
+
     while True:
         win.fill(back_ground_color)
         clock.tick(c.FPS)
@@ -95,8 +105,9 @@ if __name__ == "__main__":
         me.clock()
         # me.draw(3,fpscnt,(0,0),win)
         car=thisMap.genCamera()
+        thisMap.clock()
         thisMap.draw(fpscnt,car,win)
         #print(car)
-        #print(me.rx,me.ry)
+        #print(me.hp)
         fpscnt+=1
         pygame.display.update()

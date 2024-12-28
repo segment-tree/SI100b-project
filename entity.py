@@ -2,6 +2,11 @@ from __future__ import annotations
 from typing import *
 import constants as c
 from imageclass import *
+entityIdCount:int=0
+def genEntityId(): # from 1(0 id is for player)
+    global entityIdCount
+    entityIdCount+=1
+    return entityIdCount
 class entityLike:
     id:int
     gx:int; gy:int # 网格中的xy坐标
@@ -19,13 +24,19 @@ class entityLike:
     def rxy2gxy(self):
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
-    def __init__(self, id:int, gx:int, gy:int, speed:int=c.IntialSpeed, layer=9):
+    def __init__(self, id:int, gx:int, gy:int, initInMap:callable, speed:int=c.IntialSpeed, layer=9):
+        if initInMap(gx,gy,self)==False : 
+            self.id=-1 # 创建失败
+            raise Exception("Create entity failed")
+            # return None
         self.id,self.gx,self.gy = id,gx,gy
         self.speed=speed
         self.gxy2rxy()
         self.dx,self.dy,self.moving=0,0,0
         self.allowOverlap=True # temp
         self.layer=layer
+        
+
     def tryMove(self, dx:int, dy:int, allowF:callable)->bool:
         # 其中func为地图的检测函数（为了避免此文件依赖于scene.py)
         # allowF(x:int,y:int,id:entityLike)->bool:
@@ -50,12 +61,14 @@ class entityLike:
         if self.moving<=1:self.gxy2rxy()#及时跑一下这个转换，试图消除一些左键和下键交替按有盖率卡在两个格中间的bug
     def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):...
         # do nothing
+    def hpMinus(self, _:int=1):...#占位符,防止误调用
     def walkInto(self, other:entityLike)->bool:
         if self.id==other.id : return True
         if not self.allowOverlap or not other.allowOverlap:
             return False
         return True
-    def delete(self):...
+    def delete(self):
+        self.id=-1
 
 class creature(entityLike):
     hp:int
@@ -64,8 +77,8 @@ class creature(entityLike):
     imagesStanding:Dict[(int,int)] # 静止时贴图，怪物没有
     bombSum:int
     bombRange:int
-    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, speed:int=c.IntialSpeed, hp=c.IntialHp, layer=9):
-        super().__init__(id,gx,gy,speed,layer)
+    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable, speed:int=c.IntialSpeed, hp=c.IntialHp, layer=9):
+        super().__init__(id,gx,gy,initInMap,speed,layer)
         self.hp=hp
         self.immune=0
         self.bombSum=1
@@ -80,12 +93,16 @@ class creature(entityLike):
                     for i in range(1,c.WalkingFpsLoop+1):
                         self.imagesMoving[(tx,ty)].append(myImage(imagesdir+f"moving-({tx},{ty})-{i}.png"))
     def hpMinus(self, n:int=1):
+        if self.immune>0:return
         self.hp-=n
-        if self.hp<0 : self.delete()
+        if self.hp<=0 : self.delete()
         else : self.immune=c.ImmuneFrame
     def hpPlus(self, n:int=1):
         self.hp+=n
         self.immune=0# 清理无敌帧
+    def clock(self, moveUpdate):
+        super().clock(moveUpdate)
+        self.immune-=1
     def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):
         super().draw(layer,fpscnt,camera,win)
         if(self.layer==layer):
@@ -94,8 +111,44 @@ class creature(entityLike):
             if self.moving>0 or t:
                 w=self.imagesMoving[(self.dx,self.dy)][fpscnt%c.WalkingFpsLoop]
             else:w=self.imagesStanding[(self.dx,self.dy)]
-            w.draw(self.rx,self.ry,camera,win)
+            if self.immune<=0 or fpscnt%3!=0:
+                w.draw(self.rx,self.ry,camera,win)
+    def putBomb(self, initInMap:callable):
+        if self.bombSum>0:
+            try:
+                t=bomb(genEntityId(),self.gx,self.gy,initInMap,self,layer=2)
+                if t.id!=-1:self.bombSum-=1
+            except Exception as inst:
+                if str(inst)!="Create entity failed":
+                    raise Exception(inst)
 
+class bomb(entityLike):
+    author:entityLike
+    damage:int
+    image:myImage
+    def __init__(self, id:int, gx:int, gy:int, initInMap:callable, author:entityLike, speed = c.IntialSpeed, layer=9,skin:int=0):
+        super().__init__(id,gx,gy,initInMap,speed,layer)
+        self.author=author
+        self.damage=1
+        self.range=author.bombRange
+        self.count=c.BombCount
+        self.allowOverlap=False
+        #skin 表示炸弹皮肤
+        self.image=myImage(f"assets/scene/bomb{skin}.png")
+    def draw(self, layer, fpscnt, camera, win):
+        super().draw(layer,fpscnt,camera,win)
+        if self.layer==layer:
+            self.image.draw(self.rx,self.ry,camera,win)
+    def clock(self, moveUpdate:callable):
+        super().clock(moveUpdate)
+        if self.count <=0:
+            self.delete()
+        else: self.count-=1
+    def delete(self):
+        # 执行炸弹爆炸
+        #...
+        self.author.bombSum+=1
+        super().delete()
 
 
 

@@ -38,6 +38,14 @@ class Mapper: # Map is some keyword use Mapper instead
         basex=min(max(basex,0),self.C*c.CellSize-c.WinWidth *c.CellSize)
         basey=min(max(basey,0),self.R*c.CellSize-c.WinHeight*c.CellSize)
         return (basex,basey)
+    def addEntity(self, gx:int, gy:int, entity)->bool:
+        for i in self.mp[gx][gy]['entity']:
+            if i.allowOverlap==False:
+                return False
+        if not "player" in str(type(entity)): # trick; player大概不应被存在entities数组里
+            self.entities.append(entity)
+        self.mp[gx][gy]['entity'].add(entity)
+        return True
 
     def moveRequest(self, x:int, y:int, entity:entityLike): # entity调用这个来判断地图是否允许移动
         if self.invaild_coord(x,y):return False
@@ -88,11 +96,33 @@ class Mapper: # Map is some keyword use Mapper instead
             #self.me.draw(layer,fpscnt,camera,win)
             #^这么画图层会出问题
 
+    def burnTurn(self, gx:int, gy:int, img:myImage): # 将该地块转为受炸弹影响
+        self.mp[gx][gy]["render!"]=self.mp[gx][gy]["render"]
+        self.mp[gx][gy]["render"]=img
+    def burnUnturn(self, gx:int, gy:int): # 将该地块解除受炸弹影响
+        if self.mp[gx][gy].get("render!"):
+            self.mp[gx][gy]["render"]=self.mp[gx][gy]["render!"]
+            self.mp[gx][gy].pop("render!")
 
     def clock(self):
+        for i in self.entities:
+            i.clock(self.moveUpdate)
+        # 删除死掉的实体
+        t=self.entities
+        for i in t:
+            if i.id==-1:
+                self.mp[i.gx][i.gy]["entity"].remove(i)
+                self.entities.remove(i)
+        # print(len(self.entities))#
+        # 碰撞伤害
         for i in self.entities:
             pass
         for j in range(self.R):
             for i in range(self.C):
-                pass
+                if self.mp[i][j]["burning"]>0:
+                    for k in self.mp[i][j]["entity"]:
+                        k.hpMinus()
+                    self.mp[i][j]["burning"]-=1
+                    if self.mp[i][j]["burning"]==0:
+                        self.mp[i][j]["render"]=self.fieldimg
 
