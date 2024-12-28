@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import *
 import constants as c
 from imageclass import *
+import random
 entityIdCount:int=0
 def genEntityId(): # from 1(0 id is for player)
     global entityIdCount
@@ -159,7 +160,8 @@ class bomb(entityLike):
                 return True
             if mapper.mp[x][y]["type"]=="obstacle" :
                 mapper.mp[x][y]["type"]="object"
-                mapper.mp[x][y]["content"]=mapper.mp[x][y]["content"]%4+1
+                mapper.mp[x][y]["content"]=random.randrange(1,21)
+                if mapper.mp[x][y]["content"]>5:mapper.mp[x][y]["content"]=5
                 mapper.mp[x][y]["render"]=\
                     myImage(f'./assets/scene/object{mapper.mp[x][y]["content"]}.png')
             return False

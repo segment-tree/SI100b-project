@@ -17,7 +17,7 @@ WalkingFpsLoop=8 # 走路完整完成一步的帧数
 # 用fpscnt（帧数总计数器）mod WalkingFpsLoop 得出要渲染哪一帧
 
 BombCount=int(FPS*2.25) # 炸弹💥倒计时
-BurnCount=int(FPS*1.25)  # 受爆炸影响时间
+BurnCount=int(FPS*0.30)  # 受爆炸影响时间
 
 #键盘：
 KeyboardLeft =[pygame.K_LEFT,ord('a')]
