@@ -125,6 +125,7 @@ class creature(entityLike):
 class bomb(entityLike):
     author:entityLike
     damage:int
+    range:int
     image:myImage
     def __init__(self, id:int, gx:int, gy:int, initInMap:callable, author:entityLike, speed = c.IntialSpeed, layer=9,skin:int=0):
         super().__init__(id,gx,gy,initInMap,speed,layer)
@@ -139,14 +140,39 @@ class bomb(entityLike):
         super().draw(layer,fpscnt,camera,win)
         if self.layer==layer:
             self.image.draw(self.rx,self.ry,camera,win)
-    def clock(self, moveUpdate:callable):
+    def clock(self, moveUpdate:callable,mapper):
         super().clock(moveUpdate)
         if self.count <=0:
-            self.delete()
+            self.delete(mapper)
         else: self.count-=1
-    def delete(self):
-        # 执行炸弹爆炸
-        #...
+    def delete(self,mapper):
+        # 执行炸弹爆炸 (应该写在这里呢还是写在Mapper里？)
+        xx,yy,stp=self.gx,self.gy,self.range
+        img=myImage("./assets/scene/burning_tmp.png")
+        def __set(x,y):
+            if mapper.invaild_coord(x,y) : return False
+            if mapper.mp[x][y]["type"] in ["field","object"]:
+                mapper.mp[x][y]["burning"]=c.BurnCount
+                mapper.burnTurn(x,y,img)
+                if mapper.mp[x][y]["type"]=="object":
+                    mapper.mp[x][y]["content"]=0 # 炸弹炸毁掉落物
+                return True
+            if mapper.mp[x][y]["type"]=="obstacle" :
+                mapper.mp[x][y]["type"]="object"
+                mapper.mp[x][y]["content"]=mapper.mp[x][y]["content"]%4+1
+                mapper.mp[x][y]["render"]=\
+                    myImage(f'./assets/scene/object{mapper.mp[x][y]["content"]}.png')
+            return False
+        
+        for _x in range(xx,xx+stp+1):
+            if not __set(_x,yy):break
+        for _x in reversed(range(xx-stp,xx+1)):
+            if not __set(_x,yy):break
+        for _y in range(yy,yy+stp+1):
+            if not __set(xx,_y):break
+        for _y in reversed(range(yy-stp,yy+1)):
+            if not __set(xx,_y):break
+        # 归还炸弹
         self.author.bombSum+=1
         super().delete()
 

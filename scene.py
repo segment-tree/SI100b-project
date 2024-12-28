@@ -106,7 +106,7 @@ class Mapper: # Map is some keyword use Mapper instead
 
     def clock(self):
         for i in self.entities:
-            i.clock(self.moveUpdate)
+            i.clock(self.moveUpdate,self)
         # 删除死掉的实体
         t=self.entities
         for i in t:
