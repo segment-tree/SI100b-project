@@ -149,12 +149,15 @@ class bomb(entityLike):
     def delete(self,mapper):
         # 执行炸弹爆炸 (应该写在这里呢还是写在Mapper里？)
         xx,yy,stp=self.gx,self.gy,self.range
-        def __set(x,y,burnimg):
+        def __set(x,y,burnimg,pointer):
             if mapper.invaild_coord(x,y) : return False
             if mapper.mp[x][y]["type"] in ["field","object"]:
                 mapper.burnTurn(x,y,burnimg)
                 if mapper.mp[x][y]["type"]=="object":
+                    mapper.mp[x][y]["type"]="field"
+                    mapper.mp[x][y]["render"]=None
                     mapper.mp[x][y]["content"]=0 # 炸弹炸毁掉落物
+                pointer[0][0]=x;pointer[1][0]=y
                 return True
             if mapper.mp[x][y]["type"]=="obstacle" :
                 mapper.mp[x][y]["type"]="object"
@@ -163,19 +166,26 @@ class bomb(entityLike):
                 if mapper.mp[x][y]["content"]>5:mapper.mp[x][y]["content"]=5
                 mapper.mp[x][y]["render"]=\
                     myImage(f'./assets/scene/object{mapper.mp[x][y]["content"]}.png')
+                pointer[0][0]=x;pointer[1][0]=y
             return False
         
         colimg=myImage("./assets/scene/burning3.png")
         rowimg=myImage("./assets/scene/burning2.png")
+        u,d,l,r,_=[yy],[yy],[xx],[xx],[0]
         for _x in range(xx,xx+stp+1):
-            if not __set(_x,yy,rowimg):break
+            if not __set(_x,yy,rowimg,[r,_]):break
         for _x in reversed(range(xx-stp,xx+1)):
-            if not __set(_x,yy,rowimg):break
+            if not __set(_x,yy,rowimg,[l,_]):break
         for _y in range(yy,yy+stp+1):
-            if not __set(xx,_y,colimg):break
+            if not __set(xx,_y,colimg,[_,d]):break
         for _y in reversed(range(yy-stp,yy+1)):
-            if not __set(xx,_y,colimg):break
-        
+            if not __set(xx,_y,colimg,[_,u]):break
+        #炸弹边缘
+        u,d,l,r=u[0],d[0],l[0],r[0]
+        mapper.burnTurn(xx,u,myImage("./assets/scene/burning6.png"))
+        mapper.burnTurn(xx,d,myImage("./assets/scene/burning4.png"))
+        mapper.burnTurn(l,yy,myImage("./assets/scene/burning5.png"))
+        mapper.burnTurn(r,yy,myImage("./assets/scene/burning7.png"))
         #炸弹中心
         mapper.burnTurn(xx,yy,myImage("./assets/scene/burning1.png",zoom=1.4,mode=1),center=True)
         # 归还炸弹

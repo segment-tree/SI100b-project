@@ -51,7 +51,7 @@ class player(creature):
         raise Exception("GAMEOVER")
 
 #test
-def tempMagGener(nowmp):
+def tempMapGener(nowmp):
     # nowmp.C=30
     # nowmp.R=30
     def genWall(x,y,iid=1):
@@ -71,7 +71,7 @@ def tempMagGener(nowmp):
     genObject(15,14,2);genObject(18,20,4)
     genObject(3,4,1)
     nowmp.mp[5][5]["burning"]=20*10
-    nowmp.mp[5][5]["render"]=myImage("./assets/scene/burning_tmp.png")
+    nowmp.mp[5][5]["render!"]=myImage("./assets/scene/burning_tmp.png")
     for i in range(0,30):
         genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
     
@@ -82,6 +82,7 @@ if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
     thisMap=Mapper(100,100)
+    #tempMapGener(thisMap)
     mapGener(thisMap)
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
