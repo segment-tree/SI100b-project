@@ -156,7 +156,8 @@ class bomb(entityLike):
             self.delete(mapper)
         else: self.count-=1
         if self.kicked:
-            self.tryMove(self.dx,self.dy,mapper.moveRequest)
+            if not self.tryMove(self.dx,self.dy,mapper.moveRequest) and self.moving==0 :
+                self.kicked=False # 停止后不再移动
     
     def walkInto(self, other:entityLike):
         if "player" in str(type(other)) and other.cankick == True : # here depend on class player
@@ -189,9 +190,15 @@ class bomb(entityLike):
 
                 mapper.mp[x][y]["type"]="object"
                 mapper.burnTurn(x,y,burnimg)
+                # gen content
                 mapper.mp[x][y]["content"]=random.randrange(1,31)
-                if mapper.mp[x][y]["content"]>5:mapper.mp[x][y]["content"]=5
-                mapper.mp[x][y]["render"]=\
+                if mapper.mp[x][y]["content"]>18 : mapper.mp[x][y]["content"]=0
+                elif mapper.mp[x][y]["content"]>5 : mapper.mp[x][y]["content"]=5
+
+                if mapper.mp[x][y]["content"]==0:
+                    mapper.mp[x][y]["type"]="field"
+                    mapper.mp[x][y]["render"]=None
+                else:mapper.mp[x][y]["render"]=\
                     myImage(f'./assets/scene/object{mapper.mp[x][y]["content"]}.png')
             return False
         

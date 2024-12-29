@@ -92,12 +92,12 @@ if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
     thisMap=Mapper(100,100)
-    tempMapGener(thisMap)
-    # mapGener(thisMap)
+    # tempMapGener(thisMap)
+    mapGener(thisMap)
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=1,gy=2,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=1,gy=28,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry) # gy 28
     thisMap.me=me
 

@@ -122,6 +122,7 @@ class Mapper: # Map is some keyword use Mapper instead
         t=self.entities
         for i in t:
             if i.id==-1:
+                self.mp[i.gx+i.dx][i.gy+i.dy]["entity_locked"].discard(i)
                 self.mp[i.gx][i.gy]["entity"].remove(i)
                 self.entities.remove(i)
         # print(len(self.entities))#
