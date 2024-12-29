@@ -43,9 +43,9 @@ class player(creature):
                 case 6:self.cankick=True
             w[self.gx][self.gy]["type"]="field"
             w[self.gx][self.gy]["render"]=None# Warning
-    def clock(self):
-        self.pickup(thisMap.mp)
-        super().clock(thisMap.moveUpdate)
+    def clock(self,mapper):
+        self.pickup(mapper.mp)
+        super().clock(mapper.moveUpdate)
     def delete(self):
         super().delete()
         raise Exception("GAMEOVER")
@@ -62,21 +62,21 @@ def tempMagGener(nowmp):
         nowmp.mp[x][y]["content"]=iid
         nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/object{iid}.png')
     
-    nowmp.C=41
+    nowmp.C=31
     nowmp.R=31
 
-    # genWall(7,7)
-    # genObject(10,13,3)
-    # genObject(10,4,5)
-    # genObject(15,14,2);genObject(18,20,4)
-    # genObject(3,4,1)
-    # nowmp.mp[5][5]["burning"]=20*10
-    # nowmp.mp[5][5]["render"]=myImage("./assets/scene/burning_tmp.png")
-    # for i in range(0,30):
-    #     genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
+    genWall(7,7)
+    genObject(10,13,3)
+    genObject(10,4,5)
+    genObject(15,14,2);genObject(18,20,4)
+    genObject(3,4,1)
+    nowmp.mp[5][5]["burning"]=20*10
+    nowmp.mp[5][5]["render"]=myImage("./assets/scene/burning_tmp.png")
+    for i in range(0,30):
+        genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
     
-    # for i in range(8,12):
-    #     genWall(i,10,5)
+    for i in range(8,12):
+        genWall(i,10,5)
     
 if __name__ == "__main__":
     pygame.init()
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         #me.dy=0
         #me.moving=10
         me.keyboard()
-        me.clock()
+        me.clock(thisMap)
         # me.draw(3,fpscnt,(0,0),win)
         car=thisMap.genCamera()
         thisMap.clock()

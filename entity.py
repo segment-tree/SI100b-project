@@ -152,14 +152,12 @@ class bomb(entityLike):
         def __set(x,y,burnimg):
             if mapper.invaild_coord(x,y) : return False
             if mapper.mp[x][y]["type"] in ["field","object"]:
-                mapper.mp[x][y]["burning"]=c.BurnCount
                 mapper.burnTurn(x,y,burnimg)
                 if mapper.mp[x][y]["type"]=="object":
                     mapper.mp[x][y]["content"]=0 # 炸弹炸毁掉落物
                 return True
             if mapper.mp[x][y]["type"]=="obstacle" :
                 mapper.mp[x][y]["type"]="object"
-                mapper.mp[x][y]["burning"]=c.BurnCount
                 mapper.burnTurn(x,y,burnimg)
                 mapper.mp[x][y]["content"]=random.randrange(1,31)
                 if mapper.mp[x][y]["content"]>5:mapper.mp[x][y]["content"]=5
@@ -177,7 +175,9 @@ class bomb(entityLike):
             if not __set(xx,_y,colimg):break
         for _y in reversed(range(yy-stp,yy+1)):
             if not __set(xx,_y,colimg):break
-        __set(xx,yy,myImage("./assets/scene/burning1.png"))
+        
+        #炸弹中心
+        mapper.burnTurn(xx,yy,myImage("./assets/scene/burning1.png",zoom=1.4,mode=1),center=True)
         # 归还炸弹
         self.author.bombSum+=1
         super().delete()
