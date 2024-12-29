@@ -192,7 +192,7 @@ class bomb(entityLike):
                 mapper.burnTurn(x,y,burnimg)
                 # gen content
                 mapper.mp[x][y]["content"]=random.randrange(1,31)
-                if mapper.mp[x][y]["content"]>24 : mapper.mp[x][y]["content"]=0
+                if mapper.mp[x][y]["content"]>26 : mapper.mp[x][y]["content"]=0
                 elif mapper.mp[x][y]["content"]>5 : mapper.mp[x][y]["content"]=5
 
                 if mapper.mp[x][y]["content"]==0:
