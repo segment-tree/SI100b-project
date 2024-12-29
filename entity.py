@@ -190,7 +190,7 @@ class bomb(entityLike):
         #炸弹边缘
         u,d,l,r=u[0],d[0],l[0],r[0]
         if u!=-1 :mapper.burnTurn(xx,u,myImage("./assets/scene/burning6.png"))
-        if u!=-1 :mapper.burnTurn(xx,d,myImage("./assets/scene/burning4.png"))
+        if d!=-1 :mapper.burnTurn(xx,d,myImage("./assets/scene/burning4.png"))
         if l!=-1 :mapper.burnTurn(l,yy,myImage("./assets/scene/burning5.png"))
         if r!=-1 :mapper.burnTurn(r,yy,myImage("./assets/scene/burning7.png"))
         #炸弹中心
