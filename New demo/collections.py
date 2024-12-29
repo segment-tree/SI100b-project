@@ -446,6 +446,10 @@ class EntityLike(ListenerLike):
     def modify_single_attributes(self, key: str, value: _typing.Any):
         self.__attributes[key] = value
 
+    @_tools.listening(_const.EventCode.KILL)
+    def suicide(self):
+        self.__post_api()
+
 class PlayerLike(EntityLike):
     """
     玩家类
@@ -457,7 +461,35 @@ class PlayerLike(EntityLike):
     __ability: _typing.List[bool]
     # TODO: 一些和捡掉落物相关的方法，需要知道有哪些掉落物
 
-    pass
+    def resume_hp(self, value: int):
+        self.__attributes["hp"] += value
+        self.__attributes["hp"] = min(self.__attributes["hp"], self.__attributes["maxhp"])
+
+    def add_maxhp(self, value: int):
+        self.__attributes["maxhp"] += value
+
+    def add_bomb_count(self, value: int):
+        self.__attributes["bomb_count"] += value
+
+    def add_bomb_power(self, value: int):
+        self.__attributes["bomb_power"] += value
+
+    # def add_speed(self, value: int):
+    #     self.__attributes["speed"] += value
+    # TODO: 加不加这个？
+
+    @property
+    def ability(self) -> _typing.List[str]:
+        return [_const.ability[x] for x in range(_const.abilityCount) if self.__ability[x]]
+
+    def learn_ability(self, ability: int):
+        self.__ability[ability] = True
+
+    # # def forget_ability(self, ability: int):
+    #     self.__ability[ability] = False
+
+
+
 
 class MonsterLike(EntityLike):
     pass

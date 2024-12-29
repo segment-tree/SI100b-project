@@ -51,6 +51,12 @@ class KillEventBody(_typing.TypedDict):
 
     suicide: str  # 被删除监听者的UUID
 
+abilityCount: int = 0  # 能力总数
+ability: list = [
+    ""
+]  #能力表 TODO: 想名字
+
+
 
 someDefine = {
     "渲染事件": 114514,

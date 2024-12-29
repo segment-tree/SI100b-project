@@ -7,7 +7,8 @@ import inspect as _inspect
 
 from loguru import logger as _logger
 
-
+if _typing.TYPE_CHECKING:
+    from . import collections as _colls
 _LISTENING_METHOD_ATTR_NAME = "_listening_codes"  # listening装饰器修改的函数属性
 
 _WARNING_DO_NOT_DECORATE_PRIVATE = """Do not use the `listening` decorator on private methods!
