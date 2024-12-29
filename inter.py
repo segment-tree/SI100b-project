@@ -30,6 +30,7 @@ class player(creature):
         super().__init__(id,gx,gy,imagesdir,initInMap,speed,hp,layer)
         self.money=0
         self.cankick=False
+        self.hp+=c.IntialPlayerHp-c.IntialHp
 
     def pickup(self,w):#捡东西
         if w[self.gx][self.gy]["type"]=="object":
@@ -46,12 +47,17 @@ class player(creature):
     def clock(self,mapper):
         self.pickup(mapper.mp)
         super().clock(mapper.moveUpdate)
+    def overlap(self, other:entityLike):
+        super().overlap(other)
+        if (self.gx,self.gy)==(other.gx,other.gy):
+            if "monster" in str(type(other)) :#trick
+                self.hpMinus()
     def delete(self):
         super().delete()
         raise Exception("GAMEOVER")
 
 #test
-def tempMapGener(nowmp):
+def tempMapGener(nowmp:Mapper):
     # nowmp.C=30
     # nowmp.R=30
     def genWall(x,y,iid=1):
@@ -77,12 +83,17 @@ def tempMapGener(nowmp):
     
     for i in range(8,12):
         genWall(i,10,5)
+
+    # monsters
+    nowmp.addMonster(5,5,"./assets/monster/")
+    nowmp.addMonster(6,7,"./assets/monster/")
+    nowmp.addMonster(1,12,"./assets/monster/")
     
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
     thisMap=Mapper(100,100)
-    #tempMapGener(thisMap)
+    # tempMapGener(thisMap)
     mapGener(thisMap)
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象

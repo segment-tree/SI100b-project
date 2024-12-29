@@ -32,13 +32,12 @@ def mapGener(nowmp):
     genField(40,2)
 
     genField(1,27)#空地保证游玩正常
-    genField(1,28)
-    genField(1,29)
-    genField(2,28)
-    genField(39,1)
-    genField(39,2)
-    genField(39,3)
-    genField(38,2)
+    genField(1,28);genField(1,29);genField(2,28)
+    genField(39,1);genField(39,2);genField(39,3);genField(38,2)
+
+    # monster
+    genField(5,23);genField(6,23);genField(7,23);genField(8,23)
+    nowmp.addMonster(6,23,"./assets/monster/")
 
 
 

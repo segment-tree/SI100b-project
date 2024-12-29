@@ -26,6 +26,7 @@ class entityLike:
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
     def __init__(self, id:int, gx:int, gy:int, initInMap:callable, speed:int=c.IntialSpeed, layer=9):
+        # initInMap在地图中生成该实体
         if initInMap(gx,gy,self)==False : 
             self.id=-1 # 创建失败
             raise Exception("Create entity failed")
@@ -68,6 +69,7 @@ class entityLike:
         if not self.allowOverlap or not other.allowOverlap:
             return False
         return True
+    def overlap(self, other:entityLike):...
     def delete(self):
         self.id=-1
 
@@ -122,6 +124,8 @@ class creature(entityLike):
             except Exception as inst:
                 if str(inst)!="Create entity failed":
                     raise Exception(inst)
+
+# 分界线，上面部分几乎完全不依赖于scene.py，下面几乎完全依赖
 
 class bomb(entityLike):
     author:entityLike
@@ -199,6 +203,18 @@ class bomb(entityLike):
         self.author.bombSum+=1
         super().delete()
 
+class monster(creature):
+    def ai(self,mapper):
+        a=random.randrange(1,10)
+        match a:
+            case 1:self.tryMove(-1,0,mapper.moveRequest)
+            case 2:self.tryMove( 1,0,mapper.moveRequest)
+            case 3:self.tryMove(0,-1,mapper.moveRequest)
+            case 4:self.tryMove(0, 1,mapper.moveRequest)
+            case 5:self.putBomb(mapper.addEntity) # only for test
+
+    def clock(self, moveUpdate:callable, mapper):
+        return super().clock(moveUpdate)
 
 
 # test

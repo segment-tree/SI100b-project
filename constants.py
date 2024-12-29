@@ -11,7 +11,8 @@ WinWidth=14
 IntialSpeed=8 # 所有entity的速度初值
 IncreasedSpeed=14 # 小人吃到加速道具后的速度
 IntialBombRange=1 # 所有creature的炸弹的初始爆炸范围
-IntialHp=2
+IntialHp=1
+IntialPlayerHp=5
 ImmuneFrame=int(FPS*2) # 受击后无敌帧数
 WalkingFpsLoop=8 # 走路完整完成一步的帧数
 # 用fpscnt（帧数总计数器）mod WalkingFpsLoop 得出要渲染哪一帧

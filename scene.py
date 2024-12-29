@@ -46,7 +46,8 @@ class Mapper: # Map is some keyword use Mapper instead
             self.entities.append(entity)
         self.mp[gx][gy]['entity'].add(entity)
         return True
-
+    def addMonster(self, gx:int, gy:int, imgdir:str):
+        monster(genEntityId(),gx,gy,imgdir, self.addEntity,layer=3)
     def moveRequest(self, x:int, y:int, entity:entityLike): # entity调用这个来判断地图是否允许移动
         if self.invaild_coord(x,y):return False
         if self.mp[x][y]["type"] in ["wall","obstacle"]:
@@ -124,9 +125,12 @@ class Mapper: # Map is some keyword use Mapper instead
                 self.mp[i.gx][i.gy]["entity"].remove(i)
                 self.entities.remove(i)
         # print(len(self.entities))#
+        for i in self.entities:
+            if "monster"in str(type(i)):
+                i.ai(self)
         # 碰撞伤害
         for i in self.entities:
-            pass
+            self.me.overlap(i)
         for j in range(self.R):
             for i in range(self.C):
                 if self.mp[i][j]["burning"]>0:
