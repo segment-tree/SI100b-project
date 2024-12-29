@@ -80,12 +80,14 @@ class creature(entityLike):
     imagesStanding:Dict[(int,int)] # 静止时贴图，怪物没有
     bombSum:int
     bombRange:int
+    cankick:bool # 踢炸弹
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable, speed:int=c.IntialSpeed, hp=c.IntialHp, layer=9):
         super().__init__(id,gx,gy,initInMap,speed,layer)
         self.hp=hp
         self.immune=0
         self.bombSum=1
         self.bombRange=c.IntialBombRange
+        self.cankick=False
         self.imagesStanding,self.imagesMoving={},{}
         t=("monster"in str(type(self)))#trick
         for tx in range(-1,2):
@@ -132,6 +134,7 @@ class bomb(entityLike):
     damage:int
     range:int
     image:myImage
+    kicked:bool
     def __init__(self, id:int, gx:int, gy:int, initInMap:callable, author:entityLike, speed = c.IntialSpeed, layer=9,skin:int=0):
         super().__init__(id,gx,gy,initInMap,speed,layer)
         self.author=author
@@ -141,6 +144,8 @@ class bomb(entityLike):
         self.allowOverlap=False
         #skin 表示炸弹皮肤
         self.image=myImage(f"assets/scene/bomb{skin}.png")
+        self.kicked=False
+        self.speed=c.BombKickedSpeed
     def draw(self, layer, fpscnt, camera, win):
         super().draw(layer,fpscnt,camera,win)
         if self.layer==layer:
@@ -150,6 +155,16 @@ class bomb(entityLike):
         if self.count <=0:
             self.delete(mapper)
         else: self.count-=1
+        if self.kicked:
+            self.tryMove(self.dx,self.dy,mapper.moveRequest)
+    
+    def walkInto(self, other:entityLike):
+        if "player" in str(type(other)) and other.cankick == True : # here depend on class player
+            self.dx=self.gx-other.gx
+            self.dy=self.gy-other.gy
+            self.kicked=True
+        return super().walkInto(other)
+
     def delete(self,mapper):
         # 执行炸弹爆炸 (应该写在这里呢还是写在Mapper里？)
         xx,yy,stp=self.gx,self.gy,self.range
@@ -211,7 +226,7 @@ class monster(creature):
             case 2:self.tryMove( 1,0,mapper.moveRequest)
             case 3:self.tryMove(0,-1,mapper.moveRequest)
             case 4:self.tryMove(0, 1,mapper.moveRequest)
-            case 5:self.putBomb(mapper.addEntity) # only for test
+            # case 5:self.putBomb(mapper.addEntity) # only for test
 
     def clock(self, moveUpdate:callable, mapper):
         return super().clock(moveUpdate)

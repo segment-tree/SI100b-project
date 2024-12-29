@@ -10,6 +10,7 @@ WinHeight=10 # 这里表示格子数，而非像素数
 WinWidth=14
 IntialSpeed=8 # 所有entity的速度初值
 IncreasedSpeed=14 # 小人吃到加速道具后的速度
+BombKickedSpeed=5*IntialSpeed
 IntialBombRange=1 # 所有creature的炸弹的初始爆炸范围
 IntialHp=1
 IntialPlayerHp=5
