@@ -97,6 +97,8 @@ class Mapper: # Map is some keyword use Mapper instead
                     if layer==2 and self.mp[i][j].get("burnCenter") and self.mp[i][j].get("render!") :
                         self.mp[i][j]["render!"].drawG(i,j,camera,win)
                     for k in self.mp[i][j]["entity"]:
+                        if k==self.me:
+                            print(i,j)
                         k.draw(layer,fpscnt,camera,win)
                                     
             #for i in self.entities:

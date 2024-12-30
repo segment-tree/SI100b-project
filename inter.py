@@ -49,6 +49,7 @@ class player(creature):
         self.pickup(mapper.mp)
         super().clock(mapper.moveUpdate)
         if mapper.mp[self.gx][self.gy].get("teleportTo") :
+            thisMap.mp[self.gx][self.gy]["entity"].remove(thisMap.me)
             changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])
     def overlap(self, other:entityLike):
         super().overlap(other)
@@ -62,6 +63,7 @@ class player(creature):
 maps=[]
 def changeMap(mapid:int, gx:int, gy:int):
     global thisMap
+    #thisMap.mp[gx][gy]["entity"].remove(thisMap.me)
     thisMap=maps[mapid]
     me.reRegister(gx,gy,thisMap.addEntity)
     thisMap.me=me
@@ -113,7 +115,7 @@ if __name__ == "__main__":
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=37,gy=10,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=1,gy=17,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry) # gy 28
     thisMap.me=me
 
