@@ -91,9 +91,10 @@ def tempMapGener(nowmp:Mapper):
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
-    thisMap=Mapper(100,100)
+    thisMap=Mapper(100,100,style=1)
     # tempMapGener(thisMap)
-    mapGener(thisMap)
+    # mapGener(thisMap)
+    mapGenerTown(thisMap)
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0

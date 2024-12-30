@@ -10,8 +10,8 @@ class myImage:
     def __init__(self,imgdir,zoom=1,mode=0):
         self.image=pygame.image.load(imgdir)
         rect_t=self.image.get_rect()
-        h=(rect_t.height*c.CellSize//rect_t.width)//c.CellRatio
-        self.image=pygame.transform.scale(self.image,(int(c.CellSize*zoom)//c.CellRatio,int(h*zoom)))
+        h=(rect_t.height*c.CellSize*zoom//rect_t.width)//c.CellRatio
+        self.image=pygame.transform.scale(self.image,(int(c.CellSize*zoom)//c.CellRatio,h))
         self.rect=self.image.get_rect()
         self.mode=mode
 

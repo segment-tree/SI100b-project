@@ -12,11 +12,12 @@ class Mapper: # Map is some keyword use Mapper instead
     R:int # Row
     me:Any #指向玩家实体
     style:int # 0 森林， ？ boss房
-    def __init__(self, c:int, r:int): # It's in CHAOS!
+    backGround:myImage
+    def __init__(self, c:int, r:int,style=0): # It's in CHAOS!
         self.C,self.R=c,r
-        self.style=0
+        self.style=style
         self.fieldimg=myImage(f'./assets/scene/field{self.style}.png')
-        wall=myImage(f'./assets/scene/wall{self.style}.1.png')
+        # wall=myImage(f'./assets/scene/wall{self.style}.1.png')
         self.entities=[]
         ttt={
             "type":"field",
@@ -29,6 +30,7 @@ class Mapper: # Map is some keyword use Mapper instead
         for i in self.mp:
             for j in i:
                 j["render"]=self.fieldimg
+        self.backGround=None
         pass
     def invaild_coord(self,x,y):
         return x<0 or x >= self.C or y<0 or y >= self.R
@@ -68,6 +70,7 @@ class Mapper: # Map is some keyword use Mapper instead
         self.mp[newx][newy]["entity"].add(entity)
     
     def draw(self, fpscnt:int, camera:Tuple[int,int],win):
+        if self.backGround!=None : self.backGround.drawG(0,self.R-1,camera,win)
         for layer in range(6):
             for j in range(self.R):
                 for i in range(self.C):
