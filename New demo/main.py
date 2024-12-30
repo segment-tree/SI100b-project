@@ -24,7 +24,6 @@ if __name__ == "__main__":
     entityGroup.add_listener(player)
 
     if test:
-        player.suicide()
         pass
 
     while True:

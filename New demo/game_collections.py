@@ -84,7 +84,6 @@ class EventLike:
             距离上次UPDATE事件经过的时间(s)
         """
         body: _const.UpdateEventBody = {"second": second}
-        body.type = "UPDATE"
         return cls(_const.EventCode.UPDATE, body=body, prior=20)
 
     @classmethod
@@ -99,7 +98,6 @@ class EventLike:
             一个初始化好的EventLike对象
         """
         body: _const.KillEventBody = {"suicide": uuid}
-        body.type = "KILL"
         return cls(_const.EventCode.KILL, body=body, sender=uuid, prior=0)
 
     @classmethod
@@ -122,12 +120,11 @@ class EventLike:
             一个初始化好的EventLike对象
         """
         body: _const.DrawEventBody = {"window": window, "camera": camera}
-        body.type = "DRAW"
         return cls(_const.EventCode.DRAW, body=body, prior=300, receivers=receivers)
 
     def __init__(
         self,
-        EventCode: int,
+        code: int,
         *,
         prior: int = 10,
         sender: str = "",
@@ -146,28 +143,29 @@ class EventLike:
         :param body:
             事件附加信息
         """
-        assert isinstance(EventCode, int)
+        assert isinstance(code, int)
         assert isinstance(prior, int)
         assert isinstance(sender, str)
         assert isinstance(receivers, (set, None.__class__))
         assert isinstance(body, (dict, None.__class__))
-        self.EventCode: int = EventCode
-        self.EventPrior: int = prior
-        self.EventSender: str = sender
-        self.EventReceivers: _typing.Set[str] = (
+        self.code: int = code
+        self.prior: int = prior
+        self.sender: str = sender
+        self.receivers: _typing.Set[str] = (
                 receivers if receivers is not None else {_const.EVERYONE_RECEIVER}
         )
+        self.body: _typing.Dict[str, _typing.Any] = body if body is not None else {}
 
     def __lt__(self, other: "EventLike") -> bool:
         """
         运算符重载: `<`, 根据`prior`进行比较。
         """
-        return self.EventPrior < other.EventPrior
+        return self.prior < other.prior
     def __gt__(self, other: "EventLike") -> bool:
         """
         运算符重载: `>`, 根据`prior`进行比较。
         """
-        return self.EventPrior > other.EventPrior
+        return self.prior > other.prior
 
 
 PostEventAPILike: _typing.TypeAlias = _typing.Callable[
@@ -269,7 +267,7 @@ class ListenerLike:
             待处理事件
         """
         listen_receivers = self.__listen_receivers
-        if not event.receiver & listen_receivers:  # 等价于 event.receiver.isdisjoint(listen_receivers)
+        if not event.receivers & listen_receivers:  # 等价于 event.receiver.isdisjoint(listen_receivers)
             return
         listen_code_methods = self.__listen_methods
         if not event.code in listen_code_methods:
@@ -499,10 +497,18 @@ class EntityLike(ListenerLike):
 
         self.__image: _typing.Optional[_pygame.Surface] = image
 
-    @_tools.listening(_const.EventCode.KILL)
-    def suicide(self):
-        pass
-
+    @_tools.listening(_const.EventCode.DRAW)
+    def draw(self, event: EventLike):
+        """
+        绘制自己
+        TODO: 坐标和像素的对应
+        :param event:
+        :return:
+        """
+        body: _const.DrawEventBody = event.body
+        window: _pygame.Surface = body["window"]
+        camera: _typing.Tuple[int, int] = body["camera"]
+        window.blit(self.image, self.pos, camera)
 
 class PlayerLike(EntityLike):
     """
@@ -556,7 +562,7 @@ class PlayerLike(EntityLike):
         self.__ability[ability] = True
 
     @_tools.listening(_pygame.KEYDOWN)
-    def move(self):
+    def move(self, event: EventLike):
         keys = _pygame.key.get_pressed()
 
     # # def forget_ability(self, ability: int):
