@@ -1,7 +1,7 @@
 from entity import *
 from scene import *
 import random
-def mapGener1(nowmp):
+def mapGener(nowmp):
     def genWall(x,y,iid):
         nowmp.mp[x][y]["type"]="wall"
         nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/wall{nowmp.style}.{iid}.png')

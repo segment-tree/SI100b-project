@@ -4,6 +4,8 @@ from enum import IntEnum as _IntEnum
 
 EVERYONE_RECEIVER: _typing.Final = "constants_everyone"  #
 
+NOWMAP = 1  # 当前所在地图的编号
+
 # event code
 user_event_start: _typing.Final = _pygame.USEREVENT # 32866？ 32869
 

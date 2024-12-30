@@ -20,6 +20,7 @@ import pygame as _pygame
 
 import game_constants as _const
 import game_tools as _tools
+import makescene as _makescene
 
 class EventLike:
     """
@@ -431,13 +432,25 @@ class GroupLike(ListenerLike):
         for i in filter(lambda x: x.uuid == uuid, self.listeners):
             self.remove_listener(i)
 
+@_typing.final
+@_tools.singleton
+class SceneLike(ListenerLike):
+    """
+
+    """
+    @_tools.listening()
+
+    pass
+
 class EntityLike(ListenerLike):
     """
     实体类
+
     """
     __attributes: _typing.Dict[str, _typing.Any]
     __image: _typing.Optional[_pygame.Surface]
     __pos: _typing.List[int]
+    __map: int  # 当前处于哪张地图
 
     @property
     def attributes(self):
@@ -498,7 +511,7 @@ class EntityLike(ListenerLike):
         self.__image: _typing.Optional[_pygame.Surface] = image
 
     @_tools.listening(_const.EventCode.DRAW)
-    def draw(self, event: EventLike):
+    def draw(self, event: EventLike) -> None:
         """
         绘制自己
         TODO: 坐标和像素的对应
@@ -509,6 +522,7 @@ class EntityLike(ListenerLike):
         window: _pygame.Surface = body["window"]
         camera: _typing.Tuple[int, int] = body["camera"]
         window.blit(self.image, self.pos, camera)
+
 
 class PlayerLike(EntityLike):
     """
@@ -574,24 +588,35 @@ class PlayerLike(EntityLike):
 class MonsterLike(EntityLike):
     pass
 
-class MapLike(ListenerLike):
-    """
-    地图类
+# class MapLike(ListenerLike):
+#     """
+#     地图类
+#
+#     :param __mapDetails: typing.List[typing.List[typing.Dict[str, typing.Any]]]
+#
+#     """
+#     __mapDetails: _typing.List[_typing.List[_typing.Dict[str, _typing.Any]]]
+#     __isActive: bool
+#     __sizeColumn: int
+#     __sizeRow: int
+#
+#     def __init__(self, mapId: int):
+#         match mapId:
+#             case 1:
+#                 _makescene.mapGener1(self)
+#                 pass
+#             case 2:
+#                 _makescene.mapGener2()
+#
+#     @property
+#     def details(self) -> _typing.List[_typing.List[_typing.Dict[str, _typing.Any]]]:
+#         return self.__mapDetails
+#
+#
+#
+#     pass
+# TODO: 改成全局变量
 
-    :param __mapDetails: typing.List[typing.List[typing.Dict[str, typing.Any]]]
-
-    """
-    __mapDetails: _typing.List[_typing.List[_typing.Dict[str, _typing.Any]]]
-
-    def __init__(self, mapId: int):
-
-
-    pass
-
-@_typing.final
-@_tools.singleton
-class SceneLike(ListenerLike):
-    pass
 
 
 @_typing.final
