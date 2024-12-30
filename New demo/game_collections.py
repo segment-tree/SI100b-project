@@ -574,11 +574,25 @@ class PlayerLike(EntityLike):
 class MonsterLike(EntityLike):
     pass
 
+class MapLike(ListenerLike):
+    """
+    地图类
+
+    :param __mapDetails: typing.List[typing.List[typing.Dict[str, typing.Any]]]
+
+    """
+    __mapDetails: _typing.List[_typing.List[_typing.Dict[str, _typing.Any]]]
+
+    def __init__(self, mapId: int):
+
+
+    pass
+
+@_typing.final
+@_tools.singleton
 class SceneLike(ListenerLike):
     pass
 
-class MapLike(SceneLike):
-    pass
 
 @_typing.final
 @_tools.singleton
