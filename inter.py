@@ -24,6 +24,8 @@ class player(creature):
                         if keys[i]: self.tryMove(0,1,allowF);break
         for i in c.KeyboardBomb:
             if keys[i]:self.putBomb(thisMap.addEntity)
+    def reRegister(self, gx:int, gy:int, initInMap:callable):
+        super().reRegister(gx,gy,initInMap)
     def __init__(self, id, gx, gy, imagesdir, initInMap:callable=None, speed = c.IntialSpeed, hp=c.IntialHp, layer=9):
         if initInMap==None : initInMap=thisMap.addEntity# player切换地图的时候不要忘了重新在地图注册
         super().__init__(id,gx,gy,imagesdir,initInMap,speed,hp,layer)
@@ -46,6 +48,8 @@ class player(creature):
     def clock(self,mapper):
         self.pickup(mapper.mp)
         super().clock(mapper.moveUpdate)
+        if mapper.mp[self.gx][self.gy].get("teleportTo") :
+            changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])
     def overlap(self, other:entityLike):
         super().overlap(other)
         if (self.gx,self.gy)==(other.gx,other.gy):
@@ -54,6 +58,13 @@ class player(creature):
     def delete(self):
         super().delete()
         raise Exception("GAMEOVER")
+
+maps=[]
+def changeMap(mapid:int, gx:int, gy:int):
+    global thisMap
+    thisMap=maps[mapid]
+    me.reRegister(gx,gy,thisMap.addEntity)
+    thisMap.me=me
 
 #test
 def tempMapGener(nowmp:Mapper):
@@ -91,14 +102,18 @@ def tempMapGener(nowmp:Mapper):
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
-    thisMap=Mapper(100,100,style=1)
+    thisMap=Mapper(100,100,style=0)
     # tempMapGener(thisMap)
-    # mapGener(thisMap)
-    mapGenerTown(thisMap)
+    mapGener(thisMap) # 田野
+    maps.append(thisMap)
+    thisMap=Mapper(100,100,style=1)
+    mapGenerTown(thisMap) # 城镇
+    maps.append(thisMap)
+
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=1,gy=28,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=37,gy=10,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry) # gy 28
     thisMap.me=me
 

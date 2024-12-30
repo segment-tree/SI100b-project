@@ -25,6 +25,13 @@ class entityLike:
     def rxy2gxy(self):
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
+    def reRegister(self , gx:int ,gy:int ,initInMap:callable):
+        if initInMap(gx,gy,self)==False : 
+            self.id=-1 # 创建失败
+            raise Exception("reRegister entity failed") # Warning!!
+        self.gx,self.gy = gx,gy
+        self.gxy2rxy()
+        self.dx,self.dy,self.moving=0,0,0
     def __init__(self, id:int, gx:int, gy:int, initInMap:callable, speed:int=c.IntialSpeed, layer=9):
         # initInMap在地图中生成该实体
         if initInMap(gx,gy,self)==False : 
@@ -81,6 +88,9 @@ class creature(entityLike):
     bombSum:int
     bombRange:int
     cankick:bool # 踢炸弹
+    def reRegister(self, gx:int, gy:int, initInMap:callable):
+        super().reRegister(gx,gy,initInMap)
+        self.immune=0
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable, speed:int=c.IntialSpeed, hp=c.IntialHp, layer=9):
         super().__init__(id,gx,gy,initInMap,speed,layer)
         self.hp=hp

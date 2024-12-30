@@ -39,11 +39,14 @@ def mapGener(nowmp):
     genField(5,23);genField(6,23);genField(7,23);genField(8,23)
     nowmp.addMonster(6,23,"./assets/monster/")
 
+    nowmp.mp[0][28]["teleportTo"]=(1,40,13)
+
 def mapGenerTown(nowmp):
     nowmp.style=1
     nowmp.C=41
     nowmp.R=31
     nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}.png',zoom=nowmp.C)
+    nowmp.mp[40][12]["teleportTo"]=(0,1,28)
     # nowmp.fieldimg=myImage(f'./assets/scene/transparent.png') # useless
 
 
