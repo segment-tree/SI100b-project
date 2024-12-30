@@ -18,8 +18,8 @@ import sys as _sys
 
 import pygame as _pygame
 
-from . import constants as _const
-from . import tools as _tools
+import game_constants as _const
+import game_tools as _tools
 
 class EventLike:
     """
@@ -200,7 +200,7 @@ class ListenerLike:
     @property
     def listen_codes(self) -> _typing.Set[int]:
         """
-        获取监听者监听的事件代码集合
+        获取该监听者监听的事件代码集合
         :return:
             所有被tools.listening装饰过的函数中包含的事件代码
         """
@@ -228,7 +228,7 @@ class ListenerLike:
     def __init__(
         self,
         *,
-        listen_receivers: _typing.Optional[_typing.Set[str]],
+        listen_receivers: _typing.Optional[_typing.Set[str]] = None,
         post_api: _typing.Optional[PostEventAPILike] = None,
     ) -> None:
         """
@@ -238,7 +238,7 @@ class ListenerLike:
             事件发布函数，一般使用Core类的add_event
         """
         self.__post_api: _typing.Optional[PostEventAPILike] = post_api
-        self.__listen_receivers: _typing.Set[str] = (
+        self.__listen_receivers = (
             listen_receivers | {_const.EVERYONE_RECEIVER, self.uuid}
             if listen_receivers is not None
             else {_const.EVERYONE_RECEIVER, self.uuid}
@@ -258,6 +258,9 @@ class ListenerLike:
         if self.__post_api is None:
             raise AttributeError("Post API is not set.")
         self.__post_api(event)  # __post_api是EventLike对象的实例
+
+    def side_post(self, event: EventLike) -> None:
+        pass
 
     def listen(self, event: EventLike) -> None:
         """
@@ -435,20 +438,71 @@ class EntityLike(ListenerLike):
     实体类
     """
     __attributes: _typing.Dict[str, _typing.Any]
+    __image: _typing.Optional[_pygame.Surface]
+    __pos: _typing.List[int]
+
     @property
     def attributes(self):
+        """
+        实体的游戏内数值属性，如hp atk
+        :return:
+        """
         return self.__attributes
 
     @attributes.setter
     def attributes(self, attributes: _typing.Dict[str, _typing.Any]):
         self.__attributes = attributes
 
-    def modify_single_attributes(self, key: str, value: _typing.Any):
+    @property
+    def hp(self) -> int:
+        return self.__attributes["hp"]
+
+    @hp.setter
+    def hp(self, value: int) -> None:
+        self.__attributes["hp"] = value
+
+    @property
+    def image(self) -> _typing.Optional[_pygame.Surface]:
+        """
+        实体图像
+        :return:
+        """
+        return self.__image
+
+    @property
+    def pos(self) -> _typing.List[int]:
+        """
+        实体坐标
+        :return:
+        """
+        return self.__pos
+
+    @pos.setter
+    def pos(self, position: _typing.List[int]) -> None:
+        self.__pos = position
+
+    def modify_single_attributes(self, key: str, value: _typing.Any) -> None:
         self.__attributes[key] = value
+
+    def __init__(
+        self,
+        *,
+        image: _typing.Optional[_pygame.Surface],
+        listen_receivers: _typing.Optional[_typing.Set[str]],
+        post_api: _typing.Optional[PostEventAPILike] = None,
+    ) -> None:
+        super().__init__(
+            listen_receivers=listen_receivers,
+            post_api=post_api
+    )
+        _pygame.sprite.Sprite.__init__(self)
+
+        self.__image: _typing.Optional[_pygame.Surface] = image
 
     @_tools.listening(_const.EventCode.KILL)
     def suicide(self):
-        self.__post_api()
+        pass
+
 
 class PlayerLike(EntityLike):
     """
@@ -461,21 +515,37 @@ class PlayerLike(EntityLike):
     __ability: _typing.List[bool]
     # TODO: 一些和捡掉落物相关的方法，需要知道有哪些掉落物
 
-    def resume_hp(self, value: int):
-        self.__attributes["hp"] += value
-        self.__attributes["hp"] = min(self.__attributes["hp"], self.__attributes["maxhp"])
+    @property
+    def bomb(self) -> _typing.Dict[str, _typing.Any]:
+        return self.__attributes["bomb"]
 
-    def add_maxhp(self, value: int):
-        self.__attributes["maxhp"] += value
+    @bomb.setter
+    def bomb(self, value: _typing.Dict[str, _typing.Any]) -> None:
+        self.__attributes["bomb"] = value
 
-    def add_bomb_count(self, value: int):
-        self.__attributes["bomb_count"] += value
+    @property
+    def bomb_count(self) -> int:
+        return self.__attributes["bomb"]["count"]
 
-    def add_bomb_power(self, value: int):
-        self.__attributes["bomb_power"] += value
+    @bomb_count.setter
+    def bomb_count(self, value: int) -> None:
+        self.__attributes["bomb"]["count"] = value
 
-    # def add_speed(self, value: int):
-    #     self.__attributes["speed"] += value
+    @property
+    def bomb_power(self) -> int:
+        return self.__attributes["bomb"]["power"]
+
+    @bomb_power.setter
+    def bomb_power(self, value: int) -> None:
+        self.__attributes["bomb"]["power"] = value
+
+    # @property
+    # def speed(self) -> int:
+    #     return self.__attributes["speed"]
+    #
+    # @speed.setter
+    # def speed(self):
+    #     self.__attributes["speed"] = value
     # TODO: 加不加这个？
 
     @property
@@ -484,6 +554,10 @@ class PlayerLike(EntityLike):
 
     def learn_ability(self, ability: int):
         self.__ability[ability] = True
+
+    @_tools.listening(_pygame.KEYDOWN)
+    def move(self):
+        keys = _pygame.key.get_pressed()
 
     # # def forget_ability(self, ability: int):
     #     self.__ability[ability] = False
@@ -500,7 +574,7 @@ class SceneLike(ListenerLike):
 class MapLike(SceneLike):
     pass
 
-@_typing.Final
+@_typing.final
 @_tools.singleton
 class Core:
     """
@@ -509,13 +583,13 @@ class Core:
         单例类
     """
 
-    def __init__(self, winsize: _typing.Tuple[int, int]):
+    def __init__(self):
         def get_prior(event: EventLike) -> int:
             return event.prior
 
-        self.__winsize: _typing.Tuple[int, int] = winsize
-        self.__title: str = ""  # TODO: title
-        self.__rate: float = 60
+        self.__winsize: _typing.Tuple[int, int] = (800, 600)
+        self.__title: str = "1"  # TODO: title
+        self.__rate: float = 0
         self.__window: _pygame.Surface = _pygame.display.set_mode(
             self.winsize, _pygame.RESIZABLE
         )
@@ -524,7 +598,7 @@ class Core:
             get_prior
         )
 
-        self.__init__()
+        self.init()
         _pygame.display.set_caption(self.__title)
 
     def yield_events(
@@ -586,7 +660,7 @@ class Core:
         return EventLike.update_event(self.__clock.tick() / 1000)
 
     @property
-    def winsize(self) -> float:
+    def winsize(self) -> _typing.Tuple[int, int]:
         """
         :return:
             窗口大小
@@ -668,12 +742,27 @@ class Core:
 
     # pygame api
     @staticmethod
+    def flip() -> None:
+        """
+        将`self.window`上画的内容输出的屏幕上
+        """
+        return _pygame.display.flip()
+
+    @staticmethod
     def init() -> None:
         """
         初始化pygame
         """
         _pygame.init()
         _pygame.mixer.init()
+
+    @staticmethod
+    def exit() -> None:
+        """
+        结束程序
+        """
+        _pygame.quit()
+        _sys.exit()
 
     def blit(
             self,
@@ -717,3 +806,36 @@ class Core:
         停止音乐
         """
         _pygame.mixer.music.stop()
+
+class SideCore:
+    """
+    处理跨帧事件
+    """
+    __across_frame_event: _typing.Deque[_typing.List[EventLike]]
+    def __init__(self):
+        self.__across_frame_event = _typing.Deque[_typing.List[EventLike]]()
+
+    @property
+    def across_frame_event(self) -> _typing.Deque[_typing.List[EventLike]]:
+        return self.__across_frame_event
+
+    def add_across_event(self, i: int, event: EventLike) -> None:
+        """
+        向当前帧之后的第i帧加入事件。
+
+        :param i: int
+            放置在之后的第几帧
+        :param event: EventLike
+            等待置入之后某一帧事件队列的事件
+        :return:
+        """
+        while len(self.__across_frame_event) < i+1:
+            self.__across_frame_event.append([])
+        self.__across_frame_event[i].append(event)
+
+    def frame_end(self, core: Core) -> None:
+        for event in self.__across_frame_event[0]:
+            core.add_event(event)
+        self.__across_frame_event.popleft()
+    pass
+

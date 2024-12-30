@@ -5,7 +5,7 @@ from enum import IntEnum as _IntEnum
 EVERYONE_RECEIVER: _typing.Final = "constants_everyone"  #
 
 # event code
-__user_event_start: _typing.Final = _pygame.USEREVENT # 32866
+user_event_start: _typing.Final = _pygame.USEREVENT # 32866？ 32869
 
 def get_unused_event_code() -> int:
     """
@@ -15,9 +15,9 @@ def get_unused_event_code() -> int:
     int
         尚未使用的事件代码
     """
-    global __user_event_start
-    __user_event_start += 1
-    return __user_event_start
+    global user_event_start
+    user_event_start += 1
+    return user_event_start
 
 class EventCode(_IntEnum): # members are all ints
     UPDATE = get_unused_event_code()  # 通知监听者已经过去了一个游戏刻
