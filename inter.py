@@ -7,6 +7,7 @@ from makescene import *
 thisMap=Mapper(1,1)
 class player(creature):
     money:int
+    readToInteract:bool
     def keyboard(self): # 捕捉键盘信息
         keys = pygame.key.get_pressed()
         allowF=thisMap.moveRequest
@@ -23,7 +24,10 @@ class player(creature):
                     for i in c.KeyboardDown:
                         if keys[i]: self.tryMove(0,1,allowF);break
         for i in c.KeyboardBomb:
-            if keys[i]:self.putBomb(thisMap.addEntity)
+            if keys[i]:self.putBomb(thisMap.addEntity);break
+        for i in c.KeyboardInteract:
+            if keys[i] : self.readToInteract=True;break
+        else : self.readToInteract=False
     def reRegister(self, gx:int, gy:int, initInMap:callable):
         super().reRegister(gx,gy,initInMap)
     def __init__(self, id, gx, gy, imagesdir, initInMap:callable=None, speed = c.IntialSpeed, hp=c.IntialHp, layer=9):
@@ -45,12 +49,15 @@ class player(creature):
                 case 6:self.cankick=True
             w[self.gx][self.gy]["type"]="field"
             w[self.gx][self.gy]["render"]=None# Warning
-    def clock(self,mapper):
+    def clock(self,mapper,win):
         self.pickup(mapper.mp)
         super().clock(mapper.moveUpdate)
         if mapper.mp[self.gx][self.gy].get("teleportTo") :
             thisMap.mp[self.gx][self.gy]["entity"].remove(thisMap.me)
             changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])
+        print(self.readToInteract)
+        if self.readToInteract and mapper.mp[self.gx][self.gy].get("interact"):
+                thisMap.mp[self.gx][self.gy]["interact"](win)
     def overlap(self, other:entityLike):
         super().overlap(other)
         if (self.gx,self.gy)==(other.gx,other.gy):
@@ -115,8 +122,8 @@ if __name__ == "__main__":
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=1,gy=17,imagesdir='./assets/player/',layer=3)
-    #print('#',me.rx,me.ry) # gy 28
+    me=player(id=0,gx=33,gy=10,imagesdir='./assets/player/',layer=3)
+    #print('#',me.rx,me.ry) # 1 17
     thisMap.me=me
 
     for i in thisMap.mp[me.gx][me.gy]["entity"]:
@@ -133,7 +140,7 @@ if __name__ == "__main__":
         #me.dy=0
         #me.moving=10
         me.keyboard()
-        me.clock(thisMap)
+        me.clock(thisMap,win)
         # me.draw(3,fpscnt,(0,0),win)
         car=thisMap.genCamera()
         thisMap.clock()

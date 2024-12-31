@@ -46,6 +46,17 @@ class myImage:
                 )
         win.blit(self.image,self.rect)
 
+def drawDialog(sentence:str,win):
+    image=pygame.image.load('./assets/utils/dialog.png')
+    rect_t=image.get_rect()
+    w=c.WinWidth*c.CellSize-2*c.CellSize
+    h=rect_t.height*w//rect_t.width
+    image=pygame.transform.scale(image,(w//c.CellRatio,h//c.CellRatio))
+    rect=image.get_rect()
+    rect.move_ip(c.CellSize//c.CellRatio,int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
+    win.blit(image,rect)
+    print(sentence)# TODO
+
 def displayCreateWin():
     if pygame.display.Info().current_w >= 2000:
         c.CellRatio=1

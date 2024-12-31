@@ -1,5 +1,6 @@
 from entity import *
 from scene import *
+from imageclass import *
 import random
 def mapGener(nowmp):
     def genWall(x,y,iid):
@@ -48,6 +49,32 @@ def mapGenerTown(nowmp):
     nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}.png',zoom=nowmp.C)
     nowmp.mp[40][12]["teleportTo"]=(0,1,28)
     # nowmp.fieldimg=myImage(f'./assets/scene/transparent.png') # useless
+    # interact point:
+    def testInteract():
+        pass
+    def icecreamShop(win):
+        while True:
+            pygame.time.Clock().tick(c.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE]: break
+            drawDialog("upcoming soon",win)
+            pygame.display.update()
+    def dogtalk(win):
+        pass
+    def nineNineCat(win):
+        pass
+    def RefuseEnter(win):
+        pass
+    nowmp.mp[34][11]["interact"]=icecreamShop
+    nowmp.mp[28][25]["interact"]=nowmp.mp[29][25]["interact"]=dogtalk
+    nowmp.mp[14][25]["interact"]=nowmp.mp[21][6]["interact"]=nowmp.mp[30][6]["interact"]=RefuseEnter
+    nowmp.mp[11][6]["interact"]=nineNineCat
+    # 23 25/24 25/25 25 进入商店
+    # 3 16 自家房门
 
 
 scene0 = [
