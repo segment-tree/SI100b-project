@@ -98,7 +98,7 @@ if __name__ == "__main__":
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=1,gy=28,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=1,gy=17,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry) # gy 28
     thisMap.me=me
 
@@ -123,6 +123,6 @@ if __name__ == "__main__":
         thisMap.draw(fpscnt,car,win)
         #print(car)
         #print(me.hp)
-        # print(me.gx, me.gy)
+        print(me.gx, me.gy)
         fpscnt+=1
         pygame.display.update()
