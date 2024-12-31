@@ -5,6 +5,7 @@ from scene import *
 from makescene import *
 #第一个全局变量
 thisMap=Mapper(1,1)
+dialoger=dialog()
 class player(creature):
     money:int
     readToInteract:bool
@@ -55,9 +56,9 @@ class player(creature):
         if mapper.mp[self.gx][self.gy].get("teleportTo") :
             thisMap.mp[self.gx][self.gy]["entity"].remove(thisMap.me)
             changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])
-        print(self.readToInteract)
+        # print(self.readToInteract)
         if self.readToInteract and mapper.mp[self.gx][self.gy].get("interact"):
-                thisMap.mp[self.gx][self.gy]["interact"](win)
+                dialoger(*thisMap.mp[self.gx][self.gy]["interact"])
     def overlap(self, other:entityLike):
         super().overlap(other)
         if (self.gx,self.gy)==(other.gx,other.gy):
@@ -145,6 +146,9 @@ if __name__ == "__main__":
         car=thisMap.genCamera()
         thisMap.clock()
         thisMap.draw(fpscnt,car,win)
+
+        dialoger.keyboard()
+        dialoger.draw(win)
         #print(car)
         #print(me.hp)
         # print(me.gx, me.gy)

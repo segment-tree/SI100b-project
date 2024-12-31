@@ -1,6 +1,5 @@
 from entity import *
 from scene import *
-from imageclass import *
 import random
 def mapGener(nowmp):
     def genWall(x,y,iid):
@@ -40,7 +39,7 @@ def mapGener(nowmp):
     genField(5,23);genField(6,23);genField(7,23);genField(8,23)
     nowmp.addMonster(6,23,"./assets/monster/")
 
-    nowmp.mp[0][28]["teleportTo"]=(1,40,13)
+    nowmp.mp[0][28]["teleportTo"]=(1,40,11)
 
 def mapGenerTown(nowmp):
     nowmp.style=1
@@ -52,7 +51,10 @@ def mapGenerTown(nowmp):
     # interact point:
     def testInteract():
         pass
-    def icecreamShop(win):
+    def icecreamShop():
+        for i in range(4):
+            yield f"commingsoon{i}"
+        '''
         while True:
             pygame.time.Clock().tick(c.FPS)
             for event in pygame.event.get():
@@ -63,16 +65,17 @@ def mapGenerTown(nowmp):
             if keys[pygame.K_ESCAPE]: break
             drawDialog("upcoming soon",win)
             pygame.display.update()
-    def dogtalk(win):
-        pass
-    def nineNineCat(win):
-        pass
-    def RefuseEnter(win):
-        pass
-    nowmp.mp[34][11]["interact"]=icecreamShop
-    nowmp.mp[28][25]["interact"]=nowmp.mp[29][25]["interact"]=dogtalk
-    nowmp.mp[14][25]["interact"]=nowmp.mp[21][6]["interact"]=nowmp.mp[30][6]["interact"]=RefuseEnter
-    nowmp.mp[11][6]["interact"]=nineNineCat
+        '''
+    def dogtalk():
+        yield "Woof!"
+    def nineNineCat():
+        yield "miaomiaomiao"
+    def RefuseEnter():
+        yield "私人住宅，谢绝参观"
+    nowmp.mp[34][11]["interact"]=(icecreamShop,False)
+    nowmp.mp[28][25]["interact"]=nowmp.mp[29][25]["interact"]=(dogtalk,False)
+    nowmp.mp[14][25]["interact"]=nowmp.mp[21][6]["interact"]=nowmp.mp[30][6]["interact"]=(RefuseEnter,False)
+    nowmp.mp[11][6]["interact"]=(nineNineCat,False)
     # 23 25/24 25/25 25 进入商店
     # 3 16 自家房门
 
