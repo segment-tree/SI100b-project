@@ -438,11 +438,18 @@ class SceneLike(ListenerLike):
     """
 
     """
-    @_tools.listening()
+    @_tools.listening(_const.EventCode.DRAW)
+    def draw(self, event: EventLike) -> None:
+        # TODO: event的body已经有了camera，再做判断即可。
+        """
+        绘制地图上的所有图格
+        :return:
+        """
+        pass
 
     pass
 
-class EntityLike(ListenerLike):
+class EntityLike(ListenerLike, _pygame.sprite.Sprite):
     """
     实体类
 
@@ -453,7 +460,7 @@ class EntityLike(ListenerLike):
     __map: int  # 当前处于哪张地图
 
     @property
-    def attributes(self):
+    def attributes(self) -> _typing.Dict[str, _typing.Any]:
         """
         实体的游戏内数值属性，如hp atk
         :return:
@@ -461,7 +468,7 @@ class EntityLike(ListenerLike):
         return self.__attributes
 
     @attributes.setter
-    def attributes(self, attributes: _typing.Dict[str, _typing.Any]):
+    def attributes(self, attributes: _typing.Dict[str, _typing.Any]) -> None:
         self.__attributes = attributes
 
     @property
@@ -501,6 +508,7 @@ class EntityLike(ListenerLike):
         image: _typing.Optional[_pygame.Surface],
         listen_receivers: _typing.Optional[_typing.Set[str]],
         post_api: _typing.Optional[PostEventAPILike] = None,
+        pos: _typing.List[int] = None,
     ) -> None:
         super().__init__(
             listen_receivers=listen_receivers,
@@ -508,7 +516,12 @@ class EntityLike(ListenerLike):
     )
         _pygame.sprite.Sprite.__init__(self)
 
+        self.__pos: _typing.List[int] = pos if pos is not None else [0, 0]
         self.__image: _typing.Optional[_pygame.Surface] = image
+        self.__attributes: _typing.Dict[str, _typing.Any] = {}
+        print(self.__pos)
+        print(self.__image)
+        print(self.__attributes)
 
     @_tools.listening(_const.EventCode.DRAW)
     def draw(self, event: EventLike) -> None:
@@ -521,7 +534,11 @@ class EntityLike(ListenerLike):
         body: _const.DrawEventBody = event.body
         window: _pygame.Surface = body["window"]
         camera: _typing.Tuple[int, int] = body["camera"]
-        window.blit(self.image, self.pos, camera)
+       # window.blit(self.image, _pygame.Rect(620,200,60,60), camera)
+        window.blit(self.image, _pygame.Rect(620,200,60,60))
+
+class BombLike(EntityLike):
+    pass
 
 
 class PlayerLike(EntityLike):
@@ -533,6 +550,7 @@ class PlayerLike(EntityLike):
         TODO: 几号位放什么能力？
     """
     __ability: _typing.List[bool]
+    __attributes: _typing.Dict[str, _typing.Any]
     # TODO: 一些和捡掉落物相关的方法，需要知道有哪些掉落物
 
     @property
@@ -550,6 +568,22 @@ class PlayerLike(EntityLike):
     @bomb_count.setter
     def bomb_count(self, value: int) -> None:
         self.__attributes["bomb"]["count"] = value
+
+    @property
+    def bomb_range(self) -> int:
+        return self.__attributes["bomb"]["range"]
+
+    @bomb_range.setter
+    def bomb_range(self, value: int) -> None:
+        self.__attributes["bomb"]["range"] = value
+
+    @property
+    def bomb_available(self) -> int:
+        return self.__attributes["bomb"]["available"]
+
+    @bomb_available.setter
+    def bomb_available(self, value: int) -> None:
+        self.__attributes["bomb"]["available"] = value
 
     @property
     def bomb_power(self) -> int:
@@ -579,11 +613,22 @@ class PlayerLike(EntityLike):
     def move(self, event: EventLike):
         keys = _pygame.key.get_pressed()
 
+    @_tools.listening(_pygame.KEYDOWN)
+    def place_bomb(self, event: EventLike):
+        keys = _pygame.key.get_pressed()
+        if keys[_pygame.K_SPACE]:
+            if self.bomb_available > 0:
+                self.bomb_available -= 1
+                e = EventLike(
+                    _const.EventCode.OTHER,
+                    sender=self.uuid,
+                    prior=10
+                )
+                print("11111")
+                self.post(event=e)
+
     # # def forget_ability(self, ability: int):
     #     self.__ability[ability] = False
-
-
-
 
 class MonsterLike(EntityLike):
     pass

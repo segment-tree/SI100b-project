@@ -25,6 +25,7 @@ class EventCode(_IntEnum): # members are all ints
     UPDATE = get_unused_event_code()  # 通知监听者已经过去了一个游戏刻
     DRAW = get_unused_event_code()  # 绘制事件
     KILL = get_unused_event_code()  # 删除监听者事件（从群组等中删除监听者）
+    OTHER = get_unused_event_code()  # 其他
     # 实质上三者功能相同 只是做了可读化命名
 
 
@@ -58,6 +59,14 @@ ability: list = [
     ""
 ]  #能力表 TODO: 想名字
 
+playerAttributes: _typing.Dict[str, _typing.Any] = {
+    "bomb" : {
+        "count": 1,
+        "available": 1,
+        "range": 1,
+        "power": 1
+    }
+}
 
 
 someDefine = {

@@ -20,6 +20,7 @@ if __name__ == "__main__":
             pygame.Rect(510, 330, 60, 60)
         )
     )
+    player.attributes = _const.playerAttributes
     entityGroup = GroupLike()
     entityGroup.add_listener(player)
 
