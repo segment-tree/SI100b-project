@@ -28,3 +28,5 @@ KeyboardUp   =[pygame.K_UP,ord('w')]
 KeyboardDown =[pygame.K_DOWN,ord('s')]
 KeyboardBomb =[pygame.K_SPACE]
 KeyboardInteract =[pygame.K_LSHIFT,pygame.K_RSHIFT,ord('i')]
+KeyboardEscDialog=pygame.K_ESCAPE
+KeyboardConDialog=pygame.K_RETURN

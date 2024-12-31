@@ -57,7 +57,7 @@ class player(creature):
             thisMap.mp[self.gx][self.gy]["entity"].remove(thisMap.me)
             changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])
         # print(self.readToInteract)
-        if self.readToInteract and mapper.mp[self.gx][self.gy].get("interact"):
+        if self.readToInteract and mapper.mp[self.gx][self.gy].get("interact") and dialoger.content==None: # 只有在没有绘制对话框时才可交互
                 dialoger(*thisMap.mp[self.gx][self.gy]["interact"])
     def overlap(self, other:entityLike):
         super().overlap(other)

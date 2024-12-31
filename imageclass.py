@@ -50,28 +50,32 @@ class dialog:
     content:str
     funclist:any #
     usellm:bool
-    sleepcnt:int
+    keysleepcnt:int
     def __init__(self):
         self.content=None
         self.usellm=False
-        self.sleepcnt=c.FPS//2
-    def __call__(self, func:callable, usellm:bool):
-        self.funclist=func();self.usellm=usellm
+        self.keysleepcnt=c.FPS//2
+    def __call__(self, funclist, usellm:bool):
+        self.funclist=funclist;self.usellm=usellm
         self.content=next(self.funclist)
-        self.sleepcnt=c.FPS//2
+        self.keysleepcnt=c.FPS//2
     def keyboard(self):
         if self.content==None:return
         # 检查键盘输入，用于llm，如果有的话
         if self.usellm:
             pass
-        self.sleepcnt-=1
+        self.keysleepcnt-=1
         keys = pygame.key.get_pressed()
-        if self.sleepcnt<=0 and keys[pygame.K_RETURN]:
+        if self.keysleepcnt<=0 and keys[c.KeyboardConDialog]:
             try:
                 self.content=next(self.funclist)
             except StopIteration:
                 self.content=None
-            self.sleepcnt=c.FPS//2
+                self.funclist=None
+            self.keysleepcnt=c.FPS//2
+        if self.keysleepcnt<=0 and keys[c.KeyboardEscDialog]:
+            self.content=None
+            self.funclist=None
     def draw(self,win):
         if self.content==None:return
         image=pygame.image.load('./assets/utils/dialog.png')
