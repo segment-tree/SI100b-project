@@ -5,8 +5,10 @@ from scene import *
 from makescene import *
 #第一个全局变量
 thisMap=Mapper(1,1)
+dialoger=dialog()
 class player(creature):
     money:int
+    readToInteract:bool
     def keyboard(self): # 捕捉键盘信息
         keys = pygame.key.get_pressed()
         allowF=thisMap.moveRequest
@@ -23,7 +25,12 @@ class player(creature):
                     for i in c.KeyboardDown:
                         if keys[i]: self.tryMove(0,1,allowF);break
         for i in c.KeyboardBomb:
-            if keys[i]:self.putBomb(thisMap.addEntity)
+            if keys[i]:self.putBomb(thisMap.addEntity);break
+        for i in c.KeyboardInteract:
+            if keys[i] : self.readToInteract=True;break
+        else : self.readToInteract=False
+    def reRegister(self, gx:int, gy:int, initInMap:callable):
+        super().reRegister(gx,gy,initInMap)
     def __init__(self, id, gx, gy, imagesdir, initInMap:callable=None, speed = c.IntialSpeed, hp=c.IntialHp, layer=9):
         if initInMap==None : initInMap=thisMap.addEntity# player切换地图的时候不要忘了重新在地图注册
         super().__init__(id,gx,gy,imagesdir,initInMap,speed,hp,layer)
@@ -43,9 +50,15 @@ class player(creature):
                 case 6:self.cankick=True
             w[self.gx][self.gy]["type"]="field"
             w[self.gx][self.gy]["render"]=None# Warning
-    def clock(self,mapper):
+    def clock(self,mapper,win):
         self.pickup(mapper.mp)
         super().clock(mapper.moveUpdate)
+        if mapper.mp[self.gx][self.gy].get("teleportTo") :
+            thisMap.mp[self.gx][self.gy]["entity"].remove(thisMap.me)
+            changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])
+        # print(self.readToInteract)
+        if self.readToInteract and mapper.mp[self.gx][self.gy].get("interact") and dialoger.content==None: # 只有在没有绘制对话框时才可交互
+                dialoger(*thisMap.mp[self.gx][self.gy]["interact"])
     def overlap(self, other:entityLike):
         super().overlap(other)
         if (self.gx,self.gy)==(other.gx,other.gy):
@@ -54,6 +67,14 @@ class player(creature):
     def delete(self):
         super().delete()
         raise Exception("GAMEOVER")
+
+maps=[]
+def changeMap(mapid:int, gx:int, gy:int):
+    global thisMap
+    #thisMap.mp[gx][gy]["entity"].remove(thisMap.me)
+    thisMap=maps[mapid]
+    me.reRegister(gx,gy,thisMap.addEntity)
+    thisMap.me=me
 
 #test
 def tempMapGener(nowmp:Mapper):
@@ -91,10 +112,14 @@ def tempMapGener(nowmp:Mapper):
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
-    thisMap=Mapper(100,100,style=1)
+    thisMap=Mapper(100,100,style=0)
     # tempMapGener(thisMap)
-    # mapGener(thisMap)
-    mapGenerTown(thisMap)
+    mapGener(thisMap) # 田野
+    maps.append(thisMap)
+    thisMap=Mapper(100,100,style=1)
+    mapGenerTown(thisMap) # 城镇
+    maps.append(thisMap)
+
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
@@ -116,11 +141,14 @@ if __name__ == "__main__":
         #me.dy=0
         #me.moving=10
         me.keyboard()
-        me.clock(thisMap)
+        me.clock(thisMap,win)
         # me.draw(3,fpscnt,(0,0),win)
         car=thisMap.genCamera()
         thisMap.clock()
         thisMap.draw(fpscnt,car,win)
+
+        dialoger.keyboard()
+        dialoger.draw(win)
         #print(car)
         #print(me.hp)
         print(me.gx, me.gy)

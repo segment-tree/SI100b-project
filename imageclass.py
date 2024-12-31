@@ -46,6 +46,59 @@ class myImage:
                 )
         win.blit(self.image,self.rect)
 
+class dialog:
+    content:str
+    funclist:any #
+    usellm:bool
+    keysleepcnt:int
+    def __init__(self):
+        self.content=None
+        self.usellm=False
+        self.keysleepcnt=c.FPS//2
+    def __call__(self, funclist, usellm:bool):
+        self.funclist=funclist;self.usellm=usellm
+        self.content=next(self.funclist)
+        self.keysleepcnt=c.FPS//2
+    def keyboard(self):
+        if self.content==None:return
+        # 检查键盘输入，用于llm，如果有的话
+        if self.usellm:
+            pass
+        self.keysleepcnt-=1
+        keys = pygame.key.get_pressed()
+        if self.keysleepcnt<=0 and keys[c.KeyboardConDialog]:
+            try:
+                self.content=next(self.funclist)
+            except StopIteration:
+                self.content=None
+                self.funclist=None
+            self.keysleepcnt=c.FPS//2
+        if self.keysleepcnt<=0 and keys[c.KeyboardEscDialog]:
+            self.content=None
+            self.funclist=None
+    def draw(self,win):
+        if self.content==None:return
+        image=pygame.image.load('./assets/utils/dialog.png')
+        rect_t=image.get_rect()
+        w=c.WinWidth*c.CellSize-2*c.CellSize
+        h=rect_t.height*w//rect_t.width
+        image=pygame.transform.scale(image,(w//c.CellRatio,h//c.CellRatio))
+        rect=image.get_rect()
+        rect.move_ip(c.CellSize//c.CellRatio,int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
+        win.blit(image,rect)
+        print(self.content)# TODO
+
+def drawDialog(sentence:str,win):
+    image=pygame.image.load('./assets/utils/dialog.png')
+    rect_t=image.get_rect()
+    w=c.WinWidth*c.CellSize-2*c.CellSize
+    h=rect_t.height*w//rect_t.width
+    image=pygame.transform.scale(image,(w//c.CellRatio,h//c.CellRatio))
+    rect=image.get_rect()
+    rect.move_ip(c.CellSize//c.CellRatio,int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
+    win.blit(image,rect)
+    print(sentence)# TODO
+
 def displayCreateWin():
     if pygame.display.Info().current_w >= 2000:
         c.CellRatio=1
