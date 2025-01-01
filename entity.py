@@ -309,7 +309,7 @@ class monster(creature):
         else:
             self.aiBombCount-=1
             if self.aiBombCount==0:
-                # self.putBomb(mapper.addEntity)
+                self.putBomb(mapper.addEntity)
                 self.aiBombCount=c.FPS//2
 
         return
