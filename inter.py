@@ -107,7 +107,10 @@ def tempMapGener(nowmp:Mapper):
     # monsters
     nowmp.addMonster(5,5,"./assets/monster/")
     nowmp.addMonster(6,7,"./assets/monster/")
-    nowmp.addMonster(1,12,"./assets/monster/")
+    t=nowmp.addMonster(1,12,"./assets/monster/")
+
+    bomb(genEntityId(),2,2,nowmp.addEntity,t,layer=2)
+    bomb(genEntityId(),5,2,nowmp.addEntity,t,layer=2)
     
 if __name__ == "__main__":
     pygame.init()
@@ -127,7 +130,7 @@ if __name__ == "__main__":
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=40,gy=10,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=1,gy=17,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry) # gy 28
     thisMap.me=me
 

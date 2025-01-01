@@ -8,7 +8,7 @@ import random
 
 class Mapper: # Map is some keyword use Mapper instead
     mp:List[List[Dict[str,Any]]]
-    entities:List[entityLike]
+    entities:Set[entityLike] # List[entityLike]
     C:int # Column
     R:int # Row
     me:Any #指向玩家实体
@@ -19,7 +19,7 @@ class Mapper: # Map is some keyword use Mapper instead
         self.style=style
         self.fieldimg=myImage(f'./assets/scene/field{self.style}.png')
         # wall=myImage(f'./assets/scene/wall{self.style}.1.png')
-        self.entities=[]
+        self.entities=set()
         ttt={
             "type":"field",
             "burning":0,
@@ -46,11 +46,11 @@ class Mapper: # Map is some keyword use Mapper instead
             if i.allowOverlap==False:
                 return False
         if not "player" in str(type(entity)): # trick; player大概不应被存在entities数组里
-            self.entities.append(entity)
+            self.entities.add(entity)
         self.mp[gx][gy]['entity'].add(entity)
         return True
     def addMonster(self, gx:int, gy:int, imgdir:str):
-        monster(genEntityId(),gx,gy,imgdir, self.addEntity,layer=3)
+        return monster(genEntityId(),gx,gy,imgdir, self.addEntity,layer=3)
     def moveRequest(self, x:int, y:int, entity:entityLike): # entity调用这个来判断地图是否允许移动
         if self.invaild_coord(x,y):return False
         if self.mp[x][y]["type"] in ["wall","obstacle"]:
@@ -123,7 +123,7 @@ class Mapper: # Map is some keyword use Mapper instead
         for i in self.entities:
             i.clock(self.moveUpdate,mapper=self)
         # 删除死掉的实体
-        t=self.entities
+        t=copy.copy(self.entities)
         for i in t:
             if i.id==-1:
                 self.mp[i.gx+i.dx][i.gy+i.dy]["entity_locked"].discard(i)

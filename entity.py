@@ -274,7 +274,7 @@ class monster(creature):
             a=q.get()
             cnt+=1 # cnt 防止怪喜欢站着不动
             print(q.qsize(),(a[0],a[1]),{(a[0],a[1])} & dangerous!= {(a[0],a[1])})
-            if {(a[0],a[1])} & dangerous != {(a[0],a[1])} and (cnt>1 or random.randrange(0,9)<6):
+            if {(a[0],a[1])} & dangerous != {(a[0],a[1])} and (cnt>1 or random.randrange(0,9)<7):
                 self.movQ=[]
                 t=a[2]
                 while len(t)>0:
@@ -294,7 +294,7 @@ class monster(creature):
         if len(self.movQ)>0:
             t=self.tryMove(self.movQ[0][0],self.movQ[0][1],mapper.moveRequest)
             if t==True:self.movQ.popleft()
-            else : t=queue.deque() # make monster smater
+            else : self.movQ=queue.deque() # make monster smater
             return
         self.aiWalkCount-=1
         if self.aiWalkCount==0:
@@ -302,14 +302,14 @@ class monster(creature):
             self.aiWalkCount=c.FPS//4
 
     def ai(self,mapper):
-        a=random.randrange(-3,10)
+        a=random.randrange(-1,10)
         if a<0:return
-        if a<8 or len(self.movQ)>0:
+        if a<7 or len(self.movQ)>0:
             self.walk(mapper)
         else:
             self.aiBombCount-=1
             if self.aiBombCount==0:
-                self.putBomb(mapper.addEntity)
+                # self.putBomb(mapper.addEntity)
                 self.aiBombCount=c.FPS//2
 
         return
