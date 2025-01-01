@@ -235,9 +235,84 @@ class bomb(entityLike):
         self.author.bombSum+=1
         super().delete()
 
+import queue
+import copy
 class monster(creature):
+    aiWalkCount:int
+    aiBombCount:int
+    movQ:queue.deque
+    def __init__(self, id, gx, gy, imagesdir, initInMap, speed = c.IntialSpeed, hp=c.IntialHp, layer=9):
+        super().__init__(id, gx, gy, imagesdir, initInMap, speed, hp, layer)
+        self.aiWalkCount=c.FPS//2
+        self.aiBombCount=c.FPS//2
+        self.movQ=queue.deque()
+    def _aiFindDangerousGird(self,mapper):
+        dangerous=[]
+        for e in mapper.entities:
+            if "bomb" in str(type(e)):
+                dangerous+=[(e.gx,i) for i in range(e.gy-e.range,e.gy+e.range+1)]
+                dangerous+=[(i,e.gy) for i in range(e.gx-e.range,e.gx+e.range+1)]
+        dangerous=set(dangerous)
+        return dangerous
+
+    def aiFindSafeGird(self,mapper): # 不知道ai运行效率如何
+        dangerous=self._aiFindDangerousGird(mapper)
+        # bfs
+        q=queue.Queue()
+        q.put([self.gx,self.gy,tuple()])
+        dir=[(-1,0),(1,0),(0,-1),(0,1)]
+        vis={}
+        def _check(x,y):
+            if mapper.invaild_coord(x,y):return False
+            if mapper.mp[x][y]["type"] in ["wall","obstacle"]:
+                return False
+            for i in mapper.mp[x][y]["entity"]:
+                if not i.walkInto(self) : return False
+            return True
+        cnt=0
+        while not q.empty():
+            a=q.get()
+            cnt+=1 # cnt 防止怪喜欢站着不动
+            print(q.qsize(),(a[0],a[1]),{(a[0],a[1])} & dangerous!= {(a[0],a[1])})
+            if {(a[0],a[1])} & dangerous != {(a[0],a[1])} and (cnt>1 or random.randrange(0,9)<6):
+                self.movQ=[]
+                t=a[2]
+                while len(t)>0:
+                    self.movQ.append((t[1],t[2]))
+                    t=t[0][2]
+                
+                self.movQ=queue.deque(reversed(self.movQ))
+                break
+            random.shuffle(dir)
+            for d in dir:
+                nx,ny=a[0]+d[0],a[1]+d[1]
+                if _check(nx,ny) and not vis.get((nx,ny)):
+                    vis[(nx,ny)]=True
+                    b=[nx,ny,(a,d[0],d[1])]
+                    q.put(b)
+    def walk(self,mapper):
+        if len(self.movQ)>0:
+            t=self.tryMove(self.movQ[0][0],self.movQ[0][1],mapper.moveRequest)
+            if t==True:self.movQ.popleft()
+            else : t=queue.deque() # make monster smater
+            return
+        self.aiWalkCount-=1
+        if self.aiWalkCount==0:
+            self.aiFindSafeGird(mapper)
+            self.aiWalkCount=c.FPS//4
+
     def ai(self,mapper):
-        a=random.randrange(1,10)
+        a=random.randrange(-3,10)
+        if a<0:return
+        if a<8 or len(self.movQ)>0:
+            self.walk(mapper)
+        else:
+            self.aiBombCount-=1
+            if self.aiBombCount==0:
+                self.putBomb(mapper.addEntity)
+                self.aiBombCount=c.FPS//2
+
+        return
         match a:
             case 1:self.tryMove(-1,0,mapper.moveRequest)
             case 2:self.tryMove( 1,0,mapper.moveRequest)

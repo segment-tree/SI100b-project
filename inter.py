@@ -112,18 +112,22 @@ def tempMapGener(nowmp:Mapper):
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
-    thisMap=Mapper(100,100,style=0)
-    # tempMapGener(thisMap)
+    thisMap=Mapper(50,50,style=0)
     mapGener(thisMap) # 田野
     maps.append(thisMap)
-    thisMap=Mapper(100,100,style=1)
+    thisMap=Mapper(50,50,style=1)
     mapGenerTown(thisMap) # 城镇
     maps.append(thisMap)
+
+    ###
+    # thisMap=Mapper(50,50,style=0)
+    # tempMapGener(thisMap)
+    ###
 
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=1,gy=17,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=40,gy=10,imagesdir='./assets/player/',layer=3)
     #print('#',me.rx,me.ry) # gy 28
     thisMap.me=me
 
@@ -147,13 +151,13 @@ if __name__ == "__main__":
         thisMap.clock()
         thisMap.draw(fpscnt,car,win)
 
-        segmentDraw.drawR(1,15,4,car,win)
-        segmentDraw.drawC(1,15,4,car,win)
+        # segmentDraw.drawR(1,15,4,car,win)
+        # segmentDraw.drawC(1,15,4,car,win)
 
         dialoger.keyboard()
         dialoger.draw(win)
         #print(car)
         #print(me.hp)
-        print(me.gx, me.gy)
+        # print(me.gx, me.gy)
         fpscnt+=1
         pygame.display.update()

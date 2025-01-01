@@ -12,7 +12,7 @@ IntialSpeed=8 # 所有entity的速度初值
 IncreasedSpeed=14 # 小人吃到加速道具后的速度
 BombKickedSpeed=5*IntialSpeed
 IntialBombRange=1 # 所有creature的炸弹的初始爆炸范围
-IntialHp=1
+IntialHp=2
 IntialPlayerHp=5
 ImmuneFrame=int(FPS*2) # 受击后无敌帧数
 WalkingFpsLoop=8 # 走路完整完成一步的帧数
@@ -21,6 +21,7 @@ WalkingFpsLoop=8 # 走路完整完成一步的帧数
 BombCount=int(FPS*2.50) # 炸弹💥倒计时
 BurnCount=int(FPS*0.30)  # 受爆炸影响时间
 
+# MonsterSight=5 # 怪物视野
 #键盘：
 KeyboardLeft =[pygame.K_LEFT,ord('a')]
 KeyboardRight=[pygame.K_RIGHT,ord('d')]
