@@ -8,7 +8,7 @@ import random
 
 class Mapper: # Map is some keyword use Mapper instead
     mp:List[List[Dict[str,Any]]]
-    entities:Set[entityLike] # List[entityLike]
+    entities:List[entityLike] # Set[entityLike]
     C:int # Column
     R:int # Row
     me:Any #指向玩家实体
@@ -19,7 +19,7 @@ class Mapper: # Map is some keyword use Mapper instead
         self.style=style
         self.fieldimg=myImage(f'./assets/scene/field{self.style}.png')
         # wall=myImage(f'./assets/scene/wall{self.style}.1.png')
-        self.entities=set()
+        self.entities=[]
         ttt={
             "type":"field",
             "burning":0,
@@ -46,7 +46,7 @@ class Mapper: # Map is some keyword use Mapper instead
             if i.allowOverlap==False:
                 return False
         if not "player" in str(type(entity)): # trick; player大概不应被存在entities数组里
-            self.entities.add(entity)
+            self.entities.append(entity)
         self.mp[gx][gy]['entity'].add(entity)
         return True
     def addMonster(self, gx:int, gy:int, imgdir:str):
