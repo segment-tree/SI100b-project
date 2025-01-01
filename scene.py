@@ -4,6 +4,7 @@ from imageclass import(myImage)
 from typing import *
 # from __future__ import annotations
 from entity import *
+import random
 
 class Mapper: # Map is some keyword use Mapper instead
     mp:List[List[Dict[str,Any]]]
@@ -144,3 +145,12 @@ class Mapper: # Map is some keyword use Mapper instead
                     if self.mp[i][j]["burning"]==0:
                         self.burnUnturn(i,j)
 
+class BossScene(Mapper):
+    status:int # boss 招式
+    def __init__(self, c:int, r:int, style=1):
+        super().__init__(c,r,style)
+        self.status=0
+    def decide(self):
+        pass
+    def clock(self):
+        self.decide()

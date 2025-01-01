@@ -147,6 +147,9 @@ if __name__ == "__main__":
         thisMap.clock()
         thisMap.draw(fpscnt,car,win)
 
+        segmentDraw.drawR(1,15,4,car,win)
+        segmentDraw.drawC(1,15,4,car,win)
+
         dialoger.keyboard()
         dialoger.draw(win)
         #print(car)

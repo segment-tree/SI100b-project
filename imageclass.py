@@ -88,16 +88,23 @@ class dialog:
         win.blit(image,rect)
         print(self.content)# TODO
 
-def drawDialog(sentence:str,win):
-    image=pygame.image.load('./assets/utils/dialog.png')
-    rect_t=image.get_rect()
-    w=c.WinWidth*c.CellSize-2*c.CellSize
-    h=rect_t.height*w//rect_t.width
-    image=pygame.transform.scale(image,(w//c.CellRatio,h//c.CellRatio))
-    rect=image.get_rect()
-    rect.move_ip(c.CellSize//c.CellRatio,int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
-    win.blit(image,rect)
-    print(sentence)# TODO
+class segmentDraw:
+    @classmethod
+    def drawR(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win):
+        color = (255,0,0)
+        segment=pygame.Surface((c.CellSize*length//c.CellRatio, c.CellSize//10//c.CellRatio))
+        segment.fill(color)
+        rect = segment.get_rect()
+        rect.move_ip((gx*c.CellSize-camera[0])//c.CellRatio,(gy*c.CellSize-camera[1])//c.CellRatio)
+        win.blit(segment,rect)
+    @classmethod
+    def drawC(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win):
+        color = (255,0,0)
+        segment=pygame.Surface((c.CellSize//10//c.CellRatio, c.CellSize*length//c.CellRatio))
+        segment.fill(color)
+        rect = segment.get_rect()
+        rect.move_ip((gx*c.CellSize-camera[0])//c.CellRatio,(gy*c.CellSize-camera[1])//c.CellRatio)
+        win.blit(segment,rect)
 
 def displayCreateWin():
     if pygame.display.Info().current_w >= 2000:
