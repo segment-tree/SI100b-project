@@ -53,9 +53,11 @@ def mapGenerTown(nowmp):
         pass
     def icecreamShop():
         while True:
+            t=""
             for c in zote_precepts:
-                yield c
-            yield None
+                t= yield c+str(t) # yield要输出的对话，由imageclass.py中的dialog.keyboard处理
+                # 在存在llm时yield的返回值(t)为用户输入
+            yield None # None为特殊占位符，表示对话结束
         '''
         while True:
             pygame.time.Clock().tick(c.FPS)

@@ -25,13 +25,14 @@ class entityLike:
     def rxy2gxy(self):
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
-    def reRegister(self , gx:int ,gy:int ,initInMap:callable):
-        if initInMap(gx,gy,self)==False : 
-            self.id=-1 # 创建失败
-            raise Exception("reRegister entity failed") # Warning!!
+    def reRegister(self , gx:int ,gy:int ,initInMap:callable,force=False): # 重新注册entity，切换地图时使用
         self.gx,self.gy = gx,gy
         self.gxy2rxy()
         self.dx,self.dy,self.moving=0,0,0
+        if initInMap(gx,gy,self,force)==False : 
+            self.id=-1 # 创建失败
+            return False
+        return True
     def __init__(self, id:int, gx:int, gy:int, initInMap:callable, speed:int=c.IntialSpeed, layer=9):
         # initInMap在地图中生成该实体
         if initInMap(gx,gy,self)==False : 
@@ -85,12 +86,12 @@ class creature(entityLike):
     immune:int # 标记受击后的无敌时间
     imagesMoving:Dict[(int,int),List[myImage]] # 移动时的贴图，第二维list长度为c.WalkingFpsLoop
     imagesStanding:Dict[(int,int)] # 静止时贴图，怪物没有
-    bombSum:int
-    bombRange:int
+    bombSum:int # 炸弹数量
+    bombRange:int # 爆炸范围
     cankick:bool # 踢炸弹
-    def reRegister(self, gx:int, gy:int, initInMap:callable):
-        super().reRegister(gx,gy,initInMap)
+    def reRegister(self, gx:int, gy:int, initInMap:callable,force=False):
         self.immune=0
+        return super().reRegister(gx,gy,initInMap,force) 
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable, speed:int=c.IntialSpeed, hp=c.IntialHp, layer=9):
         super().__init__(id,gx,gy,initInMap,speed,layer)
         self.hp=hp
@@ -99,7 +100,7 @@ class creature(entityLike):
         self.bombRange=c.IntialBombRange
         self.cankick=False
         self.imagesStanding,self.imagesMoving={},{}
-        t=("monster"in str(type(self)))#trick
+        t=("monster"in str(type(self)))#trick # 用于处理怪物静止时也动的问题
         for tx in range(-1,2):
             for ty in range(-1,2):
                 if abs(tx)+abs(ty)<2:

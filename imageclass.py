@@ -50,25 +50,33 @@ class dialog:
     content:str
     funclist:any #
     usellm:bool
+    inputs:str # llm的用户输入暂存在此
     keysleepcnt:int
     def __init__(self):
         self.content=None
         self.usellm=False
         self.keysleepcnt=c.FPS//2
+        self.inputs=">"
     def __call__(self, funclist, usellm:bool):
         self.funclist=funclist;self.usellm=usellm
         self.content=next(self.funclist)
         self.keysleepcnt=c.FPS//2
-    def keyboard(self):
+    # dialog的keyboard
+    # 1.用于捕获用户输入(llm)，
+    # 2.在用户输入c.KeyboardConDialog时调用包含协程的funclist,切换下一条对话
+    #    funclist参考makescene.py中mapGenerTown的子函数
+    # 3.在用户输入c.KeyboardEscDialog时退出对话框
+    def keyboard(self,keys):
         if self.content==None:return
         # 检查键盘输入，用于llm，如果有的话
         if self.usellm:
             pass
         self.keysleepcnt-=1
-        keys = pygame.key.get_pressed()
         if self.keysleepcnt<=0 and keys[c.KeyboardConDialog]:
             try:
-                self.content=next(self.funclist)
+                self.content=self.funclist.send(self.inputs)
+                # self.content=next(self.funclist)
+                # 在存在llm的时候send self.inputs让py中mapGenerTown的子函数接受
             except StopIteration:
                 self.content=None
                 self.funclist=None
@@ -76,6 +84,7 @@ class dialog:
         if self.keysleepcnt<=0 and keys[c.KeyboardEscDialog]:
             self.content=None
             self.funclist=None
+    # 画对话框，以及对话中的内容，以及还没按c.KeyboardConDialog发送的input
     def draw(self,win):
         if self.content==None:return
         image=pygame.image.load('./assets/utils/dialog.png')
@@ -86,12 +95,13 @@ class dialog:
         rect=image.get_rect()
         rect.move_ip(int((c.WinWidth-13.5)*c.CellSize/c.CellRatio),int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
         win.blit(image,rect)
-        font = pygame.font.SysFont(None, 32)
+        font = pygame.font.SysFont(None, 64//c.CellRatio)
         surface = font.render(self.content, True, (0, 0, 0))#目前没接入ai，不能用中文
         win.blit(surface, (c.CellSize/c.CellRatio,int((c.WinHeight-4)*c.CellSize/c.CellRatio)))
         print(self.content)# TODO
 
 class segmentDraw:
+    # 在网格边界画线的class
     @classmethod
     def drawR(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win):
         color = (255,0,0)
@@ -109,6 +119,7 @@ class segmentDraw:
         rect.move_ip((gx*c.CellSize-camera[0])//c.CellRatio,(gy*c.CellSize-camera[1])//c.CellRatio)
         win.blit(segment,rect)
 
+# 创建窗口
 def displayCreateWin():
     if pygame.display.Info().current_w >= 2000:
         c.CellRatio=1

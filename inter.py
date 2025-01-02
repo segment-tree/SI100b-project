@@ -9,8 +9,7 @@ dialoger=dialog()
 class player(creature):
     money:int
     readToInteract:bool
-    def keyboard(self): # 捕捉键盘信息
-        keys = pygame.key.get_pressed()
+    def keyboard(self,keys): # 捕捉键盘信息
         allowF=thisMap.moveRequest
         #python有for-else语句但没有 elfor 有什么让这段代码美观的方案吗？？
         for i in c.KeyboardLeft:
@@ -26,11 +25,8 @@ class player(creature):
                         if keys[i]: self.tryMove(0,1,allowF);break
         for i in c.KeyboardBomb:
             if keys[i]:self.putBomb(thisMap.addEntity);break
-        for i in c.KeyboardInteract:
-            if keys[i] : self.readToInteract=True;break
-        else : self.readToInteract=False
-    def reRegister(self, gx:int, gy:int, initInMap:callable):
-        super().reRegister(gx,gy,initInMap)
+    def reRegister(self, gx:int, gy:int, initInMap:callable,force=True):
+        return super().reRegister(gx,gy,initInMap,force)
     def __init__(self, id, gx, gy, imagesdir, initInMap:callable=None, speed = c.IntialSpeed, hp=c.IntialHp, layer=9):
         if initInMap==None : initInMap=thisMap.addEntity# player切换地图的时候不要忘了重新在地图注册
         super().__init__(id,gx,gy,imagesdir,initInMap,speed,hp,layer)
@@ -62,7 +58,7 @@ class player(creature):
     def overlap(self, other:entityLike):
         super().overlap(other)
         if (self.gx,self.gy)==(other.gx,other.gy):
-            if "monster" in str(type(other)) :#trick
+            if "monster" in str(type(other)) :# 只有与monster接触时扣血
                 self.hpMinus()
     def delete(self):
         super().delete()
@@ -75,6 +71,15 @@ def changeMap(mapid:int, gx:int, gy:int):
     thisMap=maps[mapid]
     me.reRegister(gx,gy,thisMap.addEntity)
     thisMap.me=me
+
+def catchKeyboard(nowplayer,nowdialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
+    keys = pygame.key.get_pressed()
+    if nowdialog.content==None:
+        nowplayer.keyboard(keys)
+    for i in c.KeyboardInteract:
+            if keys[i] : nowplayer.readToInteract=True;break
+            else : nowplayer.readToInteract=False
+    nowdialog.keyboard(keys)
 
 #test
 def tempMapGener(nowmp:Mapper):
@@ -147,7 +152,9 @@ if __name__ == "__main__":
         #me.dx=1
         #me.dy=0
         #me.moving=10
-        me.keyboard()
+        # me.keyboard()
+        catchKeyboard(me,dialoger)
+
         me.clock(thisMap,win)
         # me.draw(3,fpscnt,(0,0),win)
         car=thisMap.genCamera()
@@ -157,7 +164,7 @@ if __name__ == "__main__":
         # segmentDraw.drawR(1,15,4,car,win)
         # segmentDraw.drawC(1,15,4,car,win)
 
-        dialoger.keyboard()
+        # dialoger.keyboard()
         dialoger.draw(win)
         #print(car)
         #print(me.hp)

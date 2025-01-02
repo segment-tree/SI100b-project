@@ -41,10 +41,11 @@ class Mapper: # Map is some keyword use Mapper instead
         basex=min(max(basex,0),self.C*c.CellSize-c.WinWidth *c.CellSize)
         basey=min(max(basey,0),self.R*c.CellSize-c.WinHeight*c.CellSize)
         return (basex,basey)
-    def addEntity(self, gx:int, gy:int, entity)->bool:
-        for i in self.mp[gx][gy]['entity']:
-            if i.allowOverlap==False:
-                return False
+    def addEntity(self, gx:int, gy:int, entity,force=False)->bool:
+        if not force:
+            for i in self.mp[gx][gy]['entity']:
+                if i.allowOverlap==False:
+                    return False
         if not "player" in str(type(entity)): # trick; player大概不应被存在entities数组里
             self.entities.append(entity)
         self.mp[gx][gy]['entity'].add(entity)
