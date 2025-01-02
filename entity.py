@@ -267,6 +267,7 @@ class monster(creature):
             if mapper.invaild_coord(x,y):return False
             if mapper.mp[x][y]["type"] in ["wall","obstacle"]:
                 return False
+            if mapper.mp[x][y]["burning"]>0:return False
             for i in mapper.mp[x][y]["entity"]:
                 if not i.walkInto(self) : return False
             return True
