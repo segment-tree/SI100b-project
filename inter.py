@@ -123,8 +123,8 @@ if __name__ == "__main__":
     maps.append(thisMap)
 
     ###
-    thisMap=Mapper(50,50,style=0)
-    tempMapGener(thisMap)
+    # thisMap=Mapper(50,50,style=0)
+    # tempMapGener(thisMap)
     ###
 
     back_ground_color=(200, 200, 200)

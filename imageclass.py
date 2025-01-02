@@ -80,12 +80,15 @@ class dialog:
         if self.content==None:return
         image=pygame.image.load('./assets/utils/dialog.png')
         rect_t=image.get_rect()
-        w=c.WinWidth*c.CellSize-2*c.CellSize
+        w=c.WinWidth*c.CellSize-c.CellSize
         h=rect_t.height*w//rect_t.width
         image=pygame.transform.scale(image,(w//c.CellRatio,h//c.CellRatio))
         rect=image.get_rect()
-        rect.move_ip(c.CellSize//c.CellRatio,int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
+        rect.move_ip(int((c.WinWidth-13.5)*c.CellSize/c.CellRatio),int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
         win.blit(image,rect)
+        font = pygame.font.SysFont(None, 32)
+        surface = font.render(self.content, True, (0, 0, 0))#目前没接入ai，不能用中文
+        win.blit(surface, (c.CellSize/c.CellRatio,int((c.WinHeight-4)*c.CellSize/c.CellRatio)))
         print(self.content)# TODO
 
 class segmentDraw:
