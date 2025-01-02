@@ -1,5 +1,7 @@
 from entity import *
 from scene import *
+# from nine_ai import *
+# from shopowner_ai import *
 import random
 def mapGener(nowmp):
     def genWall(x,y,iid):
@@ -76,7 +78,7 @@ def mapGenerTown(nowmp):
             yield None
     def nineNineCat():
         while True:
-            yield "miaomiaomiao"
+            yield "MeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeow"
             yield None
     def RefuseEnter():
         while True:
@@ -159,7 +161,7 @@ scene1=[
 
 
 zote_precepts = [
-    "戒律一：永远只打胜仗。 在输掉的战斗中，\n你不能获得任何战利品，更不能学到什么有用\n的东西。 所以，你要打赢所有的战斗，或者\n压根就不参与！",
+    "戒律一：永远只打胜仗。 在输掉的战斗中，你不能获得任何战利品，更不能学到什么有用的东西。 所以，你要打赢所有的战斗，或者压根就不参与！",
     "戒律二：永远不要让别人嘲笑你。 傻瓜们会\n嘲笑一切，甚至会嘲笑比他们强大的人。 但\n是，你要注意，嘲笑声本身其实就是有害的！\n 它会像疾病一样蔓延开来，不久之后，所有\n人都会开始嘲笑你。 所以，你需要做的是迅\n速根除它，以阻止其扩散。",
     "戒律三：永远要保证足够的休息。 战斗和冒\n险会消耗你的体力。 而只有当你休息的时候\n，你的体力才会恢复。 所以，你休息的时间\n越长就越强大。",
     "戒律四：学会忘记过去。 过去是痛苦的，回\n忆过去只会徒增伤悲。相反，你可以试着想想\n别的事情，比如未来或者美食等。",

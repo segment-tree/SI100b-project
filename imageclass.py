@@ -95,10 +95,21 @@ class dialog:
         rect=image.get_rect()
         rect.move_ip(int((c.WinWidth-13.5)*c.CellSize/c.CellRatio),int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
         win.blit(image,rect)
-        font = pygame.font.SysFont(None, 64//c.CellRatio)
-        surface = font.render(self.content, True, (0, 0, 0))#目前没接入ai，不能用中文
-        win.blit(surface, (c.CellSize/c.CellRatio,int((c.WinHeight-4)*c.CellSize/c.CellRatio)))
-        print(self.content)# TODO
+
+        font = pygame.font.SysFont('kaiti', 32//c.CellRatio)
+        #font.set_bold(True)
+        temp_Content = self.content#文字分行渲染
+        text_Line = []
+        cnt = 1
+        while(cnt*30<len(temp_Content)):
+            text_Line.append(temp_Content[(cnt-1)*30:cnt*30])
+            cnt += 1
+        text_Line.append(temp_Content[(cnt-1)*30:])
+
+        surfaces = [font.render(line, True, (0, 0, 0)) for line in text_Line]#目前没接入ai
+        for i in range(1,cnt+1):
+            win.blit(surfaces[i-1], (int((c.WinWidth-12.5)*c.CellSize/c.CellRatio),int((c.WinHeight-4+i*0.5-0.25)*c.CellSize/c.CellRatio)))
+        #print(self.content)# TODO
 
 class segmentDraw:
     # 在网格边界画线的class
