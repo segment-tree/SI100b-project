@@ -255,7 +255,14 @@ class monster(creature):
                 dangerous+=[(i,e.gy) for i in range(e.gx-e.range,e.gx+e.range+1)]
         dangerous=set(dangerous)
         return dangerous
-
+    def _check(self,x,y,mapper):
+        if mapper.invaild_coord(x,y):return False
+        if mapper.mp[x][y]["type"] in ["wall","obstacle"]:
+            return False
+        if mapper.mp[x][y]["burning"]>0:return False
+        for i in mapper.mp[x][y]["entity"]:
+            if not i.walkInto(self) : return False
+        return True
     def aiFindSafeGird(self,mapper): # 不知道ai运行效率如何
         dangerous=self._aiFindDangerousGird(mapper)
         # bfs
@@ -263,20 +270,12 @@ class monster(creature):
         q.put([self.gx,self.gy,tuple()])
         dir=[(-1,0),(1,0),(0,-1),(0,1)]
         vis={}
-        def _check(x,y):
-            if mapper.invaild_coord(x,y):return False
-            if mapper.mp[x][y]["type"] in ["wall","obstacle"]:
-                return False
-            if mapper.mp[x][y]["burning"]>0:return False
-            for i in mapper.mp[x][y]["entity"]:
-                if not i.walkInto(self) : return False
-            return True
         cnt=0
         while not q.empty():
             a=q.get()
             cnt+=1 # cnt 防止怪喜欢站着不动
             print(q.qsize(),(a[0],a[1]),{(a[0],a[1])} & dangerous!= {(a[0],a[1])})
-            if {(a[0],a[1])} & dangerous != {(a[0],a[1])} and (cnt>1 or random.randrange(0,9)<7):
+            if {(a[0],a[1])} & dangerous != {(a[0],a[1])} and (cnt>1 or random.randrange(0,9)<9):
                 self.movQ=[]
                 t=a[2]
                 while len(t)>0:
@@ -288,19 +287,34 @@ class monster(creature):
             random.shuffle(dir)
             for d in dir:
                 nx,ny=a[0]+d[0],a[1]+d[1]
-                if _check(nx,ny) and not vis.get((nx,ny)):
+                if self._check(nx,ny,mapper) and not vis.get((nx,ny)):
                     vis[(nx,ny)]=True
                     b=[nx,ny,(a,d[0],d[1])]
                     q.put(b)
+    def walk1step(self,mapper):
+        dangerous=self._aiFindDangerousGird(mapper)
+        dir=[(-1,0),(1,0),(0,-1),(0,1)]
+        random.shuffle(dir)
+        for d in dir:
+            nx,ny=self.gx+d[0],self.gy+d[1]
+            if self._check(nx,ny,mapper) and {(nx,ny)} & dangerous != {(nx,ny)}:
+                self.movQ.append((d[0],d[1]))
+                return True
+        return False
+        
     def walk(self,mapper):
+        if self.moving>0:return
         if len(self.movQ)>0:
-            t=self.tryMove(self.movQ[0][0],self.movQ[0][1],mapper.moveRequest)
-            if t==True:self.movQ.popleft()
-            else : self.movQ=queue.deque() # make monster smater
-            return
+            dx,dy=self.movQ[0][0],self.movQ[0][1]
+            if mapper.mp[self.gx+dx][self.gy+dy]["burning"]<=0:
+                t=self.tryMove(dx,dy,mapper.moveRequest)
+                if t==True:self.movQ.popleft()
+                else : self.movQ=queue.deque() # 防止怪物卡死
+                return
         self.aiWalkCount-=1
         if self.aiWalkCount==0:
-            self.aiFindSafeGird(mapper)
+            if not self.walk1step(mapper):
+                self.aiFindSafeGird(mapper)
             self.aiWalkCount=c.FPS//4
 
     def ai(self,mapper):

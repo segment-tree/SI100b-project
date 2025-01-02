@@ -136,7 +136,7 @@ if __name__ == "__main__":
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
     me=player(id=0,gx=1,gy=17,imagesdir='./assets/player/',layer=3)
-    #print('#',me.rx,me.ry) # gy 28
+    #print('#',me.rx,me.ry) # gy 28 17
     thisMap.me=me
 
     for i in thisMap.mp[me.gx][me.gy]["entity"]:
