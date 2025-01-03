@@ -113,8 +113,8 @@ def mapGenerTown(nowmp):
 
 def mapGenerShop(nowmp):
     nowmp.style=2
-    nowmp.C=20;nowmp.R=17
-    nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}.png',zoom=nowmp.C)
+    nowmp.C=21;nowmp.R=17
+    nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}2.png',zoom=nowmp.C)
     nowmp.mp[5][15]["teleportTo"]=(1,24,25)
     def getPrice():
         return [10,10,10,10,10]
