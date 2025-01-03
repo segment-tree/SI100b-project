@@ -73,9 +73,19 @@ class dialog:
         if self.usellm:
             pass
         self.keysleepcnt-=1
+        if self.keysleepcnt<=0: 
+            for i in range(ord('a'),ord('z')+1):
+                flag=False
+                if keys[i]:self.inputs+=chr(i);flag=True
+                if flag:self.keysleepcnt=c.FPS//8
+        #for event in pygame.event.get():
+        #    if event.type == pygame.TEXTINPUT or event.type == pygame.KEYDOWN:
+        #        for i in range(ord('a'),ord('z')+1):
+        #            if keys[i]:self.inputs+=chr(i)
         if self.keysleepcnt<=0 and keys[c.KeyboardConDialog]:
             try:
                 self.content=self.funclist.send(self.inputs)
+                self.inputs=">"
                 # self.content=next(self.funclist)
                 # 在存在llm的时候send self.inputs让py中mapGenerTown的子函数接受
             except StopIteration:
@@ -85,6 +95,7 @@ class dialog:
         if self.keysleepcnt<=0 and keys[c.KeyboardEscDialog]:
             self.content=None
             self.funclist=None
+        print(self.inputs)
     # 画对话框，以及对话中的内容，以及还没按c.KeyboardConDialog发送的input
     def draw(self,win):
         if self.content==None:return
@@ -110,12 +121,15 @@ class dialog:
         surfaces = [font.render(line, True, (0, 0, 0)) for line in text_Line]
         for i in range(1,cnt+1):
             win.blit(surfaces[i-1], (int((c.WinWidth-12.5)*c.CellSize/c.CellRatio),int((c.WinHeight-4+i*0.5-0.25)*c.CellSize/c.CellRatio)))
+        
+        self.draw_Input(win)
 
 
     def draw_Input(self, win):
+        if self.inputs==None:return
         font = pygame.font.SysFont('华文楷体', 32//c.CellRatio)
         #font.set_bold(True)
-        temp_Inputs = self.inputs + "I"#文字分行渲染
+        temp_Inputs = self.inputs + "_"#文字分行渲染
         text_Line = []
         cnt = 1
         while(cnt*30<len(temp_Inputs)):

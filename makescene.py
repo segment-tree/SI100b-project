@@ -82,9 +82,9 @@ def mapGenerTown(nowmp):
         c=nine('')
         while True:
             t = yield c 
-            c= nine(t)
-            if t == None:
-                break
+            c= nine(str(t))
+            # if t == None:
+            #     break
         yield None
     def RefuseEnter():
         while True:
