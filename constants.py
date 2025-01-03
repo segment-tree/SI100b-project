@@ -1,4 +1,5 @@
 import pygame
+import os
 # 常量用大驼峰命名法吧
 CellSize=42*2 # 不要修改CellSize，请修改CellRatio
 CellRatio=2
@@ -31,5 +32,9 @@ KeyboardBomb =[pygame.K_SPACE]
 KeyboardInteract =[ord('f')]
 KeyboardEscDialog=pygame.K_ESCAPE
 KeyboardConDialog=pygame.K_RETURN
+
+DefaultFont='华文楷体'
+if os.name=='posix':
+    DefaultFont = 'source-han-sans' # linux系统大概率没有华文楷体，故选此替代
 
 BossDefaultCount=FPS*10 # boss每个招式的持续时间

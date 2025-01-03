@@ -51,9 +51,9 @@ def mapGenerTown(nowmp):
     nowmp.mp[40][12]["teleportTo"]=(0,1,28)
     # nowmp.fieldimg=myImage(f'./assets/scene/transparent.png') # useless
     # interact point:
-    def testInteract():
+    def testInteract(_):
         pass
-    def icecreamShop():
+    def icecreamShop(_):
         while True:
             t=""
             for c in zote_precepts:
@@ -74,11 +74,11 @@ def mapGenerTown(nowmp):
             drawDialog("upcoming soon",win)
             pygame.display.update()
         '''
-    def dogtalk():
+    def dogtalk(_):
         while True:
             yield "Woof!"
             yield None
-    def nineNineCat():
+    def nineNineCat(_):
         c=nine('')
         while True:
             t = yield c 
@@ -86,14 +86,14 @@ def mapGenerTown(nowmp):
             # if t == None:
             #     break
         yield None
-    def RefuseEnter():
+    def RefuseEnter(_):
         while True:
             yield "私人住宅，谢绝参观"
             yield None
-    nowmp.mp[34][11]["interact"]=(icecreamShop(),False)
-    nowmp.mp[28][25]["interact"]=nowmp.mp[29][25]["interact"]=(dogtalk(),False)
-    nowmp.mp[14][25]["interact"]=nowmp.mp[21][6]["interact"]=nowmp.mp[30][6]["interact"]=(RefuseEnter(),False)
-    nowmp.mp[11][6]["interact"]=(nineNineCat(),False)
+    nowmp.mp[34][11]["interact"]=(icecreamShop,False)
+    nowmp.mp[28][25]["interact"]=nowmp.mp[29][25]["interact"]=(dogtalk,False)
+    nowmp.mp[14][25]["interact"]=nowmp.mp[21][6]["interact"]=nowmp.mp[30][6]["interact"]=(RefuseEnter,False)
+    nowmp.mp[11][6]["interact"]=(nineNineCat,True)
     # 23 25/24 25/25 25 进入商店
     # 3 16 自家房门
     def genWall(x,y):

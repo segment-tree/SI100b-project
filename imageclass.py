@@ -70,11 +70,8 @@ class dialog:
     def keyboard(self,keys):
         if self.content==None:return
         # 检查键盘输入，用于llm，如果有的话
-        if self.usellm:
-            pass
         self.keysleepcnt-=1
-        
-        if self.keysleepcnt<=0: 
+        if self.usellm and self.keysleepcnt<=0: 
             for i in list(range(ord('a'),ord('z')+1))+[ord(' '),pygame.K_BACKSPACE]:
                 flag=False
                 if keys[i]:
@@ -115,7 +112,7 @@ class dialog:
         rect.move_ip(int((c.WinWidth-13.5)*c.CellSize/c.CellRatio),int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
         win.blit(image,rect)
 
-        font = pygame.font.SysFont('华文楷体', 32//c.CellRatio)
+        font = pygame.font.SysFont(c.DefaultFont, 32//c.CellRatio)
         #font.set_bold(True)
         temp_Content = self.content#文字分行渲染
         text_Line = []
@@ -129,12 +126,12 @@ class dialog:
         for i in range(1,cnt+1):
             win.blit(surfaces[i-1], (int((c.WinWidth-12.5)*c.CellSize/c.CellRatio),int((c.WinHeight-4+i*0.5-0.25)*c.CellSize/c.CellRatio)))
         
-        self.draw_Input(win)
+        if self.usellm:self.draw_Input(win)
 
 
     def draw_Input(self, win):
         if self.inputs==None:return
-        font = pygame.font.SysFont('华文楷体', 32//c.CellRatio)
+        font = pygame.font.SysFont(c.DefaultFont, 32//c.CellRatio)
         #font.set_bold(True)
         temp_Inputs = self.inputs + "_"#文字分行渲染
         text_Line = []
@@ -182,19 +179,34 @@ def displayCreateWin():
 
 #test
 import sys
+from nine_ai import *
 if __name__ == "__main__":
     pygame.init()
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     win = pygame.display.set_mode((c.WinWidth*c.CellSize,c.WinHeight*c.CellSize))
+    def nineNineCat():
+        c=nine('')
+        while True:
+            t = yield c 
+            c= nine(str(t))
+            # if t == None:
+            #     break
+        yield None
+    aaa=dialog()
+    aaa(nineNineCat(),True)
     while True:
         clock.tick(c.FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        tree=myImage('./assets/t/54px-Pine_Stage_4.png')
+        # tree=myImage('./assets/t/54px-Pine_Stage_4.png')
         # tree.drawG(1,0,win)
-        tree.draw(c.CellSize//2,c.CellSize+c.CellSize//2,(0,0),win)
+        # tree.draw(c.CellSize//2,c.CellSize+c.CellSize//2,(0,0),win)
+        
+        aaa.keyboard(pygame.key.get_pressed())
+        aaa.draw(win)
+
         pygame.display.update()
-        print(tree.rect)
+        # print(tree.rect)
 
