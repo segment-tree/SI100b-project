@@ -51,6 +51,7 @@ class dialog:
     funclist:any #
     usellm:bool
     inputs:str # llm的用户输入暂存在此
+    
     keysleepcnt:int
     def __init__(self):
         self.content=None
@@ -96,7 +97,7 @@ class dialog:
         rect.move_ip(int((c.WinWidth-13.5)*c.CellSize/c.CellRatio),int((c.WinHeight-4.5)*c.CellSize/c.CellRatio))
         win.blit(image,rect)
 
-        font = pygame.font.SysFont('kaiti', 32//c.CellRatio)
+        font = pygame.font.SysFont('华文楷体', 32//c.CellRatio)
         #font.set_bold(True)
         temp_Content = self.content#文字分行渲染
         text_Line = []
@@ -106,11 +107,25 @@ class dialog:
             cnt += 1
         text_Line.append(temp_Content[(cnt-1)*30:])
 
-        surfaces = [font.render(line, True, (0, 0, 0)) for line in text_Line]#目前没接入ai
+        surfaces = [font.render(line, True, (0, 0, 0)) for line in text_Line]
         for i in range(1,cnt+1):
             win.blit(surfaces[i-1], (int((c.WinWidth-12.5)*c.CellSize/c.CellRatio),int((c.WinHeight-4+i*0.5-0.25)*c.CellSize/c.CellRatio)))
-        #print(self.content)# TODO
 
+
+    def draw_Input(self, win):
+        font = pygame.font.SysFont('华文楷体', 32//c.CellRatio)
+        #font.set_bold(True)
+        temp_Inputs = self.inputs + "I"#文字分行渲染
+        text_Line = []
+        cnt = 1
+        while(cnt*30<len(temp_Inputs)):
+            text_Line.append(temp_Inputs[(cnt-1)*30:cnt*30])
+            cnt += 1
+        text_Line.append(temp_Inputs[(cnt-1)*30:])
+
+        surfaces = [font.render(line, True, (0, 0, 0)) for line in text_Line]
+        for i in range(1,cnt+1):
+            win.blit(surfaces[i-1], (int((c.WinWidth-12.5)*c.CellSize/c.CellRatio),int((c.WinHeight-2+i*0.5)*c.CellSize/c.CellRatio)))
 class segmentDraw:
     # 在网格边界画线的class
     @classmethod

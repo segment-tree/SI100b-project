@@ -18,22 +18,16 @@ messages : List[Dict] = [
     }
 ]
 
-while True:
 
+
+def nine(user_Input):
+    if user_Input.lower() in ['exit','quit']:#退出聊天
+        return None    
+    messages.append({"role": "user", "content": user_Input})
     response = client.chat.completions.create(
         model="llama3.2",      
         messages=messages,   
     )
     assistant_reply = response.choices[0].message.content
-    print(assistant_reply)
     messages.append({"role": "assistant", "content": assistant_reply})
-
-
-    user_input = input("User input: ")
-    if user_input.lower() in ['exit','quit']:#退出聊天
-        print("chat ends.")
-        break
-
-    messages.append({"role": "user", "content": user_input})
-
-
+    return assistant_reply
