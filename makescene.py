@@ -145,8 +145,8 @@ def mapGenerShop(nowmp):
             # if t == None:
             #     break
         yield None
-    nowmp.mp[4][6]["interact"]=(sale,True)
-    nowmp.mp[2][6]["interact"]=nowmp.mp[3][6]["interact"]=(shopownertalk(),True)
+    nowmp.mp[4][5]["interact"]=(sale,True)
+    nowmp.mp[2][5]["interact"]=nowmp.mp[3][5]["interact"]=(shopownertalk(),True)
 
 scene0 = [
 [1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[1,13],[1,14],[1,15],[1,16],[1,17],[1,18],[1,19],[1,20],[1,21],[1,22],[1,23],[1,24],[1,25],[1,26],[1,27],[1,28],[1,30],[1,31],
