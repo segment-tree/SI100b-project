@@ -1,6 +1,6 @@
 from entity import *
 from scene import *
-# from nine_ai import *
+from nine_ai import *
 # from shopowner_ai import *
 import random
 def mapGener(nowmp):
@@ -60,7 +60,9 @@ def mapGenerTown(nowmp):
                 t= yield c+str(t) # yield要输出的对话，由imageclass.py中的dialog.keyboard处理
                 # 在存在llm时yield的返回值(t)为用户输入
             yield None # None为特殊占位符，表示对话结束
-        '''
+
+            
+        ''' 
         while True:
             pygame.time.Clock().tick(c.FPS)
             for event in pygame.event.get():
@@ -77,9 +79,13 @@ def mapGenerTown(nowmp):
             yield "Woof!"
             yield None
     def nineNineCat():
+        c=nine('')
         while True:
-            yield "MeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeowMeow"
-            yield None
+            t = yield c 
+            c= nine(t)
+            if t == None:
+                break
+        yield None
     def RefuseEnter():
         while True:
             yield "私人住宅，谢绝参观"
