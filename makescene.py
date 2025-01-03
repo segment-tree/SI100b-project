@@ -116,21 +116,27 @@ def mapGenerShop(nowmp):
     nowmp.C=20;nowmp.R=17
     nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}.png',zoom=nowmp.C)
     nowmp.mp[5][15]["teleportTo"]=(1,24,25)
-    def getPrice(t):
+    def getPrice():
         return [10,10,10,10,10]
     def sale(nowplayer,_):
         # nowplayer.money+=100
         while True:
             price=getPrice()
-            t=yield f"On Sale: 1: Heal Potion (${price[0]}), 2: Sensitive Potion(${price[1]}), 3: Expanded Bomb Grid Potion(${price[2]}), and 4: Bomb-Kicking Boots(${price[3]}). your coin: {nowplayer.money}"
+            t=yield f"On Sale: 1: Heal Potion (${price[0]}), 2: Sensitive Potion(${price[1]}), 3: Expanded Bomb Grid Potion(${price[2]}), and 4: Kicking Bomb Boots(${price[3]}). your coin: {nowplayer.money}"
+            tcoin=nowplayer.money
             if "heal" in t and nowplayer.money>price[0] :
                 nowplayer.hp+=1;nowplayer.money-=price[0]
             if "expanded" in t and nowplayer.money>price[2] :
                 nowplayer.bombRange+=1;nowplayer.money-=price[2]
             if "sensitive" in t and nowplayer.money>price[1]:
                 nowplayer.speed=c.IncreasedSpeed;nowplayer.money-=price[1]
-            if ("bomb" in t or "kicking" in t or "boots" in t) and nowplayer.money>price[3]:
+            if ("kicking" in t or "boots" in t) and nowplayer.money>price[3]:
                 nowplayer.cankick=True;nowplayer.money-=price[3]
+            if tcoin<nowplayer.money:
+                yield "purchase succeed"
+            elif "heal" in t or "expanded" in t or "sensitive" in t or "kicking" in t or "boots" in t:
+                yield "purchase failed, maybe money isn't enough?"
+            else : yield "Product not found"
     def shopownertalk():
         c=nine('')
         while True:
