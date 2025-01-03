@@ -73,15 +73,22 @@ class dialog:
         if self.usellm:
             pass
         self.keysleepcnt-=1
+        
         if self.keysleepcnt<=0: 
-            for i in range(ord('a'),ord('z')+1):
+            for i in list(range(ord('a'),ord('z')+1))+[ord(' '),pygame.K_BACKSPACE]:
                 flag=False
-                if keys[i]:self.inputs+=chr(i);flag=True
-                if flag:self.keysleepcnt=c.FPS//8
-        #for event in pygame.event.get():
-        #    if event.type == pygame.TEXTINPUT or event.type == pygame.KEYDOWN:
-        #        for i in range(ord('a'),ord('z')+1):
-        #            if keys[i]:self.inputs+=chr(i)
+                if keys[i]:
+                    flag=True
+                    if i!=pygame.K_BACKSPACE:self.inputs+=chr(i)
+                    elif len(self.inputs)>1:self.inputs=self.inputs[:-1]
+                if flag:self.keysleepcnt=c.FPS//6
+        '''
+        for event in pygame.event.get():
+            print(event)
+            if event.type == pygame.TEXTINPUT or event.type == pygame.KEYDOWN:
+                for i in range(ord('a'),ord('z')+1):
+                    if keys[i]:self.inputs+=chr(i)
+        '''
         if self.keysleepcnt<=0 and keys[c.KeyboardConDialog]:
             try:
                 self.content=self.funclist.send(self.inputs)
@@ -95,7 +102,7 @@ class dialog:
         if self.keysleepcnt<=0 and keys[c.KeyboardEscDialog]:
             self.content=None
             self.funclist=None
-        print(self.inputs)
+        # print(self.inputs)
     # 画对话框，以及对话中的内容，以及还没按c.KeyboardConDialog发送的input
     def draw(self,win):
         if self.content==None:return
