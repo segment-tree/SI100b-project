@@ -3,7 +3,7 @@ from scene import *
 from nine_ai import *
 # from shopowner_ai import *
 import random
-def mapGener(nowmp):
+def mapGener(nowmp:Mapper):
     nowmp.style=0
     def genWall(x,y,iid):
         nowmp.mp[x][y]["type"]="wall"
@@ -44,7 +44,7 @@ def mapGener(nowmp):
 
     nowmp.mp[0][28]["teleportTo"]=(1,40,11)
 
-def mapGenerTown(nowmp):
+def mapGenerTown(nowmp:Mapper):
     nowmp.style=1
     nowmp.C=41
     nowmp.R=31
@@ -118,7 +118,7 @@ def mapGenerShop(nowmp):
     nowmp.mp[5][15]["teleportTo"]=(1,24,25)
     def getPrice():
         return [1,1,1,1,1]
-    def sale(nowplayer,_):
+    def sale(nowplayer:creature,_:Mapper):
         # nowplayer.money+=100
         while True:
             price=getPrice()

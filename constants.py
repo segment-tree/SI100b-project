@@ -38,3 +38,6 @@ if os.name=='posix':
     DefaultFont = 'source-han-sans' # linux系统大概率没有华文楷体，故选此替代
 
 BossDefaultCount=FPS*10 # boss每个招式的持续时间
+
+from typing import *
+LostType=Any

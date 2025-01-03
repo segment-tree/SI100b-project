@@ -25,7 +25,7 @@ class entityLike:
     def rxy2gxy(self):
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
-    def reRegister(self , gx:int ,gy:int ,initInMap:callable,force=False): # 重新注册entity，切换地图时使用
+    def reRegister(self , gx:int ,gy:int ,initInMap:callable,force:bool=False): # 重新注册entity，切换地图时使用
         self.gx,self.gy = gx,gy
         self.gxy2rxy()
         self.moving=0
@@ -33,7 +33,7 @@ class entityLike:
             self.id=-1 # 创建失败
             return False
         return True
-    def __init__(self, id:int, gx:int, gy:int, initInMap:callable, speed:int=c.IntialSpeed, layer=9):
+    def __init__(self, id:int, gx:int, gy:int, initInMap:callable, speed:int=c.IntialSpeed, layer:int=9):
         # initInMap在地图中生成该实体
         if initInMap(gx,gy,self)==False : 
             self.id=-1 # 创建失败
@@ -89,10 +89,10 @@ class creature(entityLike):
     bombSum:int # 炸弹数量
     bombRange:int # 爆炸范围
     cankick:bool # 踢炸弹
-    def reRegister(self, gx:int, gy:int, initInMap:callable,force=False):
+    def reRegister(self, gx:int, gy:int, initInMap:callable, force:bool=False):
         self.immune=0
         return super().reRegister(gx,gy,initInMap,force) 
-    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable, speed:int=c.IntialSpeed, hp=c.IntialHp, layer=9):
+    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
         super().__init__(id,gx,gy,initInMap,speed,layer)
         self.hp=hp
         self.immune=0
@@ -146,7 +146,7 @@ class bomb(entityLike):
     range:int
     image:myImage
     kicked:bool
-    def __init__(self, id:int, gx:int, gy:int, initInMap:callable, author:entityLike, speed = c.IntialSpeed, layer=9,skin:int=0):
+    def __init__(self, id:int, gx:int, gy:int, initInMap:callable, author:entityLike, speed:int=c.IntialSpeed, layer:int=9, skin:int=0):
         super().__init__(id,gx,gy,initInMap,speed,layer)
         self.author=author
         self.damage=1
@@ -157,11 +157,11 @@ class bomb(entityLike):
         self.image=myImage(f"assets/scene/bomb{skin}.png")
         self.kicked=False
         self.speed=c.BombKickedSpeed
-    def draw(self, layer, fpscnt, camera, win):
+    def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):
         super().draw(layer,fpscnt,camera,win)
         if self.layer==layer:
             self.image.draw(self.rx,self.ry,camera,win)
-    def clock(self, moveUpdate:callable,mapper):
+    def clock(self, moveUpdate:callable, mapper:c.LostType):
         super().clock(moveUpdate)
         if self.count <=0:
             self.delete(mapper)
@@ -177,10 +177,10 @@ class bomb(entityLike):
             self.kicked=True
         return super().walkInto(other)
 
-    def delete(self,mapper):
+    def delete(self, mapper:c.LostType):
         # 执行炸弹爆炸 (应该写在这里呢还是写在Mapper里？)
         xx,yy,stp=self.gx,self.gy,self.range
-        def __set(x,y,burnimg,pointer):
+        def __set(x:int,y:int,burnimg:myImage,pointer:List[List[int]]):
             def upPointer():
                 pointer[0][0]=x;pointer[1][0]=y
                 mapper.mp[x][y].pop("burnCenter",None)
@@ -242,12 +242,12 @@ class monster(creature):
     aiWalkCount:int
     aiBombCount:int
     movQ:queue.deque
-    def __init__(self, id, gx, gy, imagesdir, initInMap, speed = c.IntialSpeed, hp=c.IntialHp, layer=9):
+    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
         super().__init__(id, gx, gy, imagesdir, initInMap, speed, hp, layer)
         self.aiWalkCount=c.FPS//2
         self.aiBombCount=c.FPS//2
         self.movQ=queue.deque()
-    def _aiFindDangerousGird(self,mapper):
+    def _aiFindDangerousGird(self, mapper:c.LostType):
         dangerous=[]
         for e in mapper.entities:
             if "bomb" in str(type(e)):
@@ -255,7 +255,7 @@ class monster(creature):
                 dangerous+=[(i,e.gy) for i in range(e.gx-e.range,e.gx+e.range+1)]
         dangerous=set(dangerous)
         return dangerous
-    def _check(self,x,y,mapper):
+    def _check(self, x:int, y:int, mapper:c.LostType):
         if mapper.invaild_coord(x,y):return False
         if mapper.mp[x][y]["type"] in ["wall","obstacle"]:
             return False
@@ -263,7 +263,7 @@ class monster(creature):
         for i in mapper.mp[x][y]["entity"]:
             if not i.walkInto(self) : return False
         return True
-    def aiFindSafeGird(self,mapper): # 不知道ai运行效率如何
+    def aiFindSafeGird(self, mapper:c.LostType): # 不知道ai运行效率如何
         dangerous=self._aiFindDangerousGird(mapper)
         # bfs
         q=queue.Queue()
@@ -291,7 +291,7 @@ class monster(creature):
                     vis[(nx,ny)]=True
                     b=[nx,ny,(a,d[0],d[1])]
                     q.put(b)
-    def walk1step(self,mapper):
+    def walk1step(self, mapper:c.LostType):
         dangerous=self._aiFindDangerousGird(mapper)
         dir=[(-1,0),(1,0),(0,-1),(0,1)]
         random.shuffle(dir)
@@ -302,7 +302,7 @@ class monster(creature):
                 return True
         return False
         
-    def walk(self,mapper):
+    def walk(self, mapper:c.LostType):
         if self.moving>0:return
         if len(self.movQ)>0:
             dx,dy=self.movQ[0][0],self.movQ[0][1]
@@ -317,7 +317,7 @@ class monster(creature):
                 self.aiFindSafeGird(mapper)
             self.aiWalkCount=c.FPS//4
 
-    def ai(self,mapper):
+    def ai(self, mapper:c.LostType):
         a=random.randrange(-1,10)
         if a<0:return
         if a<7 or len(self.movQ)>0:

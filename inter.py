@@ -9,7 +9,7 @@ dialoger=dialog()
 class player(creature):
     money:int
     readToInteract:bool
-    def keyboard(self,keys): # 捕捉键盘信息
+    def keyboard(self, keys:List[bool]): # 捕捉键盘信息
         allowF=thisMap.moveRequest
         #python有for-else语句但没有 elfor 有什么让这段代码美观的方案吗？？
         for i in c.KeyboardLeft:
@@ -25,16 +25,16 @@ class player(creature):
                         if keys[i]: self.tryMove(0,1,allowF);break
         for i in c.KeyboardBomb:
             if keys[i]:self.putBomb(thisMap.addEntity);break
-    def reRegister(self, gx:int, gy:int, initInMap:callable,force=True):
+    def reRegister(self, gx:int, gy:int, initInMap:callable, force:bool=True):
         return super().reRegister(gx,gy,initInMap,force)
-    def __init__(self, id, gx, gy, imagesdir, initInMap:callable=None, speed = c.IntialSpeed, hp=c.IntialHp, layer=9):
+    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable=None, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
         if initInMap==None : initInMap=thisMap.addEntity# player切换地图的时候不要忘了重新在地图注册
         super().__init__(id,gx,gy,imagesdir,initInMap,speed,hp,layer)
         self.money=0
         self.cankick=False
         self.hp+=c.IntialPlayerHp-c.IntialHp
 
-    def pickup(self,w):#捡东西
+    def pickup(self, w:List[List[dict[str,Any]]]):#捡东西
         if w[self.gx][self.gy]["type"]=="object":
             match w[self.gx][self.gy]["content"]:
                 case 0:print('???a empty object???')
@@ -46,7 +46,7 @@ class player(creature):
                 case 6:self.cankick=True
             w[self.gx][self.gy]["type"]="field"
             w[self.gx][self.gy]["render"]=None# Warning
-    def clock(self,mapper,win):
+    def clock(self, mapper:Mapper, win):
         self.pickup(mapper.mp)
         super().clock(mapper.moveUpdate)
         if mapper.mp[self.gx][self.gy].get("teleportTo") :
@@ -78,7 +78,7 @@ def changeMap(mapid:int, gx:int, gy:int):
     mee.reRegister(gx,gy,thisMap.addEntity)
     thisMap.me=mee
 
-def catchKeyboard(nowplayer,nowdialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
+def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
     keys = pygame.key.get_pressed()
     if nowdialog.content==None:
         nowplayer.keyboard(keys)

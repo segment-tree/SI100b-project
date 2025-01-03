@@ -33,7 +33,7 @@ class Mapper: # Map is some keyword use Mapper instead
                 j["render"]=self.fieldimg
         self.backGround=None
         pass
-    def invaild_coord(self,x,y):
+    def invaild_coord(self, x:int, y:int):
         return x<0 or x >= self.C or y<0 or y >= self.R
     def genCamera(self):
         basex=self.me.rx-c.WinWidth*c.CellSize//2
@@ -41,7 +41,7 @@ class Mapper: # Map is some keyword use Mapper instead
         basex=min(max(basex,0),self.C*c.CellSize-c.WinWidth *c.CellSize)
         basey=min(max(basey,0),self.R*c.CellSize-c.WinHeight*c.CellSize)
         return (basex,basey)
-    def addEntity(self, gx:int, gy:int, entity,force=False)->bool:
+    def addEntity(self, gx:int, gy:int, entity, force:bool=False)->bool:
         if not force:
             for i in self.mp[gx][gy]['entity']:
                 if i.allowOverlap==False:
@@ -50,9 +50,9 @@ class Mapper: # Map is some keyword use Mapper instead
             self.entities.append(entity)
         self.mp[gx][gy]['entity'].add(entity)
         return True
-    def addMonster(self, gx:int, gy:int, imgdir:str):
+    def addMonster(self, gx:int, gy:int, imgdir:str)->monster:
         return monster(genEntityId(),gx,gy,imgdir, self.addEntity,layer=3)
-    def moveRequest(self, x:int, y:int, entity:entityLike): # entity调用这个来判断地图是否允许移动
+    def moveRequest(self, x:int, y:int, entity:entityLike)->bool: # entity调用这个来判断地图是否允许移动
         if self.invaild_coord(x,y):return False
         if self.mp[x][y]["type"] in ["wall","obstacle"]:
             return False
