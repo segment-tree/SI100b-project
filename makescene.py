@@ -117,7 +117,7 @@ def mapGenerShop(nowmp):
     nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}.png',zoom=nowmp.C)
     nowmp.mp[5][15]["teleportTo"]=(1,24,25)
     def getPrice():
-        return [10,10,10,10,10]
+        return [1,1,1,1,1]
     def sale(nowplayer,_):
         # nowplayer.money+=100
         while True:
@@ -132,7 +132,7 @@ def mapGenerShop(nowmp):
                 nowplayer.speed=c.IncreasedSpeed;nowplayer.money-=price[1]
             if ("kicking" in t or "boots" in t) and nowplayer.money>price[3]:
                 nowplayer.cankick=True;nowplayer.money-=price[3]
-            if tcoin<nowplayer.money:
+            if tcoin>nowplayer.money:
                 yield "purchase succeed"
             elif "heal" in t or "expanded" in t or "sensitive" in t or "kicking" in t or "boots" in t:
                 yield "purchase failed, maybe money isn't enough?"
@@ -153,6 +153,12 @@ def mapGenerShop(nowmp):
     
     nowmp.mp[9][8]["type"]="wall"
     nowmp.mp[9][8]["render"]=myImage(f'./assets/scene/shelf1.png',zoom=6)
+    
+    nowmp.mp[9][11]["type"]="wall"
+    nowmp.mp[9][11]["render"]=myImage(f'./assets/scene/shelf3.png',zoom=2)
+    
+    nowmp.mp[13][11]["type"]="wall"
+    nowmp.mp[13][11]["render"]=myImage(f'./assets/scene/shelf3.png',zoom=2)
     
 scene0 = [
 [1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[1,13],[1,14],[1,15],[1,16],[1,17],[1,18],[1,19],[1,20],[1,21],[1,22],[1,23],[1,24],[1,25],[1,26],[1,27],[1,28],[1,30],[1,31],
