@@ -31,7 +31,7 @@ class player(creature):
         if initInMap==None : initInMap=thisMap.addEntity# player切换地图的时候不要忘了重新在地图注册
         super().__init__(id,gx,gy,imagesdir,initInMap,speed,hp,layer)
         self.money=0
-        self.cankick=True
+        self.cankick=False
         self.hp+=c.IntialPlayerHp-c.IntialHp
 
     def pickup(self,w):#捡东西
@@ -50,12 +50,15 @@ class player(creature):
         self.pickup(mapper.mp)
         super().clock(mapper.moveUpdate)
         if mapper.mp[self.gx][self.gy].get("teleportTo") :
-            thisMap.mp[self.gx][self.gy]["entity"].remove(thisMap.me)
-            changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])
+            tmp=mapper.mp[self.gx][self.gy]["content"]
+            # 如果 content为-1必须按f交互才能切换
+            if tmp!=-1 or tmp==-1 and self.readToInteract:
+                changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])
         # print(self.readToInteract)
         if self.readToInteract and mapper.mp[self.gx][self.gy].get("interact") and dialoger.content==None: # 只有在没有绘制对话框时才可交互
             t=thisMap.mp[self.gx][self.gy]["interact"]
-            dialoger(t[0](self),t[1])
+            if 'function'in str(type(t[0])) : dialoger(t[0](self,mapper),t[1])
+            else : dialoger(*t)
     def overlap(self, other:entityLike):
         super().overlap(other)
         if (self.gx,self.gy)==(other.gx,other.gy):
@@ -68,10 +71,12 @@ class player(creature):
 maps=[]
 def changeMap(mapid:int, gx:int, gy:int):
     global thisMap
-    #thisMap.mp[gx][gy]["entity"].remove(thisMap.me)
+    mee=thisMap.me
+    thisMap.mp[thisMap.me.gx][thisMap.me.gy]["entity"].remove(mee)
+    thisMap.me=None
     thisMap=maps[mapid]
-    me.reRegister(gx,gy,thisMap.addEntity)
-    thisMap.me=me
+    mee.reRegister(gx,gy,thisMap.addEntity)
+    thisMap.me=mee
 
 def catchKeyboard(nowplayer,nowdialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
     keys = pygame.key.get_pressed()
@@ -121,23 +126,30 @@ def tempMapGener(nowmp:Mapper):
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
+    #print('#',me.rx,me.ry) # gy 28 17
+    
     thisMap=Mapper(50,50,style=0)
     mapGener(thisMap) # 田野
     maps.append(thisMap)
-    thisMap=Mapper(50,50,style=1)
+    nw=thisMap=Mapper(50,50,style=1)
     mapGenerTown(thisMap) # 城镇
     maps.append(thisMap)
-
+    thisMap=Mapper(50,50,style=2)
+    #thisMap.me=me
+    mapGenerShop(thisMap) # 商店
+    #thisMap.me=None
+    maps.append(thisMap)
+    thisMap=nw
     ###
     # thisMap=Mapper(50,50,style=0)
     # tempMapGener(thisMap)
     ###
 
+    me=player(id=0,gx=26,gy=26,imagesdir='./assets/player/',layer=3)
+
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     fpscnt=0
-    me=player(id=0,gx=11,gy=6,imagesdir='./assets/player/',layer=3)
-    #print('#',me.rx,me.ry) # gy 28 17
     thisMap.me=me
 
     for i in thisMap.mp[me.gx][me.gy]["entity"]:

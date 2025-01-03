@@ -28,7 +28,7 @@ class entityLike:
     def reRegister(self , gx:int ,gy:int ,initInMap:callable,force=False): # 重新注册entity，切换地图时使用
         self.gx,self.gy = gx,gy
         self.gxy2rxy()
-        self.dx,self.dy,self.moving=0,0,0
+        self.moving=0
         if initInMap(gx,gy,self,force)==False : 
             self.id=-1 # 创建失败
             return False

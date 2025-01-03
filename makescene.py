@@ -4,6 +4,7 @@ from nine_ai import *
 # from shopowner_ai import *
 import random
 def mapGener(nowmp):
+    nowmp.style=0
     def genWall(x,y,iid):
         nowmp.mp[x][y]["type"]="wall"
         nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/wall{nowmp.style}.{iid}.png')
@@ -48,12 +49,18 @@ def mapGenerTown(nowmp):
     nowmp.C=41
     nowmp.R=31
     nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}.png',zoom=nowmp.C)
+    # 进入田野
     nowmp.mp[40][12]["teleportTo"]=(0,1,28)
+    #进入商店
+    nowmp.mp[23][25]["teleportTo"]=nowmp.mp[24][25]["teleportTo"]=\
+        nowmp.mp[25][25]["teleportTo"]=(2,5,14)
+    nowmp.mp[23][25]["content"]=nowmp.mp[24][25]["content"]=\
+        nowmp.mp[25][25]["content"]=-1 #按f才能进入
     # nowmp.fieldimg=myImage(f'./assets/scene/transparent.png') # useless
     # interact point:
-    def testInteract(_):
+    def testInteract():
         pass
-    def icecreamShop(_):
+    def icecreamShop():
         while True:
             t=""
             for c in zote_precepts:
@@ -74,11 +81,11 @@ def mapGenerTown(nowmp):
             drawDialog("upcoming soon",win)
             pygame.display.update()
         '''
-    def dogtalk(_):
+    def dogtalk():
         while True:
             yield "Woof!"
             yield None
-    def nineNineCat(_):
+    def nineNineCat():
         c=nine('')
         while True:
             t = yield c 
@@ -86,20 +93,53 @@ def mapGenerTown(nowmp):
             # if t == None:
             #     break
         yield None
-    def RefuseEnter(_):
+    def RefuseEnter():
         while True:
             yield "私人住宅，谢绝参观"
             yield None
-    nowmp.mp[34][11]["interact"]=(icecreamShop,False)
-    nowmp.mp[28][25]["interact"]=nowmp.mp[29][25]["interact"]=(dogtalk,False)
-    nowmp.mp[14][25]["interact"]=nowmp.mp[21][6]["interact"]=nowmp.mp[30][6]["interact"]=(RefuseEnter,False)
-    nowmp.mp[11][6]["interact"]=(nineNineCat,True)
+    def EnterShop(me,mapper):
+        pass
+
+    nowmp.mp[34][11]["interact"]=(icecreamShop(),False)
+    nowmp.mp[28][25]["interact"]=nowmp.mp[29][25]["interact"]=(dogtalk(),False)
+    nowmp.mp[14][25]["interact"]=nowmp.mp[21][6]["interact"]=nowmp.mp[30][6]["interact"]=(RefuseEnter(),False)
+    nowmp.mp[11][6]["interact"]=(nineNineCat(),True)
     # 23 25/24 25/25 25 进入商店
     # 3 16 自家房门
     def genWall(x,y):
         nowmp.mp[x][y]["type"]="wall"
     for x,y in scene1:
         genWall(x,y)
+
+def mapGenerShop(nowmp):
+    nowmp.style=2
+    nowmp.C=20;nowmp.R=17
+    nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}.png',zoom=nowmp.C)
+    nowmp.mp[5][15]["teleportTo"]=(1,24,25)
+    def getPrice(t):
+        return [10,10,10,10,10]
+    def sale(nowplayer,_):
+        # nowplayer.money+=100
+        while True:
+            price=getPrice()
+            t=yield f"On Sale: 1: Heal Potion (${price[0]}), 2: Sensitive Potion(${price[1]}), 3: Expanded Bomb Grid Potion(${price[2]}), and 4: Bomb-Kicking Boots(${price[3]}). your coin: {nowplayer.money}"
+            if "heal" in t and nowplayer.money>price[0] :
+                nowplayer.hp+=1;nowplayer.money-=price[0]
+            if "expanded" in t and nowplayer.money>price[2] :
+                nowplayer.bombRange+=1;nowplayer.money-=price[2]
+            if "sensitive" in t and nowplayer.money>price[1]:
+                nowplayer.speed=c.IncreasedSpeed;nowplayer.money-=price[1]
+            if ("bomb" in t or "kicking" in t or "boots" in t) and nowplayer.money>price[3]:
+                nowplayer.cankick=True;nowplayer.money-=price[3]
+    def shopownertalk():
+        c=nine('')
+        while True:
+            t = yield c 
+            c= nine(str(t))
+            # if t == None:
+            #     break
+        yield None
+    nowmp.mp[4][6]["interact"]=(sale,True)
 
 scene0 = [
 [1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[1,13],[1,14],[1,15],[1,16],[1,17],[1,18],[1,19],[1,20],[1,21],[1,22],[1,23],[1,24],[1,25],[1,26],[1,27],[1,28],[1,30],[1,31],
