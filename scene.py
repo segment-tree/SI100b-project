@@ -148,10 +148,35 @@ class Mapper: # Map is some keyword use Mapper instead
 
 class BossScene(Mapper):
     status:int # boss 招式
+    count:int # boss 当前招式剩余时间
+    content:list # 当前招式暂存的内容
     def __init__(self, c:int, r:int, style=1):
         super().__init__(c,r,style)
         self.status=0
     def decide(self):
+        self.status=random.randrange(0,3)
+        self.count=c.BossDefaultCount
+    def preAction1(self):
+        tcnt=0;self.content=[]
+        while tcnt<10:
+            x=random.randrange(0,self.C)
+            y=random.randrange(0,self.R)
+            flag=True
+            for i in range(x,x+4):
+                for j in range(y,y+4):
+                    if self.invaild_coord(i,j) or self.mp[x][y]["type"] in ["wall","obstacle"]:
+                        flag=False
+            if flag:
+                self.content.append((x,y));tcnt+=1
+    def doAction1(self):
         pass
     def clock(self):
-        self.decide()
+        self.count-=1
+        if self.count==0 : self.decide()
+        match self.status:
+            case 0:
+                if self.count==c.BossDefaultCount:
+                    self.preAction1()
+                if self.count==c.BossDefaultCount//2:
+                    self.doAction1()
+        super().clock()

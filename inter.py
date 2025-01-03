@@ -163,6 +163,7 @@ if __name__ == "__main__":
 
         # segmentDraw.drawR(1,15,4,car,win)
         # segmentDraw.drawC(1,15,4,car,win)
+        # segmentDraw.drawSqure(1,15,2,3,car,win)
 
         # dialoger.keyboard()
         dialoger.draw(win)

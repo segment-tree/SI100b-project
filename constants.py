@@ -31,3 +31,5 @@ KeyboardBomb =[pygame.K_SPACE]
 KeyboardInteract =[ord('f')]
 KeyboardEscDialog=pygame.K_ESCAPE
 KeyboardConDialog=pygame.K_RETURN
+
+BossDefaultCount=FPS*10 # boss每个招式的持续时间

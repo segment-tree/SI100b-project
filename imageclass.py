@@ -129,6 +129,13 @@ class segmentDraw:
         rect = segment.get_rect()
         rect.move_ip((gx*c.CellSize-camera[0])//c.CellRatio,(gy*c.CellSize-camera[1])//c.CellRatio)
         win.blit(segment,rect)
+    @classmethod
+    def drawSqure(self,gx,gy,width,height,camera,win):
+        self.drawR(gx,gy,width,camera,win)
+        self.drawR(gx,gy+height,width,camera,win)
+        self.drawC(gx,gy,height,camera,win)
+        self.drawC(gx+width,gy ,height,camera,win)
+
 
 # 创建窗口
 def displayCreateWin():
