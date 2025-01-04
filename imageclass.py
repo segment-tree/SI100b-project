@@ -47,7 +47,7 @@ class myImage:
         win.blit(self.image,self.rect)
 
 class dialog:
-    content:str
+    content:str|None
     funclist:Any #
     usellm:bool
     inputs:str # llm的用户输入暂存在此

@@ -72,7 +72,7 @@ class Mapper: # Map is some keyword use Mapper instead
         self.mp[newx][newy]["entity"].add(entity)
     
     def draw(self, fpscnt:int, camera:Tuple[int,int],win):
-        if self.backGround!=None : self.backGround.drawG(0,self.R-1,camera,win)
+        if type(self.backGround)==myImage : self.backGround.drawG(0,self.R-1,camera,win)
         for layer in range(6):
             for j in range(self.R):
                 for i in range(self.C):
