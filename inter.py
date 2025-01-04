@@ -127,6 +127,10 @@ if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
     #print('#',me.rx,me.ry) # gy 28 17
+
+    pygame.display.set_caption("demo")#窗口名字和图标
+    img = pygame.image.load('./assets/utils/icon1.ico')
+    pygame.display.set_icon(img)
     
     thisMap=Mapper(50,50,style=0)
     mapGener(thisMap) # 田野

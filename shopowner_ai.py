@@ -23,14 +23,20 @@ messages : List[Dict] = [
     }
 ]
 
-while True:
+def shop(words):
+    user_input = "Now chat with me as the shop owner, and do not give me the number in the output."+words
+
+    # if "quit" in user_input.lower() or "exit" in user_input.lower():#退出聊天
+    #     print("chat ends.")
+        
+    messages.append({"role": "user", "content": user_input})
 
     response = client.chat.completions.create(
         model="llama3.2",      
         messages=messages,   
     )
     assistant_reply = response.choices[0].message.content
-    print(assistant_reply)
+    level_Number = assistant_reply
     messages.append({"role": "assistant", "content": assistant_reply})
 
     user_input = 'just give me the number of the current favorability level'
@@ -50,13 +56,8 @@ while True:
             user_input = 'just give me the number of the current favorability level'
             messages.append({"role": "user", "content": user_input})
             messages.append({"role": "assistant", "content": assistant_reply})
+    
+    return (assistant_reply, level_Number)
 
-    user_input = "Now chat with me as the shop owner, and do not give me the number in the output."+input("User input: ")
-
-    if "quit" in user_input.lower() or "exit" in user_input.lower():#退出聊天
-        print("chat ends.")
-        break
-
-    messages.append({"role": "user", "content": user_input})
-
+    
 
