@@ -29,6 +29,7 @@ class player(creature):
         return super().reRegister(gx,gy,initInMap,force)
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:Callable|None =None, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
         if initInMap==None : initInMap=thisMap.addEntity# player切换地图的时候不要忘了重新在地图注册
+        assert initInMap is not None
         super().__init__(id,gx,gy,imagesdir,initInMap,speed,hp,layer)
         self.money=0
         self.cankick=False

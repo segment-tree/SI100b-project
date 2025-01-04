@@ -9,7 +9,7 @@
     devShell.aarch64-linux = let
       pkgs = nixpkgs.legacyPackages.aarch64-linux;
     in pkgs.mkShell {
-      packages = with pkgs; [ (python312.withPackages (ps: [ ps.pygame ps.openai ps.mypy])) ];
+      packages = with pkgs; [ (python312.withPackages (ps: [ ps.pygame ps.openai ps.mypy ps.setuptools])) ];
     };
   };
 }
