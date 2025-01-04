@@ -9,7 +9,7 @@ dialoger=dialog()
 class player(creature):
     money:int
     readToInteract:bool
-    def keyboard(self, keys:List[bool]): # 捕捉键盘信息
+    def keyboard(self, keys:pygame.key.ScancodeWrapper): # 捕捉键盘信息
         allowF=thisMap.moveRequest
         #python有for-else语句但没有 elfor 有什么让这段代码美观的方案吗？？
         for i in c.KeyboardLeft:
@@ -25,9 +25,9 @@ class player(creature):
                         if keys[i]: self.tryMove(0,1,allowF);break
         for i in c.KeyboardBomb:
             if keys[i]:self.putBomb(thisMap.addEntity);break
-    def reRegister(self, gx:int, gy:int, initInMap:callable, force:bool=True):
+    def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=True):
         return super().reRegister(gx,gy,initInMap,force)
-    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable=None, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
+    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:Callable|None =None, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
         if initInMap==None : initInMap=thisMap.addEntity# player切换地图的时候不要忘了重新在地图注册
         super().__init__(id,gx,gy,imagesdir,initInMap,speed,hp,layer)
         self.money=0
@@ -46,7 +46,7 @@ class player(creature):
                 case 6:self.cankick=True
             w[self.gx][self.gy]["type"]="field"
             w[self.gx][self.gy]["render"]=None# Warning
-    def clock(self, mapper:Mapper, win):
+    def clock(self, mapper:Mapper):
         self.pickup(mapper.mp)
         super().clock(mapper.moveUpdate)
         if mapper.mp[self.gx][self.gy].get("teleportTo") :
@@ -68,7 +68,7 @@ class player(creature):
         super().delete()
         raise Exception("GAMEOVER")
 
-maps=[]
+maps:List[Mapper]=[]
 def changeMap(mapid:int, gx:int, gy:int):
     global thisMap
     mee=thisMap.me
@@ -168,7 +168,7 @@ if __name__ == "__main__":
         # me.keyboard()
         catchKeyboard(me,dialoger)
 
-        me.clock(thisMap,win)
+        me.clock(thisMap)
         # me.draw(3,fpscnt,(0,0),win)
         car=thisMap.genCamera()
         thisMap.clock()

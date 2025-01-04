@@ -118,7 +118,7 @@ def mapGenerShop(nowmp):
     nowmp.mp[5][15]["teleportTo"]=(1,24,25)
     def getPrice():
         return [1,1,1,1,1]
-    def sale(nowplayer:creature,_:Mapper):
+    def sale(nowplayer:Any,_:Mapper):
         # nowplayer.money+=100
         while True:
             price=getPrice()

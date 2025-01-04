@@ -25,7 +25,7 @@ class entityLike:
     def rxy2gxy(self):
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
-    def reRegister(self , gx:int ,gy:int ,initInMap:callable,force:bool=False): # 重新注册entity，切换地图时使用
+    def reRegister(self , gx:int ,gy:int ,initInMap:Callable[[int,int,entityLike,bool],bool], force:bool=False): # 重新注册entity，切换地图时使用
         self.gx,self.gy = gx,gy
         self.gxy2rxy()
         self.moving=0
@@ -33,7 +33,7 @@ class entityLike:
             self.id=-1 # 创建失败
             return False
         return True
-    def __init__(self, id:int, gx:int, gy:int, initInMap:callable, speed:int=c.IntialSpeed, layer:int=9):
+    def __init__(self, id:int, gx:int, gy:int, initInMap:Callable[[int,int,entityLike],bool], speed:int=c.IntialSpeed, layer:int=9):
         # initInMap在地图中生成该实体
         if initInMap(gx,gy,self)==False : 
             self.id=-1 # 创建失败
@@ -47,7 +47,7 @@ class entityLike:
         self.layer=layer
         
 
-    def tryMove(self, dx:int, dy:int, allowF:callable)->bool:
+    def tryMove(self, dx:int, dy:int, allowF:Callable[[int,int,entityLike],bool])->bool:
         # 其中func为地图的检测函数（为了避免此文件依赖于scene.py)
         # allowF(x:int,y:int,id:entityLike)->bool:
         # x y 表示要求的坐标，id表示请求发出者的~entity_id~地址
@@ -57,7 +57,7 @@ class entityLike:
             self.moving=c.CellSize//self.speed+1
             return True
         return False
-    def clock(self, moveUpdate:callable):
+    def clock(self, moveUpdate:Callable[[int,int,int,int,entityLike],None]):
         # moveUpdate 为地图的更新当前实体所在网格的函数
         # moveUpdate(oldx:int, oldy:int, newx:int, newy:int, entity:entityLike)
         if self.moving>0 :
@@ -84,15 +84,15 @@ class entityLike:
 class creature(entityLike):
     hp:int
     immune:int # 标记受击后的无敌时间
-    imagesMoving:Dict[(int,int),List[myImage]] # 移动时的贴图，第二维list长度为c.WalkingFpsLoop
-    imagesStanding:Dict[(int,int)] # 静止时贴图，怪物没有
+    imagesMoving:Dict[Tuple[int,int],List[myImage]] # 移动时的贴图，第二维list长度为c.WalkingFpsLoop
+    imagesStanding:Dict[Tuple[int,int],myImage] # 静止时贴图，怪物没有
     bombSum:int # 炸弹数量
     bombRange:int # 爆炸范围
     cankick:bool # 踢炸弹
-    def reRegister(self, gx:int, gy:int, initInMap:callable, force:bool=False):
+    def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=False):
         self.immune=0
         return super().reRegister(gx,gy,initInMap,force) 
-    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
+    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:Callable, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
         super().__init__(id,gx,gy,initInMap,speed,layer)
         self.hp=hp
         self.immune=0
@@ -116,7 +116,7 @@ class creature(entityLike):
     def hpPlus(self, n:int=1):
         self.hp+=n
         self.immune=0# 清理无敌帧
-    def clock(self, moveUpdate):
+    def clock(self, moveUpdate:Callable):
         super().clock(moveUpdate)
         self.immune-=1
     def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):
@@ -129,7 +129,7 @@ class creature(entityLike):
             else:w=self.imagesStanding[(self.dx,self.dy)]
             if self.immune<=0 or fpscnt%3!=0:
                 w.draw(self.rx,self.ry,camera,win)
-    def putBomb(self, initInMap:callable):
+    def putBomb(self, initInMap:Callable):
         if self.bombSum>0:
             try:
                 t=bomb(genEntityId(),self.gx,self.gy,initInMap,self,layer=2)
@@ -141,12 +141,12 @@ class creature(entityLike):
 # 分界线，上面部分几乎完全不依赖于scene.py，下面几乎完全依赖
 
 class bomb(entityLike):
-    author:entityLike
+    author:creature
     damage:int
     range:int
     image:myImage
     kicked:bool
-    def __init__(self, id:int, gx:int, gy:int, initInMap:callable, author:entityLike, speed:int=c.IntialSpeed, layer:int=9, skin:int=0):
+    def __init__(self, id:int, gx:int, gy:int, initInMap:Callable, author:creature, speed:int=c.IntialSpeed, layer:int=9, skin:int=0):
         super().__init__(id,gx,gy,initInMap,speed,layer)
         self.author=author
         self.damage=1
@@ -161,7 +161,7 @@ class bomb(entityLike):
         super().draw(layer,fpscnt,camera,win)
         if self.layer==layer:
             self.image.draw(self.rx,self.ry,camera,win)
-    def clock(self, moveUpdate:callable, mapper:c.LostType):
+    def clock(self, moveUpdate:Callable, mapper:c.LostType):
         super().clock(moveUpdate)
         if self.count <=0:
             self.delete(mapper)
@@ -170,8 +170,8 @@ class bomb(entityLike):
             if not self.tryMove(self.dx,self.dy,mapper.moveRequest) and self.moving==0 :
                 self.kicked=False # 停止后不再移动
     
-    def walkInto(self, other:entityLike):
-        if "player" in str(type(other)) and other.cankick == True : # here depend on class player
+    def walkInto(self, other:entityLike|creature):
+        if isinstance(creature,type(other))  and other.cankick == True :
             self.dx=self.gx-other.gx
             self.dy=self.gy-other.gy
             self.kicked=True
@@ -225,11 +225,11 @@ class bomb(entityLike):
         for _y in reversed(range(yy-stp,yy+1)):
             if not __set(xx,_y,colimg,[_,u]):break
         #炸弹边缘
-        u,d,l,r=u[0],d[0],l[0],r[0]
-        if u!=-1 :mapper.burnTurn(xx,u,myImage("./assets/scene/burning6.png"))
-        if d!=-1 :mapper.burnTurn(xx,d,myImage("./assets/scene/burning4.png"))
-        if l!=-1 :mapper.burnTurn(l,yy,myImage("./assets/scene/burning5.png"))
-        if r!=-1 :mapper.burnTurn(r,yy,myImage("./assets/scene/burning7.png"))
+        uu,dd,ll,rr=u[0],d[0],l[0],r[0]
+        if uu!=-1 :mapper.burnTurn(xx,uu,myImage("./assets/scene/burning6.png"))
+        if dd!=-1 :mapper.burnTurn(xx,dd,myImage("./assets/scene/burning4.png"))
+        if ll!=-1 :mapper.burnTurn(ll,yy,myImage("./assets/scene/burning5.png"))
+        if rr!=-1 :mapper.burnTurn(rr,yy,myImage("./assets/scene/burning7.png"))
         #炸弹中心
         mapper.burnTurn(xx,yy,myImage("./assets/scene/burning1.png",zoom=1.4,mode=1),center=True)
         # 归还炸弹
@@ -242,7 +242,7 @@ class monster(creature):
     aiWalkCount:int
     aiBombCount:int
     movQ:queue.deque
-    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:callable, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
+    def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:Callable, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
         super().__init__(id, gx, gy, imagesdir, initInMap, speed, hp, layer)
         self.aiWalkCount=c.FPS//2
         self.aiBombCount=c.FPS//2
@@ -253,8 +253,8 @@ class monster(creature):
             if "bomb" in str(type(e)):
                 dangerous+=[(e.gx,i) for i in range(e.gy-e.range,e.gy+e.range+1)]
                 dangerous+=[(i,e.gy) for i in range(e.gx-e.range,e.gx+e.range+1)]
-        dangerous=set(dangerous)
-        return dangerous
+        dangerouses=set(dangerous)
+        return dangerouses
     def _check(self, x:int, y:int, mapper:c.LostType):
         if mapper.invaild_coord(x,y):return False
         if mapper.mp[x][y]["type"] in ["wall","obstacle"]:
@@ -269,7 +269,7 @@ class monster(creature):
         q=queue.Queue()
         q.put([self.gx,self.gy,tuple()])
         dir=[(-1,0),(1,0),(0,-1),(0,1)]
-        vis={}
+        vis:dict[Tuple[int,int],bool]={}
         cnt=0
         while not q.empty():
             a=q.get()
@@ -336,12 +336,12 @@ class monster(creature):
             case 4:self.tryMove(0, 1,mapper.moveRequest)
             # case 5:self.putBomb(mapper.addEntity) # only for test
 
-    def clock(self, moveUpdate:callable, mapper):
+    def clock(self, moveUpdate:Callable, mapper):
         return super().clock(moveUpdate)
 
 
 # test
-
+'''
 if __name__ == "__main__":
     a=entityLike(1,1,1)
     b=entityLike(2,2,2)
@@ -372,3 +372,4 @@ if __name__ == "__main__":
         #print(me.rx,me.ry)
         fpscnt+=1
         pygame.display.update()
+'''

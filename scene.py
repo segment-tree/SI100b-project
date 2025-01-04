@@ -13,7 +13,7 @@ class Mapper: # Map is some keyword use Mapper instead
     R:int # Row
     me:Any #指向玩家实体
     style:int # 0 森林， ？ boss房
-    backGround:myImage
+    backGround:myImage|None
     def __init__(self, c:int, r:int,style=0): # It's in CHAOS!
         self.C,self.R=c,r
         self.style=style

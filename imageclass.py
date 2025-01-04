@@ -2,7 +2,7 @@ import pygame
 from typing import *
 import constants as c
 class myImage:
-    image:pygame.sprite.Sprite
+    image:pygame.Surface
     rect:Any
     mode:int
     # mode==0:以当前格子左下为基准绘制
@@ -48,7 +48,7 @@ class myImage:
 
 class dialog:
     content:str
-    funclist:any #
+    funclist:Any #
     usellm:bool
     inputs:str # llm的用户输入暂存在此
     
@@ -67,7 +67,7 @@ class dialog:
     # 2.在用户输入c.KeyboardConDialog时调用包含协程的funclist,切换下一条对话
     #    funclist参考makescene.py中mapGenerTown的子函数
     # 3.在用户输入c.KeyboardEscDialog时退出对话框
-    def keyboard(self,keys):
+    def keyboard(self,keys:pygame.key.ScancodeWrapper):
         if self.content==None:return
         # 检查键盘输入，用于llm，如果有的话
         self.keysleepcnt-=1
