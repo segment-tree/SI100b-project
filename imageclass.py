@@ -74,6 +74,7 @@ class dialog:
         # 检查键盘输入，用于llm，如果有的话
         self.keysleepcnt-=1
         conDialogFlag=False
+        '''
         inputkeys=list(range(ord('a'),ord('z')+1))+[ord(' '),pygame.K_BACKSPACE]
         for event in pygame.event.get(pygame.KEYDOWN):
             if event.key in inputkeys:
@@ -87,9 +88,29 @@ class dialog:
                     if i!=pygame.K_BACKSPACE:self.inputs+=chr(i)
                     elif len(self.inputs)>1:self.inputs=self.inputs[:-1]
                     self.keysleepcnt=c.FPS//6
-        # 同时允许点按和长按，提高输入体验
+        '''
+        if self.usellm:
+            for event in pygame.event.get(pygame.TEXTINPUT):
+                self.inputs+=event.text
+            for event in pygame.event.get(pygame.KEYDOWN):
+                if event.key==pygame.K_BACKSPACE and len(self.inputs)>1:
+                    self.inputs=self.inputs[:-1]
+                    self.keysleepcnt=c.FPS//6
+                if event.key==c.KeyboardConDialog :
+                    conDialogFlag=True
+                    self.keysleepcnt=c.FPS//6
+            if self.keysleepcnt<=0 and keys[pygame.K_BACKSPACE] and len(self.inputs)>1:
+                self.inputs=self.inputs[:-1]
+                self.keysleepcnt=c.FPS//6
+        else :
+            for event in pygame.event.get(pygame.KEYDOWN):
+                if event.key==c.KeyboardConDialog :
+                    conDialogFlag=True
+                    self.keysleepcnt=c.FPS//6
 
-        if self.keysleepcnt<=0 and (keys[c.KeyboardConDialog] or conDialogFlag==True):
+        # 同时允许点按和长按退格和回车，提高输入体验
+
+        if self.keysleepcnt<=0 and keys[c.KeyboardConDialog] or conDialogFlag==True:
             try:
                 self.content=self.funclist.send(self.inputs)
                 self.inputs=">"
