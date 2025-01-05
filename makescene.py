@@ -1,7 +1,7 @@
 from entity import *
 from scene import *
 from nine_ai import *
-# from shopowner_ai import *
+from shopowner_ai import (shop)
 import random
 def mapGener(nowmp:Mapper):
     nowmp.style=0
@@ -64,7 +64,7 @@ def mapGenerTown(nowmp:Mapper):
         while True:
             t=""
             for c in zote_precepts:
-                t= yield c+str(t) # yield要输出的对话，由imageclass.py中的dialog.keyboard处理
+                t= yield c # yield要输出的对话，由imageclass.py中的dialog.keyboard处理
                 # 在存在llm时yield的返回值(t)为用户输入
             yield None # None为特殊占位符，表示对话结束
 
@@ -116,8 +116,18 @@ def mapGenerShop(nowmp):
     nowmp.C=21;nowmp.R=17
     nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}.png',zoom=nowmp.C)
     nowmp.mp[5][15]["teleportTo"]=(1,24,25)
+    global shopFavorability
+    shopFavorability=10
     def getPrice():
-        return [1,1,1,1,1]
+        #return [1,1,1,1,1]
+        print(shopFavorability)
+        if shopFavorability>80:return [1,1,1,1,1]
+        if shopFavorability>50:return [5,5,5,5,5]
+        if shopFavorability>10:return [10,10,10,10,10]
+        if shopFavorability>0:return [20,20,20,20,20]
+        if shopFavorability>-20:return [50,50,50,50,50]
+        return [100,100,100,100,100]
+
     def sale(nowplayer:Any,_:Mapper):
         # nowplayer.money+=100
         while True:
@@ -138,10 +148,14 @@ def mapGenerShop(nowmp):
                 yield "purchase failed, maybe money isn't enough?"
             else : yield "Product not found"
     def shopownertalk():
-        c=nine('')
+        global shopFavorability
+        c=shop('')
+        shopFavorability=int(c[1])
+        print(c)
         while True:
-            t = yield c 
-            c= nine(str(t))
+            t = yield c[0] 
+            c= shop(str(t))
+            shopFavorability=int(c[1])
             # if t == None:
             #     break
         yield None
@@ -226,61 +240,72 @@ scene1=[
 
 
 zote_precepts = [
-    "戒律一：永远只打胜仗。 在输掉的战斗中，你不能获得任何战利品，更不能学到什么有用的东西。 所以，你要打赢所有的战斗，或者压根就不参与！",
-    "戒律二：永远不要让别人嘲笑你。 傻瓜们会嘲笑一切，甚至会嘲笑比他们强大的人。 但是，你要注意，嘲笑声本身其实就是有害的！ 它会像疾病一样蔓延开来，不久之后，所有人都会开始嘲笑你。 所以，你需要做的是迅速根除它，以阻止其扩散。",
-    "戒律三：永远要保证足够的休息。 战斗和冒险会消耗你的体力。 而只有当你休息的时候，你的体力才会恢复。 所以，你休息的时间越长就越强大。",
-    "戒律四：学会忘记过去。 过去是痛苦的，回忆过去只会徒增伤悲。相反，你可以试着想想别的事情，比如未来或者美食等。",
-    "戒律五：谨记用力量打败力量。你的对手很强大？没关系！只需要用比他们更强大的力量去对付他们，你很快就可以战胜他们。",
-    "戒律六：学会把握你自己的命运。我们的长辈常教导我们说，我们的命运在我们出生之前就已注定，说实话，我不同意。",
-    "戒律七：永远不要为死者悲伤。死后的世界将会是怎样？会变得更好还是更坏？没人知道，所以对于“死亡”这件事，我们无需悲伤，更无需欢喜。",
-    "戒律八：学会独自旅行。你不要去依赖任何人，再者，也没人会永远忠诚。所以，请记住：没人会永远与你同行。",
-    "戒律九：永远让自己的家保持干净整洁。你自己就是你最宝贵的财产——你的家是你的安身立命之所。所以，你要尽可能地保持它的干净与整洁。",
-    "戒律十：请让你的武器时刻保持锋利无比。于我而言，我会让我的武器——“生命终结者”从始至终都锋利无比。这样的话，砍东西就会容易得多。",
-    "戒律十一：谨防母亲的背叛。这一条不言自明。",
-    "戒律十二：谨记让你的披风保持干燥。如果你的披风湿了，就尽快把它弄干。因为穿着湿漉漉的披风不仅会很不舒服，而且还容易生病。",
-    "戒律十三：永远不要害怕。恐惧只会让你退缩。我知道直面恐惧需要付出巨大的努力。但是，直面恐惧的前提就是要先不害怕。",
-    "戒律十四：永远尊重强者。尊重力量或者智慧，抑或二者都强于你的人。不要轻视或者嘲笑他们。",
-    "戒律十五：谨记对付一个敌人只用一拳。一拳便足以对付一个敌人，再多就是浪费了。这样的话，只需记住自己出了几拳，你就知道已经打败多少敌人了。",
-    "戒律十六：永远不要迟疑。一旦你决定了就去做，不要瞻前顾后。这种行事方式会让你终生受益，进而取得更多的成就。",
-    "戒律十七：永远相信自己的力量。别人可能会怀疑你，但有一个人是永远值得你信赖的——你自己。相信自己的力量能让你的步伐永远稳健。",
-    "戒律十八：学会在黑暗中寻求真理。这个戒律同样也不言自明。",
-    "戒律十九：谨记只有尝试了，你才有可能成功。如果你想尝试去做什么，就一定要坚持做到。一件事，要么成功，要么失败！所以，你要不惜一切代价获得成功。",
-    "戒律二十：绝不撒谎。和别人交流时，说真话会让人觉得你很谦恭，同时，也会使得整个谈话过程变得很高效。不过，你要当心，说真话很容易会让你树敌，但这也是你必须要承担的代价。",
-    "戒律二十一：要时刻警惕周围的环境。别只顾着埋头走路！你也要学会抬头看路，免得被偷袭。",
-    "戒律二十二：好男儿要志在四方。只要有机会，我就会离开我的家乡，到处寻名山、访高友。梨园虽好，但终究不是久留之所。要知道，“温柔乡”即是“英雄冢”。",
-    "戒律二十三：要摸清敌人的软肋。你遇到的每一个敌人都有其软肋，比如他们的身上有伤或者正在酣睡等。你必须时刻保持警惕，并且仔细观察你的敌人，从而发现他们的软肋！",
-    "戒律二十四：学会痛击敌人的软肋。一旦发现敌人的软肋，你就应对其发起猛烈地攻击。这样你就能很快地歼灭他们了。",
-    "戒律二十五：学会隐藏自己的软肋。要知道你的敌人也会试图去摸清你的软肋，所以你必须藏好它们。那么最佳的藏法是什么呢？从来就没有软肋。",
-    "戒律二十六：不要相信你的倒影。当你对着某些光亮的表面时，你可能会看到一张自己的脸。而且这张脸会模仿你的各个动作，看起来就和你一模一样，但请你不要因此而相信它。",
-    "戒律二十七：要尽量多吃。吃饭时，能吃多少吃多少。这能让你获得足够多的能量，而且还间接地减少了吃饭的次数。",
-    "戒律二十八：永远不要凝视黑暗。如果当你凝视黑暗而久久不见一物时，你的大脑就会开始流连于陈旧的记忆，而戒律四已经说过了，要学会忘记过去，避免在过去的记忆中无休止地纠缠。",
-    "戒律二十九：要刻意训练你的方向感。在蜿蜒曲折的洞穴中旅行很容易迷路。而有一个好的方向感就像有一张神奇的地图在你的脑子里，这非常有用。",
-    "戒律三十：永远不要轻信别人的诺言。诺言有时候并不是很可靠，因为许诺者经常会食言，所以，不要轻信它，尤其是爱情或者婚姻的诺言。",
-    "戒律三十一：要注意个人卫生。要知道，在脏兮兮的地方呆得太久是会让你生病的。所以，如果去别人家里，请要求主人给你提供最高规格的卫生条件。",
-    "戒律三十二：名字有其内在的力量。所有的名字都有其内在的力量，所以，当你在给某个事物起名字的时候，你其实就是在赋予它力量。比如，我就给我自己的骨钉取名为“生命终结者”。",
-    "戒律三十三：永远不要向你的敌人献殷勤。向你的敌人献殷勤并不是什么美德！因为你的敌人不配得到你的尊重、仁慈和怜悯。",
-    "戒律三十四：睡前不要吃东西。睡前吃东西首先不好消化，其次还影响休息，这已经是常识了。",
-    "戒律三十五：上就是上，下就是下。如果在黑暗中摔倒的话，你很容易就会失去方向感，忘记哪条路是向上走的。所以，请记住这条戒律！",
-    "戒律三十六：谨记蛋壳很容易破碎。这条戒律又是不言自明的。",
-    "戒律三十七：永远只从别人那里借东西，自己的东西绝不外借。如果别人有借有还，那么到头来你什么也得不到。但是，如果你只借不还，那么你就会赚得钵丰盆满。",
-    "戒律三十八：请警惕神秘的力量。在我们头上一直有一股神秘的力量将我们往下压。如果你在空中停留得太久的话，那么那股神秘的力量就会把你压进地里，进而让你丢掉性命。所以，你要当心啊！",
-    "戒律三十九：学会快吃慢饮。我们的身体是一个十分脆弱的东西，所以补充能量的时候，你必须小心谨慎。吃饭时你可以尽量快一点，但喝水的时候你一定要慢一些。",
-    "戒律四十：随心所欲，随心而动。过分地拘泥于规则反而会成为你的负担，有时候，你需要灵活变通，跟随自己的节奏。",
-    "戒律四十一：学会分辨谎言。别人会经常撒谎，所以，你要尖锐地指出来，并且当面质疑他们，直到他们承认自己撒谎了。",
-    "戒律四十二：永远不要做守财奴。有些人宁愿将钱带进棺材，也不愿花它们，这就是典型的守财奴。所以，你要及时行乐，能花的时候就花才是聪明人的做法，不然你就享受不到生命中的各种乐趣了。",
-    "戒律四十三：永远不要宽恕别人。如果有人恳求你的原谅，比如你的兄弟，一定要拒绝。任何人都不配得到你的原谅，包括你的那个兄弟。",
-    "戒律四十四：不要试图在水里呼吸。水是可以用来提神的，但如果你想试图在里面呼吸的话，你会窒息而死的。",
-    "戒律四十五：谨记一个事物永远不可能变成另外一个事物。这条戒律应该是显而易见的，但总是有人试图指鹿为马，混淆视听。所以，你要小心啊！",
-    "戒律四十六：谨记世界没你想象的那么大。年轻时，你认为天广地阔，这是很自然的。但不幸的是，世界实际上要小得多。这是我多年翻山越岭、跋山涉水后的感悟。",
-    "戒律四十七：要打造属于你自己的武器。只有你自己知道你想要什么样的武器。在我在很小的时候，我就用壳木制作了一把骨钉——“生命终结者”。并且，它从未让我失望过，同样地，我也如此。",
-    "戒律四十八：请小心火烛。火是一个可以肆意妄为的精灵。它能温暖你、照亮你，但如果靠得太近的话，它也会烧焦你。",
-    "戒律四十九：谨记雕像毫无意义。不要去崇拜雕像！况且，从来就没有人为你我立像，那我们为什么还要关注这个玩意？",
-    "戒律五十：不要痴迷于神秘。生活有时候会让我们一头雾水，满脸疑惑。此时，如果你不能立刻明白它背后所暗含的意义，那么就不要浪费时间去刨根究底了，大胆地继续前进就行。",
-    "戒律五十一：谨记没有什么是无害的。如果有机会，这世界上的一切都会伤害到你，比如朋友、敌人、怪物和不平坦的道路等。所以，你要时刻怀有质疑精神。",
-    "戒律五十二：谨防父亲的嫉妒。父亲们总是认为，正是由于他们创造了我们，所以我们必须为他们服务，并且决不能有超越他们的地方。如果你想开辟一条属于你自己的道路，就必须先战胜你的父亲，或者干脆离开他。",
-    "戒律五十三：不要横刀夺爱。不管是谁，都会将自己的挚爱之物埋藏在内心深处。如果你不小心瞥见了它们，就要学会克制住想占为己有的冲动。因为横刀夺爱是不会给你带来任何幸福的。",
-    "戒律五十四：如果你锁了什么东西，那么请把钥匙保管好。没有什么东西可以永远被锁起来，所以请保管好你的钥匙。因为，总有一天，你会回来取走你锁起来的东西的。",
-    "戒律五十五：不要向任何人摧眉折腰。世界上总是有人会把自己的意志强加给别人。他们只会巧取豪夺，却还总无耻地声称你的食物、土地和身体，甚至你的思想都属于他们！所以，请记住：永远不要向他们屈服，更不要任他们摆布。",
-    "戒律五十六：永远不要做梦。梦其实是一个很危险的东西，其本质是非你所有的奇怪的想法，并且还会潜入你的大脑。可是，如果你想单方面排斥它的话，又会惹来一身的病！所以，最好就像我一样不要做梦。",
-    "戒律五十七：请遵守我说的所有戒律。最重要的是要把所有戒律都牢记在心，并且一丝不苟地遵守它们。包括这一条！",
+    "Precept One: 'Always Win Your Battles'. Losing a battle earns you nothing and teaches you nothing. Win your battles, or don't engage in them at all!",
+
+    "Precept Two: 'Never Let Them Laugh at You'. Fools laugh at everything, even at their superiors. But beware, laughter isn't harmless! Laughter spreads like a disease, and soon everyone is laughing at you. You need to strike at the source of this perverse merriment quickly to stop it from spreading.",
+
+    "Precept Three: 'Always Be Rested'. Fighting and adventuring take their toll on your body. When you rest, your body strengthens and repairs itself. The longer you rest, the stronger you become.",
+
+    "Precept Four: 'Forget Your Past'. The past is painful, and thinking about your past can only bring you misery. Think about something else instead, such as the future, or some food.",
+
+    "Precept Five: 'Strength Beats Strength'. Is your opponent strong? No matter! Simply overcome their strength with even more strength, and they'll soon be defeated.",
+    "Precept Six: 'Choose Your Own Fate'. Our elders teach that our fate is chosen for us before we are even born. I disagree.",
+    "Precept Seven: 'Mourn Not the Dead'. When we die, do things get better for us or worse? There's no way to tell, so we shouldn't bother mourning. Or celebrating for that matter.",
+    "Precept Eight: 'Travel Alone'. You can rely on nobody, and nobody will always be loyal. Therefore, nobody should be your constant companion.",
+    "Precept Nine: 'Keep Your Home Tidy'. Your home is where you keep your most prized possession - yourself. Therefore, you should make an effort to keep it nice and clean.",
+    "Precept Ten: 'Keep Your Weapon Sharp'. I make sure that my weapon, 'Life Ender', is kept well-sharpened at all times. This makes it much easier to cut things.",
+    "Precept Eleven: 'Mothers Will Always Betray You'. This Precept explains itself.",
+    "Precept Twelve: 'Keep Your Cloak Dry'. If your cloak gets wet, dry it as soon as you can. Wearing wet cloaks is unpleasant, and can lead to illness.",
+    "Precept Thirteen: 'Never Be Afraid'. Fear can only hold you back. Facing your fears can be a tremendous effort. Therefore, you should just not be afraid in the first place.",
+    "Precept Fourteen: 'Respect Your Superiors'. If someone is your superior in strength or intellect or both, you need to show them your respect. Don't ignore them or laugh at them.",
+    "Precept Fifteen: 'One Foe, One Blow'. You should only use a single blow to defeat an enemy. Any more is a waste. Also, by counting your blows as you fight, you'll know how many foes you've defeated.",
+    "Precept Sixteen: 'Don't Hesitate'. Once you've made a decision, carry it out and don't look back. You'll achieve much more this way.",
+    "Precept Seventeen: 'Believe In Your Strength'. Others may doubt you, but there's someone you can always trust. Yourself. Make sure to believe in your own strength, and you will never falter.",
+    "Precept Eighteen: 'Seek Truth in the Darkness'. This Precept also explains itself.",
+    "Precept Nineteen: 'If You Try, Succeed'. If you're going to attempt something, make sure you achieve it. If you do not succeed, then you have actually failed! Avoid this at all costs.",
+    "Precept Twenty: 'Speak Only the Truth'. When speaking to someone, it is courteous and also efficient to speak truthfully. Beware though that speaking truthfully may make you enemies. This is something you'll have to bear.",
+
+    "Precept Twenty-One: 'Be Aware of Your Surroundings'. Don't just walk along staring at the ground! You need to look up every so often, to make sure nothing takes you by surprise.",
+
+    "Precept Twenty-Two: 'Abandon the Nest'. As soon as I could, I left my birthplace and made my way out into the world. Do not linger in the nest. There is nothing for you there.",
+    "Precept Twenty-Three: 'Identify the Foe's Weak Point'. Every foe you encounter has a weak point, such as a crack in their shell or being asleep. You must constantly be alert and scrutinising your enemy to detect their weakness!",
+    "Precept Twenty-Four: 'Strike the Foe's Weak Point'. Once you have identified your foe's weak point as per the previous Precept, strike it. This will instantly destroy them.",
+    "Precept Twenty-Five: 'Protect Your Own Weak Point'. Be aware that your foe will try to identify your weak point, so you must protect it. The best protection? Never having a weak point in the first place.",
+    "Precept Twenty-Six: 'Don't Trust Your Reflection'. When peering at certain shining surfaces, you may see a copy of your own face. The face will mimic your movements and seems similar to your own, but I don't think it can be trusted.",
+    "Precept Twenty-Seven: 'Eat As Much As You Can'. When having a meal, eat as much as you possibly can. This gives you extra energy, and means you can eat less frequently.",
+    "Precept Twenty-Eight: 'Don't Peer Into the Darkness'. If you peer into the darkness and can't see anything for too long, your mind will start to linger over old memories. Memories are to be avoided, as per Precept Four.",
+    "Precept Twenty-Nine: 'Develop Your Sense of Direction'. It's easy to get lost when travelling through winding, twisting caverns. Having a good sense of direction is like having a magical map inside of your head. Very useful.",
+    "Precept Thirty: 'Never Accept a Promise'. Spurn the promises of others, as they are always broken. Promises of love or betrothal are to be avoided especially.",
+    "Precept Thirty-One: 'Disease Lives Inside of Dirt'. You'll get sick if you spend too much time in filthy places. If you are staying in someone else's home, demand the highest level of cleanliness from your host.",
+
+    "Precept Thirty-Two: 'Names Have Power'. Names have power, and so to name something is to grant it power. I myself named my nail 'Life Ender'. Do not steal the name I came up with! Invent your own!",
+
+    "Precept Thirty-Three: 'Show the Enemy No Respect'. Being gallant to your enemies is no virtue! If someone opposes you, they don't deserve respect or kindness or mercy.",
+
+    "Precept Thirty-Four: 'Don't Eat Immediately Before Sleeping'. This can cause restlessness and indigestion. It's just common sense.",
+
+    "Precept Thirty-Five: 'Up is Up, Down is Down'. If you fall over in the darkness, it can be easy to lose your bearing and forget which way is up. Keep this Precept in mind!",
+    "Precept Thirty-Six: 'Eggshells are brittle'. Once again, this Precept explains itself.",
+    "Precept Thirty-Seven: 'Borrow, But Do Not Lend'. If you lend and are repayed, you gain nothing. If you borrow but do not repay, you gain everything.",
+    "Precept Thirty-Eight: 'Beware the Mysterious Force'. A mysterious force bears down on us from above, pushing us downwards. If you spend too long in the air, the force will crush you against the ground and destroy you. Beware!",
+    "Precept Thirty-Nine: 'Eat Quickly and Drink Slowly'. Your body is a delicate thing and you must fuel it with great deliberation. Food must go in as fast as possible, but fluids at a slower rate.",
+    "Precept Forty: 'Obey No Law But Your Own'. Laws written by others may inconvenience you or be a burden. Let your own desires be the only law.",
+    "Precept Forty-One: 'Learn to Detect Lies'. When others speak, they usually lie. Scrutinise and question them relentlessly until they reveal their deceit.",
+    "Precept Forty-Two: 'Spend Geo When You Have It'. Some will cling onto their Geo, even taking it into the dirt with them when they die. It is better to spend it when you can, so you can enjoy various things in life.",
+    "Precept Forty-Three: 'Never Forgive'. If someone asks forgiveness of you, for instance a brother of yours, always deny it. That brother, or whoever it is, doesn't deserve such a thing.",
+    "Precept Forty-Four: 'You Can Not Breathe Water'. Water is refreshing, but if you try to breathe it you are in for a nasty shock.",
+    "Precept Forty-Five: 'One Thing Is Not Another'. This one should be obvious, but I've had others try to argue that one thing, which is clearly what it is and not something else, is actually some other thing, which it isn't. Stay on your guard!",
+    "Precept Forty-Six: 'The World is Smaller Than You Think'. When young, you tend to think that the world is vast, huge, gigantic. It's only natural. Unfortunately, it's actually quite a lot smaller than that. I can say this, now having travelled everywhere in the land.",
+    "Precept Forty-Seven: 'Make Your Own Weapon'. Only you know exactly what is needed in your weapon. I myself fashioned 'Life Ender' from shellwood at a young age. It has never failed me. Nor I it.",
+
+    "Precept Forty-Eight: 'Be Careful With Fire'. Fire is a type of hot spirit that dances about recklessly. It can warm you and provide light, but it will also singe your shell if it gets too close.",
+    "Precept Forty-Nine: 'Statues are Meaningless'. Do not honour them! No one has ever made a statue of you or I, so why should we pay them any attention?",
+    "Precept Fifty: 'Don't Linger on Mysteries'. Some things in this world appear to us as puzzles. Or enigmas. If the meaning behind something is not immediately evident though, don't waste any time thinking about it. Just move on.",
+    "Precept Fifty-One: 'Nothing is Harmless'. Given the chance, everything in this world will hurt you. Friends, foes, monsters, uneven paths. Be suspicious of them all.",
+    "Precept Fifty-Two: 'Beware the Jealousy of Fathers'. Fathers believe that because they created us we must serve them and never exceed their capabilities. If you wish to forge your own path, you must vanquish your father. Or simply abandon him.",
+    "Precept Fifty-Three: 'Do Not Steal the Desires of Others'. Every creature keeps their desires locked up inside of themselves. If you catch a glimpse of another's desires, resist the urge to claim them as your own. It will not lead you to happiness.",
+    "Precept Fifty-Four: 'If You Lock Something Away, Keep the Key'. Nothing should be locked away for ever, so hold onto your keys. You will eventually return and unlock everything you hid away.",
+    "Precept Fifty-Five: 'Bow to No-one'. There are those in this world who would impose their will on others. They claim ownership over your food, your land, your body, and even your thoughts! They have done nothing to earn these things. Never bow to them, and make sure to disobey their commands.",
+    "Precept Fifty-Six: 'Do Not Dream'. Dreams are dangerous things. Strange ideas, not your own, can worm their way into your mind. But if you resist those ideas, sickness will wrack your body! Best not to dream at all, like me.",
+    "Precept Fifty-Seven: 'Obey All Precepts'. Most importantly, you must commit all of these Precepts to memory and obey them all unfailingly. Including this one! Hmm. Have you truly listened to everything I've said? Let's start again and repeat the 'Fifty-Seven Precepts of Zote'"
 ]

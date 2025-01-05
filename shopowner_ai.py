@@ -57,6 +57,7 @@ def shop(words):
             messages.append({"role": "user", "content": user_input})
             messages.append({"role": "assistant", "content": assistant_reply})
     
+    assistant_reply, level_Number = level_Number,assistant_reply
     return (assistant_reply, level_Number)
 
     
