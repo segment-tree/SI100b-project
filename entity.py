@@ -171,7 +171,7 @@ class bomb(entityLike):
                 self.kicked=False # 停止后不再移动
     
     def walkInto(self, other:entityLike|creature):
-        if isinstance(creature,type(other))  and other.cankick == True :
+        if isinstance(other,creature)  and other.cankick == True :
             self.dx=self.gx-other.gx
             self.dy=self.gy-other.gy
             self.kicked=True
@@ -325,7 +325,8 @@ class monster(creature):
         else:
             self.aiBombCount-=1
             if self.aiBombCount==0:
-                self.putBomb(mapper.addEntity)
+                if abs(self.gx-mapper.me.gx)+abs(self.gy-mapper.me.gy) <= c.MonsterBombDis :
+                    self.putBomb(mapper.addEntity)
                 self.aiBombCount=c.FPS//2
 
         return

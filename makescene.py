@@ -41,6 +41,20 @@ def mapGener(nowmp:Mapper):
     # monster
     genField(5,23);genField(6,23);genField(7,23);genField(8,23)
     nowmp.addMonster(6,23,"./assets/monster/")
+    
+    def genMos(x,y):
+        nowmp.addMonster(x,y,"./assets/monster/")
+        for i in range(x-2,x+2+1):
+            for j in range(y-2,y+2+1):
+                if nowmp.mp[i][j]["type"]=="obstacle":
+                    genField(i,j)
+    tmp:Dict[Tuple[int,int],bool]={}
+    for i in range(8):
+        x=random.randrange(1,nowmp.C-2)
+        y=random.randrange(1,nowmp.R-2)
+        if not tmp.get((x,y)):
+            tmp[(x,y)]=True
+            genMos(x,y)
 
     nowmp.mp[0][28]["teleportTo"]=(1,40,11)
 

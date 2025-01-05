@@ -23,6 +23,7 @@ BombCount=int(FPS*2.50) # 炸弹💥倒计时
 BurnCount=int(FPS*0.30)  # 受爆炸影响时间
 
 # MonsterSight=5 # 怪物视野
+MonsterBombDis=6 # 怪物与玩家曼哈顿距离小于此数时怪物才会扔炸弹
 #键盘：
 KeyboardLeft =[pygame.K_LEFT,ord('a')]
 KeyboardRight=[pygame.K_RIGHT,ord('d')]
