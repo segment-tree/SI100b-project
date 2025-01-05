@@ -35,6 +35,10 @@ KeyboardBomb =[pygame.K_SPACE]
 KeyboardInteract =[ord('f')]
 KeyboardEscDialog=pygame.K_ESCAPE
 KeyboardConDialog=pygame.K_RETURN
+KeyboardSpeedUp = [pygame.K_z,ord('z')]
+KeyboardSpeedDown = [pygame.K_x,ord('x')]
+KeyboardBombUp = [pygame.K_c,ord('c')]
+KeyboardBombDown = [pygame.K_v,ord('v')]
 
 DefaultFont='华文楷体'
 if os.name=='posix':

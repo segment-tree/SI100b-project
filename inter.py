@@ -23,6 +23,21 @@ class player(creature):
                 else:
                     for i in c.KeyboardDown:
                         if keys[i]: self.tryMove(0,1,allowF);break
+                    # 加速外挂
+                    else:
+                        for i in c.KeyboardSpeedUp:
+                            if keys[i]: self.speed += 1
+                        else:
+                            for i in c.KeyboardSpeedDown:
+                                if keys[i]: self.speed -= 1
+                        for i in c.KeyboardBombUp:
+                            if keys[i]:
+                                self.bombRange += 1
+                                self.bombSum += 1
+                            for i in c.KeyboardBombDown:
+                                if keys[i]:
+                                    self.bombRange -= 1
+                                    self.bombSum -= 1
         for i in c.KeyboardBomb:
             if keys[i]:self.putBomb(thisMap.addEntity);break
     def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=True):
