@@ -48,13 +48,15 @@ def mapGener(nowmp:Mapper):
             for j in range(y-2,y+2+1):
                 if nowmp.mp[i][j]["type"]=="obstacle":
                     genField(i,j)
-    tmp:Dict[Tuple[int,int],bool]={}
-    for i in range(8):
+    tmpvis:Dict[Tuple[int,int],bool]={}
+    cnt=0
+    while cnt<=7+c.Difficulty*2:
         x=random.randrange(1,nowmp.C-2)
         y=random.randrange(1,nowmp.R-2)
-        if not tmp.get((x,y)):
-            tmp[(x,y)]=True
+        if not tmpvis.get((x,y)) and nowmp.mp[x][y]["type"]!="wall":
+            tmpvis[(x,y)]=True
             genMos(x,y)
+            cnt+=1
 
     nowmp.mp[0][28]["teleportTo"]=(1,40,11)
 
@@ -135,12 +137,14 @@ def mapGenerShop(nowmp):
     def getPrice():
         #return [1,1,1,1,1]
         print(shopFavorability)
-        if shopFavorability>80:return [1,1,1,1,1]
-        if shopFavorability>50:return [5,5,5,5,5]
-        if shopFavorability>10:return [10,10,10,10,10]
-        if shopFavorability>0:return [20,20,20,20,20]
-        if shopFavorability>-20:return [50,50,50,50,50]
-        return [100,100,100,100,100]
+        if shopFavorability>80:l=[1,1,1,3,1];lv=2
+        if shopFavorability>50:l=[1,1,1,3,1];lv=3
+        if shopFavorability>10:l=[5,5,5,10,5];lv=5
+        if shopFavorability>0:l=[15,15,15,25,15];lv=5
+        if shopFavorability>-20:l=[40,40,40,60,40];lv=10
+        l=[100,100,100,100,100];lv=10
+        for i in range(5):l[i]+=c.Difficulty*lv
+
 
     def sale(nowplayer:Any,_:Mapper):
         # nowplayer.money+=100

@@ -1,6 +1,8 @@
 import pygame
 import os
 # 常量用大驼峰命名法吧
+Difficulty=0
+
 CellSize=42*2 # 不要修改CellSize，请修改CellRatio
 CellRatio=2
 # 为了让不同分辨率下小人移速等一样，故设CellRatio，仅在渲染时放缩，逻辑不受影响
