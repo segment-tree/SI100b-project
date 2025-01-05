@@ -142,9 +142,9 @@ class dialog:
         text_Line = []
         cnt = 1
         while(cnt*30<len(temp_Content)):
-            text_Line.append(temp_Content[(cnt-1)*30:cnt*30])
+            text_Line.append(temp_Content[(cnt-1)*70:cnt*70])
             cnt += 1
-        text_Line.append(temp_Content[(cnt-1)*30:])
+        text_Line.append(temp_Content[(cnt-1)*70:])
 
         surfaces = [font.render(line, True, (0, 0, 0)) for line in text_Line]
         for i in range(1,cnt+1):
@@ -161,9 +161,9 @@ class dialog:
         text_Line = []
         cnt = 1
         while(cnt*30<len(temp_Inputs)):
-            text_Line.append(temp_Inputs[(cnt-1)*30:cnt*30])
+            text_Line.append(temp_Inputs[(cnt-1)*70:cnt*70])
             cnt += 1
-        text_Line.append(temp_Inputs[(cnt-1)*30:])
+        text_Line.append(temp_Inputs[(cnt-1)*70:])
 
         surfaces = [font.render(line, True, (0, 0, 0)) for line in text_Line]
         for i in range(1,cnt+1):
