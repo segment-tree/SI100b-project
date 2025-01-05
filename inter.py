@@ -163,7 +163,7 @@ if __name__ == "__main__":
     while True:
         win.fill(back_ground_color)
         clock.tick(c.FPS)
-        for event in pygame.event.get():
+        for event in pygame.event.get(pygame.QUIT):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()

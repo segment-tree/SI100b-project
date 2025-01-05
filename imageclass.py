@@ -68,25 +68,28 @@ class dialog:
     #    funclist参考makescene.py中mapGenerTown的子函数
     # 3.在用户输入c.KeyboardEscDialog时退出对话框
     def keyboard(self,keys:pygame.key.ScancodeWrapper):
-        if self.content==None:return
+        if self.content==None:
+            pygame.event.clear()# trick防止之前输入的内容(wasdf)被检查到
+            return
         # 检查键盘输入，用于llm，如果有的话
         self.keysleepcnt-=1
+        conDialogFlag=False
+        inputkeys=list(range(ord('a'),ord('z')+1))+[ord(' '),pygame.K_BACKSPACE]
+        for event in pygame.event.get(pygame.KEYDOWN):
+            if event.key in inputkeys:
+                if event.key!=pygame.K_BACKSPACE:self.inputs+=chr(event.key)
+                elif len(self.inputs)>1:self.inputs=self.inputs[:-1]
+                self.keysleepcnt=c.FPS//6
+            if event.key==c.KeyboardConDialog : conDialogFlag=True
         if self.usellm and self.keysleepcnt<=0: 
             for i in list(range(ord('a'),ord('z')+1))+[ord(' '),pygame.K_BACKSPACE]:
-                flag=False
                 if keys[i]:
-                    flag=True
                     if i!=pygame.K_BACKSPACE:self.inputs+=chr(i)
                     elif len(self.inputs)>1:self.inputs=self.inputs[:-1]
-                if flag:self.keysleepcnt=c.FPS//6
-        '''
-        for event in pygame.event.get():
-            print(event)
-            if event.type == pygame.TEXTINPUT or event.type == pygame.KEYDOWN:
-                for i in range(ord('a'),ord('z')+1):
-                    if keys[i]:self.inputs+=chr(i)
-        '''
-        if self.keysleepcnt<=0 and keys[c.KeyboardConDialog]:
+                    self.keysleepcnt=c.FPS//6
+        # 同时允许点按和长按，提高输入体验
+
+        if self.keysleepcnt<=0 and (keys[c.KeyboardConDialog] or conDialogFlag==True):
             try:
                 self.content=self.funclist.send(self.inputs)
                 self.inputs=">"
