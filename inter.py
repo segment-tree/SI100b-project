@@ -6,38 +6,52 @@ from makescene import *
 #第一个全局变量
 thisMap=Mapper(1,1)
 dialoger=dialog()
+# 穿墙外挂用
+alwaysAllow = False
 class player(creature):
     money:int
     readToInteract:bool
     def keyboard(self, keys:pygame.key.ScancodeWrapper): # 捕捉键盘信息
+        global alwaysAllow
         allowF=thisMap.moveRequest
         #python有for-else语句但没有 elfor 有什么让这段代码美观的方案吗？？
         for i in c.KeyboardLeft:
-            if keys[i]: self.tryMove(-1,0,allowF);break
+            if keys[i]: self.tryMove(-1,0,allowF, alwaysAllow);break
         else:
             for i in c.KeyboardRight:
-                if keys[i]: self.tryMove(1,0,allowF);break
+                if keys[i]: self.tryMove(1,0,allowF, alwaysAllow);break
             else:
                 for i in c.KeyboardUp:
-                    if keys[i]: self.tryMove(0,-1,allowF);break
+                    if keys[i]: self.tryMove(0,-1,allowF, alwaysAllow);break
                 else:
                     for i in c.KeyboardDown:
-                        if keys[i]: self.tryMove(0,1,allowF);break
-                    # 加速外挂
-                    else:
-                        for i in c.KeyboardSpeedUp:
-                            if keys[i]: self.speed += 1
-                        else:
-                            for i in c.KeyboardSpeedDown:
-                                if keys[i]: self.speed -= 1
-                        for i in c.KeyboardBombUp:
-                            if keys[i]:
-                                self.bombRange += 1
-                                self.bombSum += 1
-                            for i in c.KeyboardBombDown:
-                                if keys[i]:
-                                    self.bombRange -= 1
-                                    self.bombSum -= 1
+                        if keys[i]: self.tryMove(0,1,allowF, alwaysAllow);break
+        # 外挂 加速 加炸弹 穿墙 获得金钱 加血 报告属性并崩溃
+        for i in c.KeyboardSpeedUp:
+            if keys[i]: self.speed += 1
+        for i in c.KeyboardSpeedDown:
+            if keys[i]: self.speed -= 1
+        for i in c.KeyboardBombUp:
+            if keys[i]:
+                self.bombRange += 1
+                self.bombSum += 1
+        for i in c.KeyboardBombDown:
+            if keys[i]:
+                self.bombRange -= 1
+                self.bombSum -= 1
+        for i in c.KeyboardCrossWall:
+            if keys[i]: alwaysAllow = not alwaysAllow
+        for i in c.KeyboardMoneyUp:
+            if keys[i]: self.money += 10
+        for i in c.KeyboardMoneyDown:
+            if keys[i]: self.money -= 10
+        for i in c.KeyboardHealth:
+            if keys[i]: self.hpPlus()
+        for i in c.KeyboardCrash:
+            if keys[i]:
+                print(f"speed:{self.speed},\r\nbombRange:{self.bombRange},\r\nbombSum:{self.bombSum},\r\nmoney:{self.money},\r\nhp:{self.hp}")
+                raise Exception("Crash")
+
         for i in c.KeyboardBomb:
             if keys[i]:self.putBomb(thisMap.addEntity);break
     def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=True):
