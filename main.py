@@ -14,7 +14,23 @@ if __name__ == "__main__":
     pygame.display.set_caption("demo")#窗口名字和图标
     img = pygame.image.load('./assets/utils/icon1.ico')
     pygame.display.set_icon(img)
-    
+
+    """
+    音乐/音效播放初始化
+    """
+    pygame.mixer.init()
+    backgroundMusic = [
+        pygame.mixer.Sound('./assets/music/胞子の森.ogg'),
+        pygame.mixer.Sound('./assets/music/回想.ogg'),
+    ]
+    backgroundSound = [
+
+    ]
+    backgroundMusic[1].play(-1)
+
+    """
+    地图初始化
+    """
     i.thisMap=Mapper(50,50,style=0)
     mapGener(i.thisMap) # 田野
     i.maps.append(i.thisMap)
@@ -43,9 +59,20 @@ if __name__ == "__main__":
     #for i in i.thisMap.mp[me.gx][me.gy]["entity"]:
     #    print(i)
 
+    """
+    开始界面
+    """
     start = True
-    win.fill((255,255,255))
+    win.fill((255, 255, 255))
     button = 0
+    startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
+    startSceneImg = pygame.transform.scale(startSceneImg, (
+    c.WinWidth * c.CellSize // c.CellRatio, c.WinHeight * c.CellSize // c.CellRatio))
+    startSceneRect = startSceneImg.get_rect()
+    arrowImg = pygame.image.load('./assets/startscene/未标题-2.png')
+    arrowImg = pygame.transform.scale(arrowImg, (c.WinHeight * c.CellSize // c.CellRatio // c.CellRatio * 0.1,
+                                                 c.WinHeight * c.CellSize // c.CellRatio // c.CellRatio * 0.2))
+    arrowRect = arrowImg.get_rect()
     while start:
         win.convert()
         clock.tick(c.FPS)
@@ -54,26 +81,31 @@ if __name__ == "__main__":
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_LEFT:
                     if button > 0:
                         button -= 1
-                elif event.key == pygame.K_DOWN:
-                    if button < 3:
+                elif event.key == pygame.K_RIGHT:
+                    if button < 1:
                         button += 1
                 if event.key == pygame.K_RETURN:
                     if button == 0:
                         start = False
+                        stop_music(backgroundMusic[1])
+                        play_music(backgroundMusic[0])
                         break
                     elif button == 1:
-                        pass
-                    elif button == 2:
                         pygame.quit()
                         sys.exit()
-        colorStart = (100,100,100) if button == 0 else (0,0,0)
-        colorExit = (100,100,100) if button == 2 else (0,0,0)
-        win.blit(pygame.font.Font(None, 36).render("Start", True, colorStart), (100,700))
-        win.blit(pygame.font.Font(None, 36).render("Exit", True, colorExit), (100,750))
+        win.blit(startSceneImg, startSceneRect)
+        if button == 0:
+            win.blit(arrowImg, arrowRect.move(c.WinWidth * c.CellSize // c.CellRatio * 0.31,
+                                              c.WinHeight * c.CellSize // c.CellRatio * 0.52))
+        elif button == 1:
+            win.blit(arrowImg, arrowRect.move(c.WinWidth * c.CellSize // c.CellRatio * 0.61,
+                                              c.WinHeight * c.CellSize // c.CellRatio * 0.52))
         pygame.display.update()
+    # 开始界面 End
+
 
     while True:
         win.fill(back_ground_color)
