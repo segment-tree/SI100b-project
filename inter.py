@@ -234,6 +234,9 @@ if __name__ == "__main__":
     for i in thisMap.mp[me.gx][me.gy]["entity"]:
         print(i)
 
+    """
+    开始界面
+    """
     start = True
     win.fill((255,255,255))
     button = 0
@@ -255,7 +258,7 @@ if __name__ == "__main__":
                     if button > 0:
                         button -= 1
                 elif event.key == pygame.K_RIGHT:
-                    if button < 2:
+                    if button < 1:
                         button += 1
                 if event.key == pygame.K_RETURN:
                     if button == 0:
@@ -272,6 +275,7 @@ if __name__ == "__main__":
         elif button == 1:
             win.blit(arrowImg, arrowRect.move(c.WinWidth*c.CellSize//c.CellRatio * 0.61,c.WinHeight*c.CellSize//c.CellRatio*0.52))
         pygame.display.update()
+    # 开始界面 End
 
     while True:
         win.fill(back_ground_color)
