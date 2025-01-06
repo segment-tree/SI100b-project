@@ -47,13 +47,13 @@ class entityLike:
         self.layer=layer
         
 
-    def tryMove(self, dx:int, dy:int, allowF:Callable[[int,int,entityLike],bool])->bool:
+    def tryMove(self, dx:int, dy:int, allowF:Callable[[int,int,entityLike],bool], canCrossWall:bool)->bool:
         # 其中func为地图的检测函数（为了避免此文件依赖于scene.py)
         # allowF(x:int,y:int,id:entityLike)->bool:
         # x y 表示要求的坐标，id表示请求发出者的~entity_id~地址
         if self.moving>1 : return False
         self.dx,self.dy=dx,dy # 无论是否允许移动(但不在移动)，都要改变entity的朝向
-        if allowF(self.gx+dx,self.gy+dy,self) :
+        if allowF(self.gx+dx,self.gy+dy,self) or canCrossWall :
             self.moving=c.CellSize//self.speed+1
             return True
         return False
@@ -167,7 +167,7 @@ class bomb(entityLike):
             self.delete(mapper)
         else: self.count-=1
         if self.kicked:
-            if not self.tryMove(self.dx,self.dy,mapper.moveRequest) and self.moving==0 :
+            if not self.tryMove(self.dx,self.dy,mapper.moveRequest, canCrossWall=False) and self.moving==0 :
                 self.kicked=False # 停止后不再移动
     
     def walkInto(self, other:entityLike|creature):
@@ -307,7 +307,7 @@ class monster(creature):
         if len(self.movQ)>0:
             dx,dy=self.movQ[0][0],self.movQ[0][1]
             if mapper.mp[self.gx+dx][self.gy+dy]["burning"]<=0:
-                t=self.tryMove(dx,dy,mapper.moveRequest)
+                t=self.tryMove(dx,dy,mapper.moveRequest, canCrossWall=False)
                 if t==True:self.movQ.popleft()
                 else : self.movQ=queue.deque() # 防止怪物卡死
                 return
@@ -331,10 +331,10 @@ class monster(creature):
 
         return
         match a:
-            case 1:self.tryMove(-1,0,mapper.moveRequest)
-            case 2:self.tryMove( 1,0,mapper.moveRequest)
-            case 3:self.tryMove(0,-1,mapper.moveRequest)
-            case 4:self.tryMove(0, 1,mapper.moveRequest)
+            case 1:self.tryMove(-1,0,mapper.moveRequest, canCrossWall=False)
+            case 2:self.tryMove( 1,0,mapper.moveRequest, canCrossWall=False)
+            case 3:self.tryMove(0,-1,mapper.moveRequest, canCrossWall=False)
+            case 4:self.tryMove(0, 1,mapper.moveRequest, canCrossWall=False)
             # case 5:self.putBomb(mapper.addEntity) # only for test
 
     def clock(self, moveUpdate:Callable, mapper):

@@ -36,6 +36,17 @@ KeyboardInteract =[ord('f')]
 KeyboardEscDialog=pygame.K_ESCAPE
 KeyboardConDialog=pygame.K_RETURN
 
+# 外挂用
+KeyboardSpeedUp = [pygame.K_z,ord('z')]
+KeyboardSpeedDown = [pygame.K_x,ord('x')]
+KeyboardBombUp = [pygame.K_c,ord('c')]
+KeyboardBombDown = [pygame.K_v,ord('v')]
+KeyboardCrossWall = [pygame.K_BACKSPACE]
+KeyboardMoneyUp = [pygame.K_n,ord('n')]
+KeyboardMoneyDown = [pygame.K_m,ord('m')]
+KeyboardHealth = [pygame.K_b,ord('b')]
+KeyboardCrash = [pygame.K_SCROLLOCK]
+
 DefaultFont='华文楷体'
 if os.name=='posix':
     DefaultFont = 'source-han-sans' # linux系统大概率没有华文楷体，故选此替代

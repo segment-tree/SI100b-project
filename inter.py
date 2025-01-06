@@ -1,5 +1,10 @@
 # 包含属于entity player monster等
 # 因为这部分代码需要访问scene所以不在entity.py里
+import sys
+from turtledemo.paint import switchupdown
+
+import pygame
+
 from entity import *
 from scene import *
 from makescene import *
@@ -9,23 +14,52 @@ from makescene import *
 #第一个全局变量
 thisMap=Mapper(1,1)
 dialoger=dialog()
+# 穿墙外挂用
+alwaysAllow = False
 class player(creature):
     money:int
     readToInteract:bool
     def keyboard(self, keys:pygame.key.ScancodeWrapper): # 捕捉键盘信息
+        global alwaysAllow
         allowF=thisMap.moveRequest
         #python有for-else语句但没有 elfor 有什么让这段代码美观的方案吗？？
         for i in c.KeyboardLeft:
-            if keys[i]: self.tryMove(-1,0,allowF);break
+            if keys[i]: self.tryMove(-1,0,allowF, alwaysAllow);break
         else:
             for i in c.KeyboardRight:
-                if keys[i]: self.tryMove(1,0,allowF);break
+                if keys[i]: self.tryMove(1,0,allowF, alwaysAllow);break
             else:
                 for i in c.KeyboardUp:
-                    if keys[i]: self.tryMove(0,-1,allowF);break
+                    if keys[i]: self.tryMove(0,-1,allowF, alwaysAllow);break
                 else:
                     for i in c.KeyboardDown:
-                        if keys[i]: self.tryMove(0,1,allowF);break
+                        if keys[i]: self.tryMove(0,1,allowF, alwaysAllow);break
+        # 外挂 加速 加炸弹 穿墙 获得金钱 加血 报告属性并崩溃
+        for i in c.KeyboardSpeedUp:
+            if keys[i]: self.speed += 1
+        for i in c.KeyboardSpeedDown:
+            if keys[i]: self.speed -= 1
+        for i in c.KeyboardBombUp:
+            if keys[i]:
+                self.bombRange += 1
+                self.bombSum += 1
+        for i in c.KeyboardBombDown:
+            if keys[i]:
+                self.bombRange -= 1
+                self.bombSum -= 1
+        for i in c.KeyboardCrossWall:
+            if keys[i]: alwaysAllow = not alwaysAllow
+        for i in c.KeyboardMoneyUp:
+            if keys[i]: self.money += 10
+        for i in c.KeyboardMoneyDown:
+            if keys[i]: self.money -= 10
+        for i in c.KeyboardHealth:
+            if keys[i]: self.hpPlus()
+        for i in c.KeyboardCrash:
+            if keys[i]:
+                print(f"speed:{self.speed},\r\nbombRange:{self.bombRange},\r\nbombSum:{self.bombSum},\r\nmoney:{self.money},\r\nhp:{self.hp}")
+                raise Exception("Crash")
+
         for i in c.KeyboardBomb:
             if keys[i]:self.putBomb(thisMap.addEntity);break
     def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=True):
@@ -135,6 +169,7 @@ if __name__ == "__main__":
     pygame.display.set_caption("demo")#窗口名字和图标
     img = pygame.image.load('./assets/utils/icon1.ico')
     pygame.display.set_icon(img)
+
     
     thisMap=Mapper(50,50,style=0)
     mapGener(thisMap) # 田野
@@ -162,6 +197,38 @@ if __name__ == "__main__":
 
     for i in thisMap.mp[me.gx][me.gy]["entity"]:
         print(i)
+
+    start = True
+    win.fill((255,255,255))
+    button = 0
+    while start:
+        win.convert()
+        clock.tick(c.FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    if button > 0:
+                        button -= 1
+                elif event.key == pygame.K_DOWN:
+                    if button < 3:
+                        button += 1
+                if event.key == pygame.K_RETURN:
+                    if button == 0:
+                        start = False
+                        break
+                    elif button == 1:
+                        pass
+                    elif button == 2:
+                        pygame.quit()
+                        sys.exit()
+        colorStart = (100,100,100) if button == 0 else (0,0,0)
+        colorExit = (100,100,100) if button == 2 else (0,0,0)
+        win.blit(pygame.font.Font(None, 36).render("Start", True, colorStart), (100,700))
+        win.blit(pygame.font.Font(None, 36).render("Exit", True, colorExit), (100,750))
+        pygame.display.update()
 
     while True:
         win.fill(back_ground_color)
