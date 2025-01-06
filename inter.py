@@ -2,7 +2,6 @@
 # 因为这部分代码需要访问scene所以不在entity.py里
 import asyncio
 import sys
-from turtledemo.paint import switchupdown
 
 import pygame
 
