@@ -19,13 +19,6 @@ if __name__ == "__main__":
     音乐/音效播放初始化
     """
     pygame.mixer.init()
-    backgroundMusic = [
-        pygame.mixer.Sound('./assets/music/胞子の森.ogg'),
-        pygame.mixer.Sound('./assets/music/回想.ogg'),
-    ]
-    backgroundSound = [
-
-    ]
     backgroundMusic[1].play(-1)
 
     """

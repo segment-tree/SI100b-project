@@ -111,6 +111,8 @@ def changeMap(mapid:int, gx:int, gy:int):
     thisMap=maps[mapid]
     mee.reRegister(gx,gy,thisMap.addEntity)
     thisMap.me=mee
+
+    # 更换背景音乐
     if mapid == 0:
         for i in range(0, len(backgroundMusic)):
             stop_music(backgroundMusic[i])
@@ -182,3 +184,14 @@ def stop_music(music:pygame.mixer.Sound, time=1000):
 
 def play_sound(sound:pygame.mixer.Sound):
     sound.play(1)
+
+"""
+音乐及音效定义
+"""
+backgroundMusic = [
+    pygame.mixer.Sound('./assets/music/胞子の森.ogg'),
+    pygame.mixer.Sound('./assets/music/回想.ogg'),
+]
+backgroundSound = [
+
+]
