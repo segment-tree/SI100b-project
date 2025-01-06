@@ -1,5 +1,6 @@
 # 包含属于entity player monster等
 # 因为这部分代码需要访问scene所以不在entity.py里
+import asyncio
 import sys
 from turtledemo.paint import switchupdown
 
@@ -112,6 +113,18 @@ def changeMap(mapid:int, gx:int, gy:int):
     thisMap=maps[mapid]
     mee.reRegister(gx,gy,thisMap.addEntity)
     thisMap.me=mee
+    if mapid == 0:
+        for i in range(0, len(backgroundMusic)):
+            stop_music(backgroundMusic[i])
+        play_music(backgroundMusic[1])
+    elif mapid == 1:
+        for i in range(0, len(backgroundMusic)):
+            stop_music(backgroundMusic[i])
+        play_music(backgroundMusic[0])
+    elif mapid == 2:
+        for i in range(0, len(backgroundMusic)):
+            stop_music(backgroundMusic[i])
+        play_music(backgroundMusic[1])
 
 def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
     keys = pygame.key.get_pressed()
@@ -157,17 +170,38 @@ def tempMapGener(nowmp:Mapper):
 
     bomb(genEntityId(),2,2,nowmp.addEntity,t,layer=2)
     bomb(genEntityId(),5,2,nowmp.addEntity,t,layer=2)
-    
+
+def play_music(music:pygame.mixer.Sound):
+    asyncio.sleep(2)
+    music.play(-1)
+
+def stop_music(music:pygame.mixer.Sound, time=1000):
+    music.fadeout(time)
+
+def play_sound(sound:pygame.mixer.Sound):
+    sound.play(1)
+
+
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
     #print('#',me.rx,me.ry) # gy 28 17
 
+    pygame.mixer.init()
+    backgroundMusic = [
+        pygame.mixer.Sound('./assets/music/胞子の森.ogg'),
+        pygame.mixer.Sound('./assets/music/回想.ogg'),
+    ]
+    backgroundSound = [
+
+    ]
+    backgroundMusic[1].play(-1)
+
     pygame.display.set_caption("demo")#窗口名字和图标
     img = pygame.image.load('./assets/utils/icon1.ico')
     pygame.display.set_icon(img)
 
-    
+
     thisMap=Mapper(50,50,style=0)
     mapGener(thisMap) # 田野
     maps.append(thisMap)
@@ -198,6 +232,12 @@ if __name__ == "__main__":
     start = True
     win.fill((255,255,255))
     button = 0
+    startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
+    startSceneImg = pygame.transform.scale(startSceneImg, (c.WinWidth*c.CellSize//c.CellRatio,c.WinHeight*c.CellSize//c.CellRatio))
+    startSceneRect = startSceneImg.get_rect()
+    arrowImg = pygame.image.load('./assets/startscene/未标题-2.png')
+    arrowImg = pygame.transform.scale(arrowImg, (c.WinHeight*c.CellSize//c.CellRatio//c.CellRatio*0.1,c.WinHeight*c.CellSize//c.CellRatio//c.CellRatio*0.2))
+    arrowRect = arrowImg.get_rect()
     while start:
         win.convert()
         clock.tick(c.FPS)
@@ -206,25 +246,26 @@ if __name__ == "__main__":
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_LEFT:
                     if button > 0:
                         button -= 1
-                elif event.key == pygame.K_DOWN:
-                    if button < 3:
+                elif event.key == pygame.K_RIGHT:
+                    if button < 2:
                         button += 1
                 if event.key == pygame.K_RETURN:
                     if button == 0:
                         start = False
+                        stop_music(backgroundMusic[1])
+                        play_music(backgroundMusic[0])
                         break
                     elif button == 1:
-                        pass
-                    elif button == 2:
                         pygame.quit()
                         sys.exit()
-        colorStart = (100,100,100) if button == 0 else (0,0,0)
-        colorExit = (100,100,100) if button == 2 else (0,0,0)
-        win.blit(pygame.font.Font(None, 36).render("Start", True, colorStart), (100,700))
-        win.blit(pygame.font.Font(None, 36).render("Exit", True, colorExit), (100,750))
+        win.blit(startSceneImg, startSceneRect)
+        if button == 0:
+            win.blit(arrowImg, arrowRect.move(c.WinWidth*c.CellSize//c.CellRatio * 0.31,c.WinHeight*c.CellSize//c.CellRatio*0.52))
+        elif button == 1:
+            win.blit(arrowImg, arrowRect.move(c.WinWidth*c.CellSize//c.CellRatio * 0.61,c.WinHeight*c.CellSize//c.CellRatio*0.52))
         pygame.display.update()
 
     while True:

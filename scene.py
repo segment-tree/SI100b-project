@@ -68,7 +68,7 @@ class Mapper: # Map is some keyword use Mapper instead
     def moveUpdate(self, oldx:int, oldy:int, newx:int, newy:int, entity:entityLike):
         # set 移除元素： remove 不存在会返回错误；discard不会
         self.mp[oldx][oldy]["entity"].remove(entity)
-        self.mp[newx][newy]["entity_locked"].discard(entity)
+        self.mp[newx][newy]["entity_locked"].discard(entity)  # 原版本为remove
         self.mp[newx][newy]["entity"].add(entity)
     
     def draw(self, fpscnt:int, camera:Tuple[int,int],win):
