@@ -47,13 +47,13 @@ class entityLike:
         self.layer=layer
         
 
-    def tryMove(self, dx:int, dy:int, allowF:Callable[[int,int,entityLike],bool], canCrossWall:bool=False)->bool:
+    def tryMove(self, dx:int, dy:int, allowF:Callable[[int,int,entityLike],bool])->bool:
         # 其中func为地图的检测函数（为了避免此文件依赖于scene.py)
         # allowF(x:int,y:int,id:entityLike)->bool:
         # x y 表示要求的坐标，id表示请求发出者的~entity_id~地址
         if self.moving>1 : return False
         self.dx,self.dy=dx,dy # 无论是否允许移动(但不在移动)，都要改变entity的朝向
-        if allowF(self.gx+dx,self.gy+dy,self) or canCrossWall :
+        if allowF(self.gx+dx,self.gy+dy,self) :
             self.moving=c.CellSize//self.speed+1
             return True
         return False
