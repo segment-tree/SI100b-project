@@ -49,6 +49,16 @@ KeyboardCrash = [pygame.K_SCROLLOCK]
 # 穿墙外挂用
 alwaysAllow = False
 
+# 开始界面用
+startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
+startSceneImg = pygame.transform.scale(startSceneImg, (
+WinWidth * CellSize // CellRatio, WinHeight * CellSize // c.CellRatio))
+startSceneRect = startSceneImg.get_rect()
+arrowImg = pygame.image.load('./assets/utils/arrow.png')
+arrowImg = pygame.transform.scale(arrowImg, (WinHeight * CellSize // CellRatio // CellRatio * 0.1,
+                                             WinHeight * CellSize // CellRatio // CellRatio * 0.2))
+arrowRect = arrowImg.get_rect()
+
 DefaultFont='华文楷体'
 if os.name=='posix':
     DefaultFont = 'source-han-sans' # linux系统大概率没有华文楷体，故选此替代

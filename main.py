@@ -3,7 +3,6 @@ import inter as i
 import pygame  
 import sys
 from makescene import *
-# from turtledemo.paint import switchupdown
 # import heartrate
 # heartrate.trace(browser=True,files=heartrate.files.all)
 if __name__ == "__main__":
@@ -60,14 +59,7 @@ if __name__ == "__main__":
     start = True
     win.fill((255, 255, 255))
     button = 0
-    startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
-    startSceneImg = pygame.transform.scale(startSceneImg, (
-    c.WinWidth * c.CellSize // c.CellRatio, c.WinHeight * c.CellSize // c.CellRatio))
-    startSceneRect = startSceneImg.get_rect()
-    arrowImg = pygame.image.load('./assets/utils/arrow.png')
-    arrowImg = pygame.transform.scale(arrowImg, (c.WinHeight * c.CellSize // c.CellRatio // c.CellRatio * 0.1,
-                                                 c.WinHeight * c.CellSize // c.CellRatio // c.CellRatio * 0.2))
-    arrowRect = arrowImg.get_rect()
+
     while start:
         win.convert()
         clock.tick(c.FPS)
@@ -91,12 +83,12 @@ if __name__ == "__main__":
                     elif button == 1:
                         pygame.quit()
                         sys.exit()
-        win.blit(startSceneImg, startSceneRect)
+        win.blit(c.startSceneImg, c.startSceneRect)
         if button == 0:
-            win.blit(arrowImg, arrowRect.move(c.WinWidth * c.CellSize // c.CellRatio * 0.31,
+            win.blit(c.arrowImg, c.arrowRect.move(c.WinWidth * c.CellSize // c.CellRatio * 0.31,
                                               c.WinHeight * c.CellSize // c.CellRatio * 0.52))
         elif button == 1:
-            win.blit(arrowImg, arrowRect.move(c.WinWidth * c.CellSize // c.CellRatio * 0.61,
+            win.blit(c.arrowImg, c.arrowRect.move(c.WinWidth * c.CellSize // c.CellRatio * 0.61,
                                               c.WinHeight * c.CellSize // c.CellRatio * 0.52))
         pygame.display.update()
     # 开始界面 End
