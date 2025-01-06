@@ -1,15 +1,7 @@
 # 包含属于entity player monster等
 # 因为这部分代码需要访问scene所以不在entity.py里
-import sys
-# from turtledemo.paint import switchupdown
-
-import pygame
-
 from entity import *
 from scene import *
-from makescene import *
-# import heartrate
-# heartrate.trace(browser=True,files=heartrate.files.all)
 
 #第一个全局变量
 thisMap=Mapper(1,1)
@@ -122,6 +114,10 @@ def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输�
             else : nowplayer.readToInteract=False
     nowdialog.keyboard(keys)
 
+def modthisMap(other:Mapper):
+    global thisMap
+    thisMap=other
+
 #test
 def tempMapGener(nowmp:Mapper):
     # nowmp.C=30
@@ -157,103 +153,3 @@ def tempMapGener(nowmp:Mapper):
 
     bomb(genEntityId(),2,2,nowmp.addEntity,t,layer=2)
     bomb(genEntityId(),5,2,nowmp.addEntity,t,layer=2)
-    
-if __name__ == "__main__":
-    pygame.init()
-    win=displayCreateWin()
-    #print('#',me.rx,me.ry) # gy 28 17
-
-    pygame.display.set_caption("demo")#窗口名字和图标
-    img = pygame.image.load('./assets/utils/icon1.ico')
-    pygame.display.set_icon(img)
-
-    
-    thisMap=Mapper(50,50,style=0)
-    mapGener(thisMap) # 田野
-    maps.append(thisMap)
-    nw=thisMap=Mapper(50,50,style=1)
-    mapGenerTown(thisMap) # 城镇
-    maps.append(thisMap)
-    thisMap=Mapper(50,50,style=2)
-    #thisMap.me=me
-    mapGenerShop(thisMap) # 商店
-    #thisMap.me=None
-    maps.append(thisMap)
-    thisMap=nw
-    ###
-    # thisMap=Mapper(50,50,style=0)
-    # tempMapGener(thisMap)
-    ###
-
-    me=player(id=0,gx=26,gy=26,imagesdir='./assets/player/',layer=3)
-
-    back_ground_color=(200, 200, 200)
-    clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
-    fpscnt=0
-    thisMap.me=me
-
-    for i in thisMap.mp[me.gx][me.gy]["entity"]:
-        print(i)
-
-    start = True
-    win.fill((255,255,255))
-    button = 0
-    while start:
-        win.convert()
-        clock.tick(c.FPS)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    if button > 0:
-                        button -= 1
-                elif event.key == pygame.K_DOWN:
-                    if button < 3:
-                        button += 1
-                if event.key == pygame.K_RETURN:
-                    if button == 0:
-                        start = False
-                        break
-                    elif button == 1:
-                        pass
-                    elif button == 2:
-                        pygame.quit()
-                        sys.exit()
-        colorStart = (100,100,100) if button == 0 else (0,0,0)
-        colorExit = (100,100,100) if button == 2 else (0,0,0)
-        win.blit(pygame.font.Font(None, 36).render("Start", True, colorStart), (100,700))
-        win.blit(pygame.font.Font(None, 36).render("Exit", True, colorExit), (100,750))
-        pygame.display.update()
-
-    while True:
-        win.fill(back_ground_color)
-        clock.tick(c.FPS)
-        for event in pygame.event.get(pygame.QUIT):
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        #me.dx=1
-        #me.dy=0
-        #me.moving=10
-        # me.keyboard()
-        catchKeyboard(me,dialoger)
-
-        me.clock(thisMap)
-        # me.draw(3,fpscnt,(0,0),win)
-        car=thisMap.genCamera()
-        thisMap.clock()
-        thisMap.draw(fpscnt,car,win)
-
-        # segmentDraw.drawR(1,15,4,car,win)
-        # segmentDraw.drawC(1,15,4,car,win)
-        # segmentDraw.drawSqure(9,4,6,2,car,win)
-
-        # dialoger.keyboard()
-        dialoger.draw(win)
-        # print(car)
-        # print(me.hp)
-        # print(me.gx, me.gy)
-        fpscnt+=1
-        pygame.display.update()

@@ -1,8 +1,8 @@
+# from __future__ import annotations
 import constants as c
 import copy
 from imageclass import(myImage)
 from typing import *
-# from __future__ import annotations
 from entity import *
 import random
 
