@@ -1,4 +1,4 @@
 .vscode
 private
 __pycache__
-
+*.cpython*.so

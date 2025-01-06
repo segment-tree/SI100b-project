@@ -11,15 +11,12 @@ from makescene import *
 #第一个全局变量
 thisMap=Mapper(1,1)
 dialoger=dialog()
-# 穿墙外挂用
-alwaysAllow = False
 class player(creature):
     money:int
     readToInteract:bool
     def keyboard(self, keys:pygame.key.ScancodeWrapper): # 捕捉键盘信息
-        global alwaysAllow
         allowF=thisMap.moveRequest
-        if alwaysAllow:allowF=lambda _a,_b,_c : True
+        if c.alwaysAllow:allowF=lambda x,y,entity : True
         #python有for-else语句但没有 elfor 有什么让这段代码美观的方案吗？？
         for i in c.KeyboardLeft:
             if keys[i]: self.tryMove(-1,0,allowF);break
@@ -47,7 +44,7 @@ class player(creature):
                 self.bombRange -= 1
                 self.bombSum -= 1
         for i in c.KeyboardCrossWall:
-            if keys[i]: alwaysAllow = not alwaysAllow
+            if keys[i]: c.alwaysAllow = not c.alwaysAllow
         for i in c.KeyboardMoneyUp:
             if keys[i]: self.money += 10
         for i in c.KeyboardMoneyDown:
