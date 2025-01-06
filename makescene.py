@@ -144,6 +144,7 @@ def mapGenerShop(nowmp):
         if shopFavorability>-20:l=[40,40,40,60,40];lv=10
         l=[100,100,100,100,100];lv=10
         for i in range(5):l[i]+=c.Difficulty*lv
+        return l
 
 
     def sale(nowplayer:Any,_:Mapper):

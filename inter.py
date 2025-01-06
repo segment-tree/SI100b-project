@@ -3,6 +3,9 @@
 from entity import *
 from scene import *
 from makescene import *
+# import heartrate
+# heartrate.trace(browser=True,files=heartrate.files.all)
+
 #第一个全局变量
 thisMap=Mapper(1,1)
 dialoger=dialog()
