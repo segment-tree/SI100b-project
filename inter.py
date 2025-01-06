@@ -19,7 +19,7 @@ class player(creature):
     def keyboard(self, keys:pygame.key.ScancodeWrapper): # 捕捉键盘信息
         global alwaysAllow
         allowF=thisMap.moveRequest
-        if c.alwaysAllow:allowF=lambda _a,_b,_c : True
+        if alwaysAllow:allowF=lambda _a,_b,_c : True
         #python有for-else语句但没有 elfor 有什么让这段代码美观的方案吗？？
         for i in c.KeyboardLeft:
             if keys[i]: self.tryMove(-1,0,allowF);break
