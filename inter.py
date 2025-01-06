@@ -1,13 +1,9 @@
 # 包含属于entity player monster等
 # 因为这部分代码需要访问scene所以不在entity.py里
 import asyncio
-import sys
-
 import pygame
-
 from entity import *
 from scene import *
-from makescene import *
 #第一个全局变量
 thisMap=Mapper(1,1)
 dialoger=dialog()
@@ -111,7 +107,18 @@ def changeMap(mapid:int, gx:int, gy:int):
     thisMap=maps[mapid]
     mee.reRegister(gx,gy,thisMap.addEntity)
     thisMap.me=mee
+    changeMusic(mapid)
 
+def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
+    keys = pygame.key.get_pressed()
+    if nowdialog.content==None:
+        nowplayer.keyboard(keys)
+    for i in c.KeyboardInteract:
+            if keys[i] : nowplayer.readToInteract=True;break
+            else : nowplayer.readToInteract=False
+    nowdialog.keyboard(keys)
+
+def changeMusic(mapid):
     # 更换背景音乐
     if mapid == 0:
         for i in range(0, len(backgroundMusic)):
@@ -126,55 +133,6 @@ def changeMap(mapid:int, gx:int, gy:int):
             stop_music(backgroundMusic[i])
         play_music(backgroundMusic[1])
 
-def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
-    keys = pygame.key.get_pressed()
-    if nowdialog.content==None:
-        nowplayer.keyboard(keys)
-    for i in c.KeyboardInteract:
-            if keys[i] : nowplayer.readToInteract=True;break
-            else : nowplayer.readToInteract=False
-    nowdialog.keyboard(keys)
-
-def modthisMap(other:Mapper):
-    global thisMap
-    thisMap=other
-
-#test
-def tempMapGener(nowmp:Mapper):
-    # nowmp.C=30
-    # nowmp.R=30
-    def genWall(x,y,iid=1):
-        nowmp.mp[x][y]["type"]="wall"
-        nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/wall{nowmp.style}.{iid}.png')
-    def genObject(x,y,iid):
-        nowmp.mp[x][y]["type"]="object"
-        nowmp.mp[x][y]["content"]=iid
-        nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/object{iid}.png')
-    
-    nowmp.C=31
-    nowmp.R=31
-
-    genWall(7,7)
-    genObject(10,13,3)
-    genObject(10,4,5)
-    genObject(15,14,2);genObject(18,20,4)
-    genObject(3,4,1)
-    # nowmp.mp[5][5]["burning"]=20*10
-    # nowmp.mp[5][5]["render!"]=myImage("./assets/scene/burning_tmp.png")
-    for i in range(0,30):
-        genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
-    
-    for i in range(8,12):
-        genWall(i,10,5)
-
-    # monsters
-    nowmp.addMonster(5,5,"./assets/monster/")
-    nowmp.addMonster(6,7,"./assets/monster/")
-    t=nowmp.addMonster(1,12,"./assets/monster/")
-
-    bomb(genEntityId(),2,2,nowmp.addEntity,t,layer=2)
-    bomb(genEntityId(),5,2,nowmp.addEntity,t,layer=2)
-
 def play_music(music:pygame.mixer.Sound):
     asyncio.sleep(2)
     music.play(-1)
@@ -188,10 +146,5 @@ def play_sound(sound:pygame.mixer.Sound):
 """
 音乐及音效定义
 """
-backgroundMusic = [
-    pygame.mixer.Sound('./assets/music/胞子の森.ogg'),
-    pygame.mixer.Sound('./assets/music/回想.ogg'),
-]
-backgroundSound = [
-
-]
+backgroundMusic = []
+backgroundSound = []

@@ -3,6 +3,41 @@ from scene import *
 from nine_ai import *
 from shopowner_ai import (shop)
 import random
+
+def tempMapGener(nowmp:Mapper):
+    # nowmp.C=30
+    # nowmp.R=30
+    def genWall(x,y,iid=1):
+        nowmp.mp[x][y]["type"]="wall"
+        nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/wall{nowmp.style}.{iid}.png')
+    def genObject(x,y,iid):
+        nowmp.mp[x][y]["type"]="object"
+        nowmp.mp[x][y]["content"]=iid
+        nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/object{iid}.png')
+    
+    nowmp.C=31
+    nowmp.R=31
+
+    genWall(7,7)
+    genObject(10,13,3)
+    genObject(10,4,5)
+    genObject(15,14,2);genObject(18,20,4)
+    genObject(3,4,1)
+    # nowmp.mp[5][5]["burning"]=20*10
+    # nowmp.mp[5][5]["render!"]=myImage("./assets/scene/burning_tmp.png")
+    for i in range(0,30):
+        genWall(0,i);genWall(i,0);genWall(30,i);genWall(i,30)
+    
+    for i in range(8,12):
+        genWall(i,10,5)
+
+    # monsters
+    nowmp.addMonster(5,5,"./assets/monster/")
+    nowmp.addMonster(6,7,"./assets/monster/")
+    t=nowmp.addMonster(1,12,"./assets/monster/")
+
+    bomb(genEntityId(),2,2,nowmp.addEntity,t,layer=2)
+    bomb(genEntityId(),5,2,nowmp.addEntity,t,layer=2)
 def mapGener(nowmp:Mapper):
     nowmp.style=0
     def genWall(x,y,iid):

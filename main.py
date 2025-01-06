@@ -19,23 +19,26 @@ if __name__ == "__main__":
     音乐/音效播放初始化
     """
     pygame.mixer.init()
+    backgroundMusic.append(pygame.mixer.Sound('./assets/music/胞子の森.ogg'))
+    backgroundMusic.append(pygame.mixer.Sound('./assets/music/回想.ogg'))
     backgroundMusic[1].play(-1)
+    
 
     """
     地图初始化
     """
     i.thisMap=Mapper(50,50,style=0)
     mapGener(i.thisMap) # 田野
-    i.maps.append(i.thisMap)
+    maps.append(i.thisMap)
     i.thisMap=Mapper(50,50,style=1)
     nw=i.thisMap
     mapGenerTown(i.thisMap) # 城镇
-    i.maps.append(i.thisMap)
+    maps.append(i.thisMap)
     i.thisMap=Mapper(50,50,style=2)
     #thisMap.me=me
     mapGenerShop(i.thisMap) # 商店
     #thisMap.me=None
-    i.maps.append(i.thisMap)
+    maps.append(i.thisMap)
     i.thisMap=nw
     ###
     # thisMap=Mapper(50,50,style=0)
@@ -51,7 +54,6 @@ if __name__ == "__main__":
 
     #for i in i.thisMap.mp[me.gx][me.gy]["entity"]:
     #    print(i)
-
     """
     开始界面
     """
@@ -62,7 +64,7 @@ if __name__ == "__main__":
     startSceneImg = pygame.transform.scale(startSceneImg, (
     c.WinWidth * c.CellSize // c.CellRatio, c.WinHeight * c.CellSize // c.CellRatio))
     startSceneRect = startSceneImg.get_rect()
-    arrowImg = pygame.image.load('./assets/startscene/未标题-2.png')
+    arrowImg = pygame.image.load('./assets/utils/arrow.png')
     arrowImg = pygame.transform.scale(arrowImg, (c.WinHeight * c.CellSize // c.CellRatio // c.CellRatio * 0.1,
                                                  c.WinHeight * c.CellSize // c.CellRatio // c.CellRatio * 0.2))
     arrowRect = arrowImg.get_rect()
