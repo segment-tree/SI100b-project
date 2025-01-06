@@ -46,6 +46,8 @@ KeyboardMoneyUp = [pygame.K_n,ord('n')]
 KeyboardMoneyDown = [pygame.K_m,ord('m')]
 KeyboardHealth = [pygame.K_b,ord('b')]
 KeyboardCrash = [pygame.K_SCROLLOCK]
+# 穿墙外挂用
+alwaysAllow = False
 
 DefaultFont='华文楷体'
 if os.name=='posix':
