@@ -32,6 +32,7 @@ class player(creature):
                 else:
                     for i in c.KeyboardDown:
                         if keys[i]: self.tryMove(0,1,allowF, alwaysAllow);break
+
         # 外挂 加速 加炸弹 穿墙 获得金钱 加血 报告属性并崩溃
         for i in c.KeyboardSpeedUp:
             if keys[i]: self.speed += 1
@@ -134,6 +135,10 @@ def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输�
             if keys[i] : nowplayer.readToInteract=True;break
             else : nowplayer.readToInteract=False
     nowdialog.keyboard(keys)
+
+def modthisMap(other:Mapper):
+    global thisMap
+    thisMap=other
 
 #test
 def tempMapGener(nowmp:Mapper):

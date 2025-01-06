@@ -138,12 +138,13 @@ def mapGenerShop(nowmp):
         #return [1,1,1,1,1]
         print(shopFavorability)
         if shopFavorability>80:l=[1,1,1,3,1];lv=2
-        if shopFavorability>50:l=[1,1,1,3,1];lv=3
-        if shopFavorability>10:l=[5,5,5,10,5];lv=5
-        if shopFavorability>0:l=[15,15,15,25,15];lv=5
-        if shopFavorability>-20:l=[40,40,40,60,40];lv=10
-        l=[100,100,100,100,100];lv=10
+        elif shopFavorability>50:l=[1,1,1,3,1];lv=3
+        elif shopFavorability>10:l=[5,5,5,10,5];lv=5
+        elif shopFavorability>0:l=[15,15,15,25,15];lv=5
+        elif shopFavorability>-20:l=[40,40,40,60,40];lv=10
+        else:l=[100,100,100,100,100];lv=10
         for i in range(5):l[i]+=c.Difficulty*lv
+        return l
 
 
     def sale(nowplayer:Any,_:Mapper):
@@ -152,17 +153,17 @@ def mapGenerShop(nowmp):
             price=getPrice()
             t=yield f"On Sale: 1: Heal Potion (${price[0]}), 2: Sensitive Potion(${price[1]}), 3: Expanded Bomb Grid Potion(${price[2]}), and 4: Kicking Bomb Boots(${price[3]}). your coin: {nowplayer.money}"
             tcoin=nowplayer.money
-            if "heal" in t and nowplayer.money>price[0] :
+            if ("1"in t or "heal" in t) and nowplayer.money>=price[0] :
                 nowplayer.hp+=1;nowplayer.money-=price[0]
-            if "expanded" in t and nowplayer.money>price[2] :
+            if ("3"in t or "expanded" in t) and nowplayer.money>=price[2] :
                 nowplayer.bombRange+=1;nowplayer.money-=price[2]
-            if "sensitive" in t and nowplayer.money>price[1]:
+            if ("2"in t or "sensitive" in t) and nowplayer.money>=price[1]:
                 nowplayer.speed=c.IncreasedSpeed;nowplayer.money-=price[1]
-            if ("kicking" in t or "boots" in t) and nowplayer.money>price[3]:
+            if ("4"in t or "kicking" in t or "boots" in t) and nowplayer.money>=price[3]:
                 nowplayer.cankick=True;nowplayer.money-=price[3]
             if tcoin>nowplayer.money:
                 yield "purchase succeed"
-            elif "heal" in t or "expanded" in t or "sensitive" in t or "kicking" in t or "boots" in t:
+            elif "heal" in t or "expanded" in t or "sensitive" in t or "kicking" in t or "boots" in t or "1" in t or "2" in t or "3" in t or "4" in t:
                 yield "purchase failed, maybe money isn't enough?"
             else : yield "Product not found"
     def shopownertalk():
