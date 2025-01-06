@@ -1,7 +1,7 @@
 # 包含属于entity player monster等
 # 因为这部分代码需要访问scene所以不在entity.py里
 import sys
-from turtledemo.paint import switchupdown
+# from turtledemo.paint import switchupdown
 
 import pygame
 
@@ -14,26 +14,23 @@ from makescene import *
 #第一个全局变量
 thisMap=Mapper(1,1)
 dialoger=dialog()
-# 穿墙外挂用
-alwaysAllow = False
 class player(creature):
     money:int
     readToInteract:bool
     def keyboard(self, keys:pygame.key.ScancodeWrapper): # 捕捉键盘信息
-        global alwaysAllow
         allowF=thisMap.moveRequest
         #python有for-else语句但没有 elfor 有什么让这段代码美观的方案吗？？
         for i in c.KeyboardLeft:
-            if keys[i]: self.tryMove(-1,0,allowF, alwaysAllow);break
+            if keys[i]: self.tryMove(-1,0,allowF, c.alwaysAllow);break
         else:
             for i in c.KeyboardRight:
-                if keys[i]: self.tryMove(1,0,allowF, alwaysAllow);break
+                if keys[i]: self.tryMove(1,0,allowF, c.alwaysAllow);break
             else:
                 for i in c.KeyboardUp:
-                    if keys[i]: self.tryMove(0,-1,allowF, alwaysAllow);break
+                    if keys[i]: self.tryMove(0,-1,allowF, c.alwaysAllow);break
                 else:
                     for i in c.KeyboardDown:
-                        if keys[i]: self.tryMove(0,1,allowF, alwaysAllow);break
+                        if keys[i]: self.tryMove(0,1,allowF, c.alwaysAllow);break
         # 外挂 加速 加炸弹 穿墙 获得金钱 加血 报告属性并崩溃
         for i in c.KeyboardSpeedUp:
             if keys[i]: self.speed += 1
@@ -48,7 +45,7 @@ class player(creature):
                 self.bombRange -= 1
                 self.bombSum -= 1
         for i in c.KeyboardCrossWall:
-            if keys[i]: alwaysAllow = not alwaysAllow
+            if keys[i]: c.alwaysAllow = not c.alwaysAllow
         for i in c.KeyboardMoneyUp:
             if keys[i]: self.money += 10
         for i in c.KeyboardMoneyDown:
