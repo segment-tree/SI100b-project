@@ -61,10 +61,10 @@ if __name__ == "__main__":
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     if button > 0:
                         button -= 1
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     if button < 1:
                         button += 1
                 if event.key == pygame.K_RETURN:
@@ -72,6 +72,7 @@ if __name__ == "__main__":
                         start = False
                         stop_music(backgroundMusic[0])
                         play_music(backgroundMusic[1])
+                        i.thisMapId = 1
                         break
                     elif button == 1:
                         pygame.quit()

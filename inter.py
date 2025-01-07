@@ -101,8 +101,9 @@ class player(creature):
         raise Exception("GAMEOVER")
 
 maps:List[Mapper]=[]
+thisMapId: int
 def changeMap(mapid:int, gx:int, gy:int):
-    global thisMap
+    global thisMap, thisMapId
     mee=thisMap.me
     thisMap.mp[thisMap.me.gx][thisMap.me.gy]["entity"].remove(mee)
     thisMap.me=None
@@ -110,6 +111,7 @@ def changeMap(mapid:int, gx:int, gy:int):
     mee.reRegister(gx,gy,thisMap.addEntity)
     thisMap.me=mee
     changeMusic(mapid)
+    thisMapId = mapid  # 表示当前地图的id 用于changeMusic
 
 def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
     keys = pygame.key.get_pressed()
@@ -121,19 +123,24 @@ def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输�
     nowdialog.keyboard(keys)
 
 def changeMusic(mapid):
+    global thisMapId
     # 更换背景音乐
-    if mapid == 0:
-        for i in range(0, len(backgroundMusic)):
-            stop_music(backgroundMusic[i])
-        play_music(backgroundMusic[1])
-    elif mapid == 1:
-        for i in range(0, len(backgroundMusic)):
-            stop_music(backgroundMusic[i])
-        play_music(backgroundMusic[1])
-    elif mapid == 2:
+    # if mapid == 0:
+    #     for i in range(0, len(backgroundMusic)):
+    #         stop_music(backgroundMusic[i])
+    #     play_music(backgroundMusic[1])
+    # elif mapid == 1:
+    #     for i in range(0, len(backgroundMusic)):
+    #         stop_music(backgroundMusic[i])
+    #     play_music(backgroundMusic[1])
+    if mapid == 2:
         for i in range(0, len(backgroundMusic)):
             stop_music(backgroundMusic[i])
         play_music(backgroundMusic[2])
+    if thisMapId == 2:
+        for i in range(0, len(backgroundMusic)):
+            stop_music(backgroundMusic[i])
+        play_music(backgroundMusic[1])
 
 def play_music(music:pygame.mixer.Sound):
     asyncio.sleep(2)
