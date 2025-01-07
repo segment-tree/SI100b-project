@@ -129,11 +129,11 @@ def changeMusic(mapid):
     elif mapid == 1:
         for i in range(0, len(backgroundMusic)):
             stop_music(backgroundMusic[i])
-        play_music(backgroundMusic[0])
+        play_music(backgroundMusic[1])
     elif mapid == 2:
         for i in range(0, len(backgroundMusic)):
             stop_music(backgroundMusic[i])
-        play_music(backgroundMusic[1])
+        play_music(backgroundMusic[2])
 
 def play_music(music:pygame.mixer.Sound):
     asyncio.sleep(2)
@@ -153,7 +153,8 @@ def play_sound(sound:pygame.mixer.Sound):
 pygame.mixer.init()
 backgroundMusic = [
     pygame.mixer.Sound('./assets/music/Home_Screen.ogg'),
-    pygame.mixer.Sound('./assets/music/outside.ogg')
+    pygame.mixer.Sound('./assets/music/outside.ogg'),
+    pygame.mixer.Sound('./assets/music/shop.ogg')
 ]
 backgroundSound = []
 

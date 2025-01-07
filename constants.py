@@ -52,7 +52,8 @@ alwaysAllow = False
 # 开始界面用
 # 仅针对2K情况
 startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
-startSceneImg = pygame.transform.scale(startSceneImg, (WinWidth*CellSize,WinHeight*CellSize))
+startSceneImg = pygame.transform.scale(startSceneImg, (
+WinWidth * CellSize // CellRatio, WinHeight * CellSize // CellRatio))
 startSceneRect = startSceneImg.get_rect()
 arrowImg = pygame.image.load('./assets/utils/arrow.png')
 arrowImg = pygame.transform.scale(arrowImg, (WinHeight * CellSize * 0.05,
