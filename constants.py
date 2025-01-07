@@ -51,13 +51,16 @@ alwaysAllow = False
 
 # 开始界面用
 startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
-startSceneImg = pygame.transform.scale(startSceneImg, (
-WinWidth * CellSize // CellRatio, WinHeight * CellSize // c.CellRatio))
+startSceneImg = pygame.transform.scale(startSceneImg, (WinWidth*CellSize//CellRatio,WinHeight*CellSize//CellRatio))
 startSceneRect = startSceneImg.get_rect()
 arrowImg = pygame.image.load('./assets/utils/arrow.png')
 arrowImg = pygame.transform.scale(arrowImg, (WinHeight * CellSize // CellRatio // CellRatio * 0.1,
                                              WinHeight * CellSize // CellRatio // CellRatio * 0.2))
 arrowRect = arrowImg.get_rect()
+arrowRect1 = arrowRect.move(WinWidth * CellSize // CellRatio * 0.31,
+                           WinHeight * CellSize // CellRatio * 0.52)
+arrowRect2 = arrowRect.move(WinWidth * CellSize // CellRatio * 0.61,
+                            WinHeight * CellSize // CellRatio * 0.52)
 
 DefaultFont='华文楷体'
 if os.name=='posix':
