@@ -2,6 +2,8 @@
 # 因为这部分代码需要访问scene所以不在entity.py里
 import asyncio
 import pygame
+
+import constants as c
 from entity import *
 from scene import *
 #第一个全局变量
@@ -145,6 +147,13 @@ def play_sound(sound:pygame.mixer.Sound):
 
 """
 音乐及音效定义
+
+直接在此处加入即可
 """
-backgroundMusic = []
+backgroundMusic = [
+    pygame.mixer.Sound('./assets/music/Home_Screen.ogg'),
+    pygame.mixer.Sound('./assets/music/outside.ogg')
+]
 backgroundSound = []
+
+

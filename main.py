@@ -18,9 +18,7 @@ if __name__ == "__main__":
     音乐/音效播放初始化
     """
     pygame.mixer.init()
-    backgroundMusic.append(pygame.mixer.Sound('./assets/music/outside.ogg'))
-    backgroundMusic.append(pygame.mixer.Sound('./assets/music/Home_Screen.ogg'))
-    backgroundMusic[1].play(-1)
+    backgroundMusic[0].play(-1)
     
 
     """
@@ -85,11 +83,9 @@ if __name__ == "__main__":
                         sys.exit()
         win.blit(c.startSceneImg, c.startSceneRect)
         if button == 0:
-            win.blit(c.arrowImg, c.arrowRect.move(c.WinWidth * c.CellSize // c.CellRatio * 0.31,
-                                              c.WinHeight * c.CellSize // c.CellRatio * 0.52))
+            win.blit(c.arrowImg, c.arrowRect1)
         elif button == 1:
-            win.blit(c.arrowImg, c.arrowRect.move(c.WinWidth * c.CellSize // c.CellRatio * 0.61,
-                                              c.WinHeight * c.CellSize // c.CellRatio * 0.52))
+            win.blit(c.arrowImg, c.arrowRect2)
         pygame.display.update()
     # 开始界面 End
 

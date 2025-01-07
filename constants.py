@@ -50,14 +50,18 @@ KeyboardCrash = [pygame.K_SCROLLOCK]
 alwaysAllow = False
 
 # 开始界面用
+# 仅针对2K情况
 startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
-startSceneImg = pygame.transform.scale(startSceneImg, (
-WinWidth * CellSize // CellRatio, WinHeight * CellSize // CellRatio))
+startSceneImg = pygame.transform.scale(startSceneImg, (WinWidth*CellSize,WinHeight*CellSize))
 startSceneRect = startSceneImg.get_rect()
 arrowImg = pygame.image.load('./assets/utils/arrow.png')
-arrowImg = pygame.transform.scale(arrowImg, (WinHeight * CellSize // CellRatio // CellRatio * 0.1,
-                                             WinHeight * CellSize // CellRatio // CellRatio * 0.2))
+arrowImg = pygame.transform.scale(arrowImg, (WinHeight * CellSize * 0.05,
+                                             WinHeight * CellSize * 0.1))
 arrowRect = arrowImg.get_rect()
+arrowRect1 = arrowRect.move(WinWidth * CellSize * 0.325,
+                           WinHeight * CellSize * 0.59)
+arrowRect2 = arrowRect.move(WinWidth * CellSize * 0.63,
+                            WinHeight * CellSize * 0.59)
 
 DefaultFont='华文楷体'
 if os.name=='posix':
