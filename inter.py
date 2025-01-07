@@ -147,8 +147,13 @@ def play_sound(sound:pygame.mixer.Sound):
 
 """
 音乐及音效定义
+
+直接在此处加入即可
 """
-backgroundMusic = []
+backgroundMusic = [
+    pygame.mixer.Sound('./assets/music/Home_Screen.ogg'),
+    pygame.mixer.Sound('./assets/music/outside.ogg')
+]
 backgroundSound = []
 
 

@@ -18,9 +18,7 @@ if __name__ == "__main__":
     音乐/音效播放初始化
     """
     pygame.mixer.init()
-    backgroundMusic.append(pygame.mixer.Sound('./assets/music/outside.ogg'))
-    backgroundMusic.append(pygame.mixer.Sound('./assets/music/Home_Screen.ogg'))
-    backgroundMusic[1].play(-1)
+    backgroundMusic[0].play(-1)
     
 
     """
