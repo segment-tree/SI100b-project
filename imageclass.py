@@ -141,7 +141,7 @@ class dialog:
         temp_Content = self.content#文字分行渲染
         text_Line = []
         cnt = 1
-        while(cnt*30<len(temp_Content)):
+        while(cnt*70<len(temp_Content)):
             text_Line.append(temp_Content[(cnt-1)*70:cnt*70])
             cnt += 1
         text_Line.append(temp_Content[(cnt-1)*70:])
@@ -160,7 +160,7 @@ class dialog:
         temp_Inputs = self.inputs + "_"#文字分行渲染
         text_Line = []
         cnt = 1
-        while(cnt*30<len(temp_Inputs)):
+        while(cnt*70<len(temp_Inputs)):
             text_Line.append(temp_Inputs[(cnt-1)*70:cnt*70])
             cnt += 1
         text_Line.append(temp_Inputs[(cnt-1)*70:])
