@@ -50,6 +50,7 @@ KeyboardCrash = [pygame.K_SCROLLOCK]
 alwaysAllow = False
 
 # 开始界面用
+# 仅针对2K情况
 startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
 startSceneImg = pygame.transform.scale(startSceneImg, (WinWidth*CellSize,WinHeight*CellSize))
 startSceneRect = startSceneImg.get_rect()
