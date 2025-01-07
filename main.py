@@ -70,8 +70,8 @@ if __name__ == "__main__":
                 if event.key == pygame.K_RETURN:
                     if button == 0:
                         start = False
-                        stop_music(backgroundMusic[1])
-                        play_music(backgroundMusic[0])
+                        stop_music(backgroundMusic[0])
+                        play_music(backgroundMusic[1])
                         break
                     elif button == 1:
                         pygame.quit()
