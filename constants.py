@@ -4,7 +4,7 @@ import os
 Difficulty=0
 
 CellSize=42*2 # 不要修改CellSize，请修改CellRatio
-CellRatio=2
+CellRatio=1
 # 为了让不同分辨率下小人移速等一样，故设CellRatio，仅在渲染时放缩，逻辑不受影响
 # 2k分辨率时CellRatio为1，1k为2，（但这样就不支持4k屏了）
 # 尽量不要在imageclass.py外的地方访问CellRatio
@@ -56,13 +56,13 @@ startSceneImg = pygame.transform.scale(startSceneImg, (
 WinWidth * CellSize // CellRatio, WinHeight * CellSize // CellRatio))
 startSceneRect = startSceneImg.get_rect()
 arrowImg = pygame.image.load('./assets/utils/arrow.png')
-arrowImg = pygame.transform.scale(arrowImg, (WinHeight * CellSize * 0.05,
-                                             WinHeight * CellSize * 0.1))
+arrowImg = pygame.transform.scale(arrowImg, (WinHeight * CellSize // CellRatio * 0.05,
+                                             WinHeight * CellSize // CellRatio * 0.1))
 arrowRect = arrowImg.get_rect()
-arrowRect1 = arrowRect.move(WinWidth * CellSize * 0.325,
-                           WinHeight * CellSize * 0.59)
-arrowRect2 = arrowRect.move(WinWidth * CellSize * 0.63,
-                            WinHeight * CellSize * 0.59)
+arrowRect1 = arrowRect.move(WinWidth * CellSize // CellRatio * 0.325,
+                           WinHeight * CellSize // CellRatio * 0.59)
+arrowRect2 = arrowRect.move(WinWidth * CellSize // CellRatio * 0.63,
+                            WinHeight * CellSize // CellRatio * 0.59)
 
 DefaultFont='华文楷体'
 if os.name=='posix':
