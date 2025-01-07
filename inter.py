@@ -2,8 +2,9 @@
 # 因为这部分代码需要访问scene所以不在entity.py里
 import asyncio
 import pygame
-from entity import *
+from entityfamily import *
 from scene import *
+from imageclass import *
 #第一个全局变量
 thisMap=Mapper(1,1)
 dialoger=dialog()
@@ -53,7 +54,7 @@ class player(creature):
                 raise Exception("Crash")
 
         for i in c.KeyboardBomb:
-            if keys[i]:self.putBomb(thisMap.addEntity);break
+            if keys[i]:self.putBomb(thisMap.addEntity,bomb);break
     def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=True):
         return super().reRegister(gx,gy,initInMap,force)
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:Callable|None =None, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
@@ -134,7 +135,7 @@ def changeMusic(mapid):
         play_music(backgroundMusic[1])
 
 def play_music(music:pygame.mixer.Sound):
-    asyncio.sleep(2)
+    # asyncio.sleep(2)
     music.play(-1)
 
 def stop_music(music:pygame.mixer.Sound, time=1000):
@@ -146,5 +147,5 @@ def play_sound(sound:pygame.mixer.Sound):
 """
 音乐及音效定义
 """
-backgroundMusic = []
-backgroundSound = []
+backgroundMusic:List[pygame.mixer.Sound] = []
+backgroundSound:List[pygame.mixer.Sound] = []

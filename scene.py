@@ -3,7 +3,7 @@ import constants as c
 import copy
 from imageclass import(myImage)
 from typing import *
-from entity import *
+from entity import (genEntityId,entityLike,creature)
 import random
 
 class Mapper: # Map is some keyword use Mapper instead
@@ -50,8 +50,8 @@ class Mapper: # Map is some keyword use Mapper instead
             self.entities.append(entity)
         self.mp[gx][gy]['entity'].add(entity)
         return True
-    def addMonster(self, gx:int, gy:int, imgdir:str)->monster:
-        return monster(genEntityId(),gx,gy,imgdir, self.addEntity,layer=3)
+    def addEitityEx(self, gx:int, gy:int, imgdir:str,entitytype:type)->Any:
+        return entitytype(genEntityId(),gx,gy,imgdir, self.addEntity,layer=3)
     def moveRequest(self, x:int, y:int, entity:entityLike)->bool: # entity调用这个来判断地图是否允许移动
         if self.invaild_coord(x,y):return False
         if self.mp[x][y]["type"] in ["wall","obstacle"]:

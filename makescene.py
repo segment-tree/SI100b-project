@@ -1,4 +1,4 @@
-from entity import *
+from entityfamily import *
 from scene import *
 from nine_ai import *
 from shopowner_ai import (shop)
@@ -32,9 +32,9 @@ def tempMapGener(nowmp:Mapper):
         genWall(i,10,5)
 
     # monsters
-    nowmp.addMonster(5,5,"./assets/monster/")
-    nowmp.addMonster(6,7,"./assets/monster/")
-    t=nowmp.addMonster(1,12,"./assets/monster/")
+    nowmp.addEitityEx(5,5,"./assets/monster/",monster)
+    nowmp.addEitityEx(6,7,"./assets/monster/",monster)
+    t=nowmp.addEitityEx(1,12,"./assets/monster/",monster)
 
     bomb(genEntityId(),2,2,nowmp.addEntity,t,layer=2)
     bomb(genEntityId(),5,2,nowmp.addEntity,t,layer=2)
@@ -75,10 +75,10 @@ def mapGener(nowmp:Mapper):
 
     # monster
     genField(5,23);genField(6,23);genField(7,23);genField(8,23)
-    nowmp.addMonster(6,23,"./assets/monster/")
+    nowmp.addEitityEx(6,23,"./assets/monster/",monster)
     
     def genMos(x,y):
-        nowmp.addMonster(x,y,"./assets/monster/")
+        nowmp.addEitityEx(x,y,"./assets/monster/",monster)
         for i in range(x-2,x+2+1):
             for j in range(y-2,y+2+1):
                 if nowmp.mp[i][j]["type"]=="obstacle":
