@@ -52,7 +52,7 @@ alwaysAllow = False
 # 开始界面用
 startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
 startSceneImg = pygame.transform.scale(startSceneImg, (
-WinWidth * CellSize // CellRatio, WinHeight * CellSize // c.CellRatio))
+WinWidth * CellSize // CellRatio, WinHeight * CellSize // CellRatio))
 startSceneRect = startSceneImg.get_rect()
 arrowImg = pygame.image.load('./assets/utils/arrow.png')
 arrowImg = pygame.transform.scale(arrowImg, (WinHeight * CellSize // CellRatio // CellRatio * 0.1,

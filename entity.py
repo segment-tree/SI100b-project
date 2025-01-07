@@ -2,8 +2,10 @@ from __future__ import annotations
 from typing import *
 import constants as c
 from imageclass import *
+from decision_ai import (decision)
 import random
 entityIdCount:int=0
+entityCount:int = 0#当前场上炸了几个物品了
 def genEntityId(): # from 1(0 id is for player)
     global entityIdCount
     entityIdCount+=1
@@ -204,7 +206,7 @@ class bomb(entityLike):
                 # gen content
                 mapper.mp[x][y]["content"]=random.randrange(1,31)
                 if mapper.mp[x][y]["content"]>26 : mapper.mp[x][y]["content"]=0
-                elif mapper.mp[x][y]["content"]>5 : mapper.mp[x][y]["content"]=5
+                else : mapper.mp[x][y]["content"]=int(decision(entityCount))
 
                 if mapper.mp[x][y]["content"]==0:
                     mapper.mp[x][y]["type"]="field"
