@@ -4,7 +4,7 @@ import os
 Difficulty=0
 
 CellSize=42*2 # 不要修改CellSize，请修改CellRatio
-CellRatio=1
+CellRatio=2
 # 为了让不同分辨率下小人移速等一样，故设CellRatio，仅在渲染时放缩，逻辑不受影响
 # 2k分辨率时CellRatio为1，1k为2，（但这样就不支持4k屏了）
 # 尽量不要在imageclass.py外的地方访问CellRatio
@@ -64,10 +64,10 @@ if CellRatio == 1:
     arrowRect2 = arrowRect.move(WinWidth * CellSize * 0.63,
                                 WinHeight * CellSize * 0.59)
 elif CellRatio == 2:
-    arrowRect1 = arrowRect.move(WinWidth * CellSize / 1.333 * 0.325,
-                               WinHeight * CellSize / 1.333 * 0.59)
-    arrowRect2 = arrowRect.move(WinWidth * CellSize / 1.333 * 0.63,
-                                WinHeight * CellSize / 1.333 * 0.59)
+    arrowRect1 = arrowRect.move(WinWidth * CellSize * 0.5 * 0.325,
+                               WinHeight * CellSize * 0.52 * 0.59)
+    arrowRect2 = arrowRect.move(WinWidth * CellSize * 0.5 * 0.63,
+                                WinHeight * CellSize * 0.52 * 0.59)
 
 DefaultFont='华文楷体'
 if os.name=='posix':
