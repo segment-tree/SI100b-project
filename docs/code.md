@@ -18,3 +18,12 @@
 
 ## 核心代码架构
 
+### 代码的依赖关系
+
+如图（暂无）
+
+目前[type-test](https://github.com/segment-tree/SI100b-project/tree/type-test)分支为结构更清晰的代码，拆分了entity.py的前后部分(因为entity.py)后半部分mapper参数的类型为Mapper，其实依赖与scene.py但是因为python的动态类型是这个依赖可以不import，这样借助动态类型实现了类似于互相import，[这个commit](https://github.com/segment-tree/SI100b-project/commit/4eda9e9dfa4754ea69dc9b4110a3f6a173fa3ddf)可以看到拆分所做的一些修改，实际上地图部分和实体部分耦合度仍然较大，这也算是不使用事件队列只使用直接互调函数的缺点（entityLike和Mapper间函数互调，但entityLike不会直接发起对另一个entityLike的调用（而是通过地图发起），这保证了架构的稳定性）
+
+### entity-map架构
+
+TODO
