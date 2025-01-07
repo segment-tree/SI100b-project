@@ -122,6 +122,6 @@ if __name__ == "__main__":
         dialoger.draw(win)
         # print(car)
         # print(me.hp)
-        # print(me.gx, me.gy)
+        print(me.gx, me.gy)
         fpscnt+=1
         pygame.display.update()
