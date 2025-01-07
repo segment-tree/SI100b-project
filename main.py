@@ -14,12 +14,7 @@ if __name__ == "__main__":
     img = pygame.image.load('./assets/utils/icon1.ico')
     pygame.display.set_icon(img)
 
-    """
-    音乐/音效播放初始化
-    """
-    pygame.mixer.init()
     backgroundMusic[0].play(-1)
-    
 
     """
     地图初始化

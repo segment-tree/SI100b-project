@@ -150,6 +150,7 @@ def play_sound(sound:pygame.mixer.Sound):
 
 直接在此处加入即可
 """
+pygame.mixer.init()
 backgroundMusic = [
     pygame.mixer.Sound('./assets/music/Home_Screen.ogg'),
     pygame.mixer.Sound('./assets/music/outside.ogg')
