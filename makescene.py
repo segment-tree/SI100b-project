@@ -146,7 +146,11 @@ def mapGenerTown(nowmp:Mapper):
         yield None
     def RefuseEnter():
         while True:
-            yield "私人住宅，谢绝参观"
+            yield "(I can't enter others' house.)"
+            yield None
+    def Home():
+        while True:
+            yield "(This is my home. But it's not the time to go home and sleep.)"
             yield None
     def EnterShop(me,mapper):
         pass
@@ -154,6 +158,7 @@ def mapGenerTown(nowmp:Mapper):
     nowmp.mp[34][11]["interact"]=(icecreamShop(),False)
     nowmp.mp[28][25]["interact"]=nowmp.mp[29][25]["interact"]=(dogtalk(),False)
     nowmp.mp[14][25]["interact"]=nowmp.mp[21][6]["interact"]=nowmp.mp[30][6]["interact"]=(RefuseEnter(),False)
+    nowmp.mp[3][16]["interact"]=(Home(),False)
     nowmp.mp[11][6]["interact"]=(nineNineCat(),True)
     # 23 25/24 25/25 25 进入商店
     # 3 16 自家房门
