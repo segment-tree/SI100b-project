@@ -3,11 +3,14 @@ import inter as i
 import pygame  
 import sys
 from makescene import *
+import constants as c
 # import heartrate
 # heartrate.trace(browser=True,files=heartrate.files.all)
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
+
+    import imageconstants as cc
     #print('#',me.rx,me.ry) # gy 28 17
 
     pygame.display.set_caption("Bubbles Valley")#窗口名字和图标
@@ -77,11 +80,11 @@ if __name__ == "__main__":
                     elif button == 1:
                         pygame.quit()
                         sys.exit()
-        win.blit(c.startSceneImg, c.startSceneRect)
+        win.blit(cc.startSceneImg, cc.startSceneRect)
         if button == 0:
-            win.blit(c.arrowImg, c.arrowRect1)
+            win.blit(cc.arrowImg, cc.arrowRect1)
         elif button == 1:
-            win.blit(c.arrowImg, c.arrowRect2)
+            win.blit(cc.arrowImg, cc.arrowRect2)
         pygame.display.update()
     # 开始界面 End
 
