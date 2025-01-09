@@ -220,6 +220,13 @@ def mapGenerShop(nowmp):
             t = yield c[0] 
             c= shop(str(t))
             shopFavorability=int(c[1])
+            # shopFavorability=100
+            if shopFavorability>=100:
+                yield "What a charming person you are!"
+                yield "I mean..."
+                yield "I'm a bit obsessed with you."
+                yield "Are you willing to take over my shop?"
+                raise Exception("Ending2")
             # if t == None:
             #     break
         yield None

@@ -1,9 +1,19 @@
 import pygame
 import constants as c
 # 开始界面用
+def transformScale(img):
+    return pygame.transform.scale(img, (
+        c.WinWidth * c.CellSize // c.CellRatio, c.WinHeight * c.CellSize // c.CellRatio))
 startSceneImg = pygame.image.load('./assets/scene/Home_Screen.png')
-startSceneImg = pygame.transform.scale(startSceneImg, (
-c.WinWidth * c.CellSize // c.CellRatio, c.WinHeight * c.CellSize // c.CellRatio))
+startSceneImg = transformScale(startSceneImg)
+Ending1Img = pygame.image.load('./assets/scene/ending1.png')
+Ending1Img =transformScale(Ending1Img)
+Ending2Img = pygame.image.load('./assets/scene/ending2.png')
+Ending2Img = transformScale(Ending2Img)
+GameOverImg= pygame.image.load('./assets/scene/gameover.png')
+GameOverImg= transformScale(GameOverImg)
+
+
 startSceneRect = startSceneImg.get_rect()
 arrowImg = pygame.image.load('./assets/utils/arrow.png')
 arrowImg = pygame.transform.scale(arrowImg, (c.WinHeight * c.CellSize // c.CellRatio * 0.05,

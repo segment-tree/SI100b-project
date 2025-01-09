@@ -6,6 +6,40 @@ from makescene import *
 import constants as c
 # import heartrate
 # heartrate.trace(browser=True,files=heartrate.files.all)
+def loop(me,clock,win):
+    fpscnt=0
+    while True:
+        win.fill(back_ground_color)
+        clock.tick(c.FPS)
+        for event in pygame.event.get(pygame.QUIT):
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        #me.dx=1
+        #me.dy=0
+        #me.moving=10
+        # me.keyboard()
+        catchKeyboard(me,dialoger)
+
+        a=i.thisMap
+        me.clock(a)
+        # me.draw(3,fpscnt,(0,0),win)
+        car=i.thisMap.genCamera()
+        i.thisMap.clock()
+        i.thisMap.draw(fpscnt,car,win)
+
+        # segmentDraw.drawR(1,15,4,car,win)
+        # segmentDraw.drawC(1,15,4,car,win)
+        # segmentDraw.drawSqure(9,4,6,2,car,win)
+
+        # dialoger.keyboard()
+        dialoger.draw(win)
+        # print(car)
+        # print(me.hp)
+        print(me.gx, me.gy)
+        fpscnt+=1
+        pygame.display.update()
+
 if __name__ == "__main__":
     pygame.init()
     win=displayCreateWin()
@@ -44,7 +78,6 @@ if __name__ == "__main__":
 
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
-    fpscnt=0
     i.thisMap.me=me
 
     #for i in i.thisMap.mp[me.gx][me.gy]["entity"]:
@@ -88,35 +121,26 @@ if __name__ == "__main__":
         pygame.display.update()
     # 开始界面 End
 
+    try:
+        loop(me,clock,win)
+    except Exception as inst:
+        Img=cc.GameOverImg
+        print(inst)
+        match str(inst):
+            case "GAMEOVER":
+                Img=cc.GameOverImg
+            case "Ending1":
+                Img=cc.Ending1Img
+            case "Ending2":
+                Img=cc.Ending2Img
+    
+        while True:
+            clock.tick(c.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            win.blit(Img,Img.get_rect())
+            pygame.display.update()
+                
 
-    while True:
-        win.fill(back_ground_color)
-        clock.tick(c.FPS)
-        for event in pygame.event.get(pygame.QUIT):
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        #me.dx=1
-        #me.dy=0
-        #me.moving=10
-        # me.keyboard()
-        catchKeyboard(me,dialoger)
-
-        a=i.thisMap
-        me.clock(a)
-        # me.draw(3,fpscnt,(0,0),win)
-        car=i.thisMap.genCamera()
-        i.thisMap.clock()
-        i.thisMap.draw(fpscnt,car,win)
-
-        # segmentDraw.drawR(1,15,4,car,win)
-        # segmentDraw.drawC(1,15,4,car,win)
-        # segmentDraw.drawSqure(9,4,6,2,car,win)
-
-        # dialoger.keyboard()
-        dialoger.draw(win)
-        # print(car)
-        # print(me.hp)
-        print(me.gx, me.gy)
-        fpscnt+=1
-        pygame.display.update()
