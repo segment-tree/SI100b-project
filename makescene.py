@@ -94,6 +94,7 @@ def mapGener(nowmp:Mapper):
             cnt+=1
 
     nowmp.mp[0][28]["teleportTo"]=(1,40,11)
+    nowmp.mp[40][2]["teleportTo"]=(3,0,13)
 
 def mapGenerTown(nowmp:Mapper):
     nowmp.style=1
@@ -248,7 +249,39 @@ def mapGenerShop(nowmp):
     
     nowmp.mp[13][11]["type"]="wall"
     nowmp.mp[13][11]["render"]=myImage(f'./assets/scene/shelf3.png',zoom=2)
+
+def mapGenerDeep(nowmp:Mapper):
+    def end1():
+        yield "Oh my goodness!!!!!"
+        yield "I thought I was going to die here."
+        yield "Take me away, my hero."
+        raise Exception("Ending1")
+    nowmp.style=0
+    def genWall(x,y,iid):
+        nowmp.mp[x][y]["type"]="wall"
+        nowmp.mp[x][y]["render"]=myImage(f'./assets/scene/wall{nowmp.style}.{iid}.png')
+    def genField(x,y):
+        nowmp.mp[x][y]["type"]="field"
+        nowmp.mp[x][y]["content"]=0
+        nowmp.mp[x][y]["render"]=None
+    nowmp.C=15
+    nowmp.R=15
+
+    for x,y in scene3_0:
+        genWall(x,y,1)
+    nowmp.mp[7][7]["type"]="wall"
+    nowmp.mp[7][7]["render"]=myImage(f'./assets/scene/beauty.png')
+    nowmp.mp[6][7]["interact"]=(end1(),False)
+
+    for i in range(0,14):
+        t= random.randrange(1,13)
+        genWall(0,i,t);genWall(i,0,t);genWall(14,i,t);genWall(i,14,t)
+    genWall(14,14,1)
     
+    # 从(0,13)进入
+    # nowmp.mp[0][13]["render"]=myImage(f'./assets/scene/transparent.png')
+
+    # nowmp.mp[0][18]["teleportTo"]=(1,40,11)
 scene0 = [
 [1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,12],[1,13],[1,14],[1,15],[1,16],[1,17],[1,18],[1,19],[1,20],[1,21],[1,22],[1,23],[1,24],[1,25],[1,26],[1,27],[1,28],[1,30],[1,31],
 [41,1],[41,2],[41,4],[41,5],[41,6],[41,7],[41,8],[41,9],[41,10],[41,11],[41,12],[41,13],[41,14],[41,15],[41,16],[41,17],[41,18],[41,19],[41,20],[41,21],[41,22],[41,23],[41,24],[41,25],[41,26],[41,27],[41,28],[41,29],[41,30],[41,31],
@@ -322,6 +355,11 @@ scene2 =[
 [9,8],[10,8],[11,8],[12,8],[13,8],[14,8],
 [14,11],[14,12],[14,13],[14,14],[14,15],[13,11],[13,12],[13,13],[13,14],[13,15],
 [9,11],[9,12],[9,13],[9,14],[9,15],[10,11],[10,12],[10,13],[10,14],[10,15],
+]
+
+scene3_0=[
+    [4,6],[5,6],[6,6],[7,6],[8,6],[8,7],
+    [4,8],[5,8],[6,8],[7,8],[8,8]
 ]
 
 

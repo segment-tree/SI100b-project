@@ -67,6 +67,9 @@ if __name__ == "__main__":
     #thisMap.me=me
     mapGenerShop(i.thisMap) # 商店
     #thisMap.me=None
+    maps.append(i.thisMap) #"山洞"
+    i.thisMap=Mapper(50,50,style=0)
+    mapGenerDeep(i.thisMap)
     maps.append(i.thisMap)
     i.thisMap=nw
     ###

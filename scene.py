@@ -146,7 +146,7 @@ class Mapper: # Map is some keyword use Mapper instead
                     if self.mp[i][j]["burning"]==0:
                         self.burnUnturn(i,j)
 
-class BossScene(Mapper):
+class BossScene(Mapper): # ABANDONED
     status:int # boss 招式
     count:int # boss 当前招式剩余时间
     content:list # 当前招式暂存的内容
