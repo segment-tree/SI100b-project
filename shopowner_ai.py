@@ -23,7 +23,10 @@ messages : List[Dict] = [
     }
 ]
 
+import constants as c
 def shop(words):
+    if not c.LLMavailability: return ("Welcome to my shop (LLM not available)",15)
+
     user_input = "Now chat with me as the shop owner, and do not give me the number in the output."+words
 
     # if "quit" in user_input.lower() or "exit" in user_input.lower():#退出聊天

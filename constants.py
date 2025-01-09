@@ -2,6 +2,11 @@ import pygame
 import os
 # 常量用大驼峰命名法吧
 Difficulty=0
+AIdecisionEnbled=False
+LLMavailability=True
+
+if LLMavailability==False:
+    AIdecisionEnbled=False
 
 CellSize=42*2 # 不要修改CellSize，请修改CellRatio
 CellRatio=2
@@ -48,7 +53,6 @@ KeyboardCrash = [pygame.K_SCROLLOCK]
 # 穿墙外挂用
 alwaysAllow = False
 
-AIdecisionEnbled=False
 
 DefaultFont='华文楷体'
 if os.name=='posix':

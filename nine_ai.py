@@ -19,8 +19,9 @@ messages : List[Dict] = [
 ]
 
 
-
+import constants as c
 def nine(user_Input):
+    if not c.LLMavailability: return "Meow~ (LLM not available)"
     # if user_Input.lower() in ['exit','quit']:#退出聊天
     #     return None    
     messages.append({"role": "user", "content": user_Input})
