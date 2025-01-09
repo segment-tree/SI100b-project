@@ -29,30 +29,31 @@ class player(creature):
                         if keys[i]: self.tryMove(0,1,allowF);break
 
         # 外挂 加速 加炸弹 穿墙 获得金钱 加血 报告属性并崩溃
-        for i in c.KeyboardSpeedUp:
-            if keys[i]: self.speed += 1
-        for i in c.KeyboardSpeedDown:
-            if keys[i]: self.speed -= 1
-        for i in c.KeyboardBombUp:
-            if keys[i]:
-                self.bombRange += 1
-                self.bombSum += 1
-        for i in c.KeyboardBombDown:
-            if keys[i]:
-                self.bombRange -= 1
-                self.bombSum -= 1
-        for i in c.KeyboardCrossWall:
-            if keys[i]: c.alwaysAllow = not c.alwaysAllow
-        for i in c.KeyboardMoneyUp:
-            if keys[i]: self.money += 10
-        for i in c.KeyboardMoneyDown:
-            if keys[i]: self.money -= 10
-        for i in c.KeyboardHealth:
-            if keys[i]: self.hpPlus()
-        for i in c.KeyboardCrash:
-            if keys[i]:
-                print(f"speed:{self.speed},\r\nbombRange:{self.bombRange},\r\nbombSum:{self.bombSum},\r\nmoney:{self.money},\r\nhp:{self.hp}")
-                raise Exception("Crash")
+        if c.AllowCheat:
+            for i in c.KeyboardSpeedUp:
+                if keys[i]: self.speed += 1
+            for i in c.KeyboardSpeedDown:
+                if keys[i]: self.speed -= 1
+            for i in c.KeyboardBombUp:
+                if keys[i]:
+                    self.bombRange += 1
+                    self.bombSum += 1
+            for i in c.KeyboardBombDown:
+                if keys[i]:
+                    self.bombRange -= 1
+                    self.bombSum -= 1
+            for i in c.KeyboardCrossWall:
+                if keys[i]: c.alwaysAllow = not c.alwaysAllow
+            for i in c.KeyboardMoneyUp:
+                if keys[i]: self.money += 10
+            for i in c.KeyboardMoneyDown:
+                if keys[i]: self.money -= 10
+            for i in c.KeyboardHealth:
+                if keys[i]: self.hpPlus()
+            for i in c.KeyboardCrash:
+                if keys[i]:
+                    print(f"speed:{self.speed},\r\nbombRange:{self.bombRange},\r\nbombSum:{self.bombSum},\r\nmoney:{self.money},\r\nhp:{self.hp}")
+                    raise Exception("Crash")
 
         for i in c.KeyboardBomb:
             if keys[i]:self.putBomb(thisMap.addEntity);break

@@ -4,6 +4,7 @@ import os
 Difficulty=0
 AIdecisionEnbled=False
 LLMavailability=True
+AllowCheat=False
 
 if LLMavailability==False:
     AIdecisionEnbled=False
