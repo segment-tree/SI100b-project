@@ -182,7 +182,7 @@ def mapGenerShop(nowmp):
     shopFavorability=10
     def getPrice():
         #return [1,1,1,1,1]
-        print(shopFavorability)
+        print('shopFavorability:',shopFavorability)
         if shopFavorability>80:l=[1,1,1,3,1];lv=2
         elif shopFavorability>50:l=[1,1,1,3,1];lv=3
         elif shopFavorability>25:l=[2,2,2,6,2];lv=4
@@ -225,7 +225,7 @@ def mapGenerShop(nowmp):
         while True:
             t = yield c[0] 
             c= shop(str(t))
-            print('#',shopFavorability,c[1])
+            print('shopFavorability:',shopFavorability)
             shopFavorability+=int(c[1])-lastFavorability
             lastFavorability=int(c[1])
             # shopFavorability=100
