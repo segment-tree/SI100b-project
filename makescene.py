@@ -94,7 +94,7 @@ def mapGener(nowmp:Mapper):
             cnt+=1
 
     nowmp.mp[0][28]["teleportTo"]=(1,40,11)
-    nowmp.mp[40][2]["teleportTo"]=(3,0,13)
+    nowmp.mp[40][2]["teleportTo"]=(3,0,4)
 
 def mapGenerTown(nowmp:Mapper):
     nowmp.style=1
@@ -264,19 +264,19 @@ def mapGenerDeep(nowmp:Mapper):
         nowmp.mp[x][y]["type"]="field"
         nowmp.mp[x][y]["content"]=0
         nowmp.mp[x][y]["render"]=None
-    nowmp.C=15
-    nowmp.R=15
+    nowmp.C=14
+    nowmp.R=10
 
-    for x,y in scene3_0:
-        genWall(x,y,1)
-    nowmp.mp[7][7]["type"]="wall"
-    nowmp.mp[7][7]["render"]=myImage(f'./assets/scene/beauty.png')
-    nowmp.mp[6][7]["interact"]=(end1(),False)
+    for i in range(nowmp.C):
+        for j in range(nowmp.R):
+            genWall(i,j,random.randrange(1,13))
+    for i in range(0,8):
+        genField(i,4)
+    nowmp.mp[7][4]["type"]="wall"
+    nowmp.mp[7][4]["render"]=myImage(f'./assets/scene/beauty.png')
+    nowmp.mp[6][4]["interact"]=(end1(),False)
 
-    for i in range(0,14):
-        t= random.randrange(1,13)
-        genWall(0,i,t);genWall(i,0,t);genWall(14,i,t);genWall(i,14,t)
-    genWall(14,14,1)
+    nowmp.mp[7][5]["render"]=myImage(f'./assets/scene/wall{nowmp.style}.{1}.png')
     
     # 从(0,13)进入
     # nowmp.mp[0][13]["render"]=myImage(f'./assets/scene/transparent.png')
@@ -357,10 +357,10 @@ scene2 =[
 [9,11],[9,12],[9,13],[9,14],[9,15],[10,11],[10,12],[10,13],[10,14],[10,15],
 ]
 
-scene3_0=[
-    [4,6],[5,6],[6,6],[7,6],[8,6],[8,7],
-    [4,8],[5,8],[6,8],[7,8],[8,8]
-]
+#scene3_0=[
+#    [4,3],[5,3],[6,3],[7,3],[8,3],[8,4],
+#    [4,5],[5,5],[6,5],[7,5],[8,5]
+#]
 
 
 

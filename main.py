@@ -146,7 +146,8 @@ def main(win):
                 break
             win.blit(Img,Img.get_rect())
             pygame.display.update()
-                
+    import os
+    os.system("exec python main.py")
 
 if __name__ == "__main__":
     pygame.init()
