@@ -185,6 +185,7 @@ def mapGenerShop(nowmp):
         print(shopFavorability)
         if shopFavorability>80:l=[1,1,1,3,1];lv=2
         elif shopFavorability>50:l=[1,1,1,3,1];lv=3
+        elif shopFavorability>25:l=[2,2,2,6,2];lv=4
         elif shopFavorability>10:l=[5,5,5,10,5];lv=5
         elif shopFavorability>0:l=[15,15,15,25,15];lv=5
         elif shopFavorability>-20:l=[40,40,40,60,40];lv=10
@@ -195,6 +196,7 @@ def mapGenerShop(nowmp):
 
     def sale(nowplayer:Any,_:Mapper):
         # nowplayer.money+=100
+        global shopFavorability
         while True:
             price=getPrice()
             t=yield f"On Sale: 1: Heal Potion (${price[0]}), 2: Sensitive Potion(${price[1]}), 3: Expanded Bomb Grid Potion(${price[2]}), and 4: Kicking Bomb Boots(${price[3]}). your coin: {nowplayer.money}"
@@ -208,6 +210,7 @@ def mapGenerShop(nowmp):
             if ("4"in t or "kicking" in t or "boots" in t) and nowplayer.money>=price[3]:
                 nowplayer.cankick=True;nowplayer.money-=price[3]
             if tcoin>nowplayer.money:
+                shopFavorability+=5
                 yield "purchase succeed"
             elif "heal" in t or "expanded" in t or "sensitive" in t or "kicking" in t or "boots" in t or "1" in t or "2" in t or "3" in t or "4" in t:
                 yield "purchase failed, maybe money isn't enough?"
@@ -215,12 +218,16 @@ def mapGenerShop(nowmp):
     def shopownertalk():
         global shopFavorability
         c=shop('')
-        shopFavorability=int(c[1])
-        print(c)
+        lastFavorability=10
+        shopFavorability+=int(c[1])-lastFavorability
+        lastFavorability=int(c[1])
+        # print(c)
         while True:
             t = yield c[0] 
             c= shop(str(t))
-            shopFavorability=int(c[1])
+            print('#',shopFavorability,c[1])
+            shopFavorability+=int(c[1])-lastFavorability
+            lastFavorability=int(c[1])
             # shopFavorability=100
             if shopFavorability>=100:
                 yield "What a charming person you are!"
