@@ -101,9 +101,8 @@ class player(creature):
         raise Exception("GAMEOVER")
 
 maps:List[Mapper]=[]
-thisMapId: int
 def changeMap(mapid:int, gx:int, gy:int):
-    global thisMap, thisMapId
+    global thisMap
     mee=thisMap.me
     thisMap.mp[thisMap.me.gx][thisMap.me.gy]["entity"].remove(mee)
     thisMap.me=None
@@ -111,7 +110,7 @@ def changeMap(mapid:int, gx:int, gy:int):
     mee.reRegister(gx,gy,thisMap.addEntity)
     thisMap.me=mee
     changeMusic(mapid)
-    thisMapId = mapid  # 表示当前地图的id 用于changeMusic
+    # thisMapId = mapid  # 表示当前地图的id 用于changeMusic
 
 def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
     keys = pygame.key.get_pressed()
@@ -123,6 +122,7 @@ def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输�
     nowdialog.keyboard(keys)
 
 def changeMusic(mapid):
+    '''
     global thisMapId
     # 更换背景音乐
     # if mapid == 0:
@@ -141,6 +141,10 @@ def changeMusic(mapid):
         for i in range(0, len(backgroundMusic)):
             stop_music(backgroundMusic[i])
         play_music(backgroundMusic[1])
+    '''
+    for i in range(0, len(backgroundMusic)):
+            stop_music(backgroundMusic[i])
+    play_music(backgroundMusic[mapid+1])
 
 def play_music(music:pygame.mixer.Sound):
     asyncio.sleep(2)
@@ -160,8 +164,10 @@ def play_sound(sound:pygame.mixer.Sound):
 pygame.mixer.init()
 backgroundMusic = [
     pygame.mixer.Sound('./assets/music/Home_Screen.ogg'),
+    pygame.mixer.Sound('./assets/music/Queen-Gardens.flac'),
     pygame.mixer.Sound('./assets/music/outside.ogg'),
-    pygame.mixer.Sound('./assets/music/shop.ogg')
+    pygame.mixer.Sound('./assets/music/shop.ogg'),
+    pygame.mixer.Sound('./assets/music/City-of-Tears.flac')
 ]
 backgroundSound = []
 

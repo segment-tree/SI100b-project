@@ -48,8 +48,6 @@ def main(win):
     pygame.display.set_icon(img)
 
     backgroundMusic[0].play(-1)
-    global maps
-    maps=[]
     """
     地图初始化
     """
@@ -106,8 +104,8 @@ def main(win):
                     if button == 0:
                         start = False
                         stop_music(backgroundMusic[0])
-                        play_music(backgroundMusic[1])
-                        i.thisMapId = 1
+                        play_music(backgroundMusic[1+1])
+                        # i.thisMapId = 1
                         break
                     elif button == 1:
                         pygame.quit()
