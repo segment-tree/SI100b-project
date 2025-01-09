@@ -10,7 +10,7 @@ if __name__ == "__main__":
     win=displayCreateWin()
     #print('#',me.rx,me.ry) # gy 28 17
 
-    pygame.display.set_caption("demo")#窗口名字和图标
+    pygame.display.set_caption("Bubbles Valley")#窗口名字和图标
     img = pygame.image.load('./assets/utils/icon1.ico')
     pygame.display.set_icon(img)
 
