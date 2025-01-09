@@ -48,6 +48,8 @@ KeyboardCrash = [pygame.K_SCROLLOCK]
 # 穿墙外挂用
 alwaysAllow = False
 
+AIdecisionEnbled=False
+
 DefaultFont='华文楷体'
 if os.name=='posix':
     DefaultFont = 'source-han-sans' # linux系统大概率没有华文楷体，故选此替代

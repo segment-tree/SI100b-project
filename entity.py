@@ -206,7 +206,8 @@ class bomb(entityLike):
                 # gen content
                 mapper.mp[x][y]["content"]=random.randrange(1,31)
                 if mapper.mp[x][y]["content"]>26 : mapper.mp[x][y]["content"]=0
-                else : mapper.mp[x][y]["content"]=int(decision(entityCount))
+                elif c.AIdecisionEnbled : mapper.mp[x][y]["content"]=int(decision(entityCount))
+                elif mapper.mp[x][y]["content"]>5 : mapper.mp[x][y]["content"]=5
 
                 if mapper.mp[x][y]["content"]==0:
                     mapper.mp[x][y]["type"]="field"
