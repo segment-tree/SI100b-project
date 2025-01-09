@@ -8,6 +8,7 @@ import constants as c
 # heartrate.trace(browser=True,files=heartrate.files.all)
 def loop(me,clock,win):
     fpscnt=0
+    back_ground_color=(200, 200, 200)
     while True:
         win.fill(back_ground_color)
         clock.tick(c.FPS)
@@ -40,13 +41,8 @@ def loop(me,clock,win):
         fpscnt+=1
         pygame.display.update()
 
-if __name__ == "__main__":
-    pygame.init()
-    win=displayCreateWin()
-
+def main(win):
     import imageconstants as cc
-    #print('#',me.rx,me.ry) # gy 28 17
-
     pygame.display.set_caption("Bubbles Valley")#窗口名字和图标
     img = pygame.image.load('./assets/utils/icon1.ico')
     pygame.display.set_icon(img)
@@ -79,7 +75,6 @@ if __name__ == "__main__":
 
     me=player(id=0,gx=3,gy=17,imagesdir='./assets/player/',layer=3)
 
-    back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
     i.thisMap.me=me
 
@@ -139,11 +134,21 @@ if __name__ == "__main__":
     
         while True:
             clock.tick(c.FPS)
+            flag=False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == pygame.KEYDOWN and event.key==c.KeyboardConDialog:
+                    flag=True
+            if flag:
+                for t in backgroundMusic:stop_music(t)
+                break
             win.blit(Img,Img.get_rect())
             pygame.display.update()
                 
 
+if __name__ == "__main__":
+    pygame.init()
+    win=displayCreateWin()
+    while(True):main(win)
