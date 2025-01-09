@@ -48,7 +48,8 @@ def main(win):
     pygame.display.set_icon(img)
 
     backgroundMusic[0].play(-1)
-
+    global maps
+    maps=[]
     """
     地图初始化
     """
@@ -131,6 +132,7 @@ def main(win):
                 Img=cc.Ending1Img
             case "Ending2":
                 Img=cc.Ending2Img
+            case _ : raise inst 
     
         while True:
             clock.tick(c.FPS)
@@ -146,8 +148,10 @@ def main(win):
                 break
             win.blit(Img,Img.get_rect())
             pygame.display.update()
+    """重新启动程序"""
     import os
-    os.system("exec python main.py")
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
 
 if __name__ == "__main__":
     pygame.init()
