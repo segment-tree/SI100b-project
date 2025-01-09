@@ -40,7 +40,7 @@ if __name__ == "__main__":
     # tempMapGener(thisMap)
     ###
 
-    me=player(id=0,gx=26,gy=26,imagesdir='./assets/player/',layer=3)
+    me=player(id=0,gx=3,gy=17,imagesdir='./assets/player/',layer=3)
 
     back_ground_color=(200, 200, 200)
     clock = pygame.time.Clock() # 用于控制循环刷新频率的对象

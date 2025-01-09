@@ -152,6 +152,10 @@ def mapGenerTown(nowmp:Mapper):
         while True:
             yield "(This is my home. But it's not the time to go home and sleep.)"
             yield None
+    def Notice():
+        while True:
+            yield "Lost Person Notice: My daughter Haley has been missing in the forest for a day now. She has long golden hair and emerald like eyes. If you find her, I am willing to marry her to you. --The mayor"
+            yield None
     def EnterShop(me,mapper):
         pass
 
@@ -159,6 +163,7 @@ def mapGenerTown(nowmp:Mapper):
     nowmp.mp[28][25]["interact"]=nowmp.mp[29][25]["interact"]=(dogtalk(),False)
     nowmp.mp[14][25]["interact"]=nowmp.mp[21][6]["interact"]=nowmp.mp[30][6]["interact"]=(RefuseEnter(),False)
     nowmp.mp[3][16]["interact"]=(Home(),False)
+    nowmp.mp[7][16]["interact"]=nowmp.mp[10][6]["interact"]=nowmp.mp[24][6]["interact"]=nowmp.mp[27][6]["interact"]=nowmp.mp[26][25]["interact"]=nowmp.mp[11][25]["interact"]=(Notice(),False)
     nowmp.mp[11][6]["interact"]=(nineNineCat(),True)
     # 23 25/24 25/25 25 进入商店
     # 3 16 自家房门
