@@ -102,16 +102,16 @@ class bomb(entityLike):
         super().delete()
 
 import queue
-import copy
+from collections import (deque)
 class monster(creature):
     aiWalkCount:int
     aiBombCount:int
-    movQ:queue.deque
+    movQ:deque[Tuple[int,int]]
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:Callable, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
         super().__init__(id, gx, gy, imagesdir, initInMap, speed, hp, layer)
         self.aiWalkCount=c.FPS//2
         self.aiBombCount=c.FPS//2
-        self.movQ=queue.deque()
+        self.movQ=deque()
     def _aiFindDangerousGird(self, mapper:Mapper)->Set[Tuple[int,int]]:
         dangerous=[]
         for e in mapper.entities:
@@ -131,7 +131,7 @@ class monster(creature):
     def aiFindSafeGird(self, mapper:Mapper)->None: # 不知道ai运行效率如何
         dangerous=self._aiFindDangerousGird(mapper)
         # bfs
-        q=queue.Queue()
+        q:queue.Queue[List[Any]]=queue.Queue()
         q.put([self.gx,self.gy,tuple()])
         dir=[(-1,0),(1,0),(0,-1),(0,1)]
         vis:dict[Tuple[int,int],bool]={}
@@ -141,13 +141,13 @@ class monster(creature):
             cnt+=1 # cnt 防止怪喜欢站着不动
             print(q.qsize(),(a[0],a[1]),{(a[0],a[1])} & dangerous!= {(a[0],a[1])})
             if {(a[0],a[1])} & dangerous != {(a[0],a[1])} and (cnt>1 or random.randrange(0,9)<9):
-                self.movQ=[]
+                movQ_t=[]
                 t=a[2]
                 while len(t)>0:
-                    self.movQ.append((t[1],t[2]))
+                    movQ_t.append((t[1],t[2]))
                     t=t[0][2]
                 
-                self.movQ=queue.deque(reversed(self.movQ))
+                self.movQ=deque(reversed(movQ_t))
                 break
             random.shuffle(dir)
             for d in dir:
@@ -174,7 +174,7 @@ class monster(creature):
             if mapper.mp[self.gx+dx][self.gy+dy]["burning"]<=0:
                 t=self.tryMove(dx,dy,mapper.moveRequest)
                 if t==True:self.movQ.popleft()
-                else : self.movQ=queue.deque() # 防止怪物卡死
+                else : self.movQ=deque() # 防止怪物卡死
                 return
         self.aiWalkCount-=1
         if self.aiWalkCount==0:
