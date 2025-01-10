@@ -148,7 +148,6 @@ def changeMusic(mapid):
     play_music(backgroundMusic[mapid+1])
 
 def play_music(music:pygame.mixer.Sound):
-    asyncio.sleep(2)
     music.play(-1)
 
 def stop_music(music:pygame.mixer.Sound, time=1000):
