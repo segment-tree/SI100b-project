@@ -4,6 +4,7 @@ import copy
 from imageclass import(myImage)
 from typing import *
 from entity import (genEntityId,entityLike,creature)
+import pygame.surface
 import random
 
 class Mapper: # Map is some keyword use Mapper instead
@@ -14,7 +15,7 @@ class Mapper: # Map is some keyword use Mapper instead
     me:Any #指向玩家实体
     style:int # 0 森林， ？ boss房
     backGround:myImage|None
-    def __init__(self, c:int, r:int,style=0): # It's in CHAOS!
+    def __init__(self, c:int, r:int, style:int=0): # It's in CHAOS!
         self.C,self.R=c,r
         self.style=style
         self.fieldimg=myImage(f'./assets/scene/field{self.style}.png')
@@ -33,15 +34,15 @@ class Mapper: # Map is some keyword use Mapper instead
                 j["render"]=self.fieldimg
         self.backGround=None
         pass
-    def invaild_coord(self, x:int, y:int):
+    def invaild_coord(self, x:int, y:int)->bool:
         return x<0 or x >= self.C or y<0 or y >= self.R
-    def genCamera(self):
+    def genCamera(self)->Tuple[int,int]:
         basex=self.me.rx-c.WinWidth*c.CellSize//2
         basey=self.me.ry-c.WinHeight*c.CellSize//2
         basex=min(max(basex,0),self.C*c.CellSize-c.WinWidth *c.CellSize)
         basey=min(max(basey,0),self.R*c.CellSize-c.WinHeight*c.CellSize)
         return (basex,basey)
-    def addEntity(self, gx:int, gy:int, entity, force:bool=False)->bool:
+    def addEntity(self, gx:int, gy:int, entity:entityLike, force:bool=False)->bool:
         if not force:
             for i in self.mp[gx][gy]['entity']:
                 if i.allowOverlap==False:
@@ -65,13 +66,13 @@ class Mapper: # Map is some keyword use Mapper instead
         self.mp[x][y]["entity_locked"].add(entity)
         return True
     
-    def moveUpdate(self, oldx:int, oldy:int, newx:int, newy:int, entity:entityLike):
+    def moveUpdate(self, oldx:int, oldy:int, newx:int, newy:int, entity:entityLike)->None:
         # set 移除元素： remove 不存在会返回错误；discard不会
         self.mp[oldx][oldy]["entity"].remove(entity)
         self.mp[newx][newy]["entity_locked"].discard(entity)  # 原版本为remove
         self.mp[newx][newy]["entity"].add(entity)
     
-    def draw(self, fpscnt:int, camera:Tuple[int,int],win):
+    def draw(self, fpscnt:int, camera:Tuple[int,int],win:pygame.Surface)->None:
         if type(self.backGround)==myImage : self.backGround.drawG(0,self.R-1,camera,win)
         for layer in range(6):
             for j in range(self.R):
@@ -106,21 +107,21 @@ class Mapper: # Map is some keyword use Mapper instead
             #self.me.draw(layer,fpscnt,camera,win)
             #^这么画图层会出问题
 
-    def burnTurn(self, gx:int, gy:int, img:myImage, center:bool=False): # 将该地块转为受炸弹影响
+    def burnTurn(self, gx:int, gy:int, img:myImage, center:bool=False)->None: # 将该地块转为受炸弹影响
         # self.mp[gx][gy]["render!"]=self.mp[gx][gy]["render"]
         # self.mp[gx][gy]["render"]=img
         self.mp[gx][gy]["burning"]=c.BurnCount
         self.mp[gx][gy]["render!"]=img
         if center:
             self.mp[gx][gy]["burnCenter"]=True
-    def burnUnturn(self, gx:int, gy:int): # 将该地块解除受炸弹影响
+    def burnUnturn(self, gx:int, gy:int)->None: # 将该地块解除受炸弹影响
         # if self.mp[gx][gy].get("render!"):
         #     self.mp[gx][gy]["render"]=self.mp[gx][gy]["render!"]
         #     self.mp[gx][gy].pop("render!")
         self.mp[gx][gy].pop("render!")
         self.mp[gx][gy].pop("burnCenter",None)
 
-    def clock(self):
+    def clock(self)->None:
         for i in self.entities:
             i.clock(self.moveUpdate,mapper=self)
         # 删除死掉的实体
@@ -133,30 +134,30 @@ class Mapper: # Map is some keyword use Mapper instead
         # print(len(self.entities))#
         for i in self.entities:
             if "monster"in str(type(i)):
-                i.ai(self)
+                i.ai(self) #type ignore
         # 碰撞伤害
         for i in self.entities:
             self.me.overlap(i)
-        for j in range(self.R):
-            for i in range(self.C):
-                if self.mp[i][j]["burning"]>0:
-                    for k in self.mp[i][j]["entity"]:
+        for b in range(self.R):
+            for a in range(self.C):
+                if self.mp[a][b]["burning"]>0:
+                    for k in self.mp[a][b]["entity"]:
                         k.hpMinus()
-                    self.mp[i][j]["burning"]-=1
-                    if self.mp[i][j]["burning"]==0:
-                        self.burnUnturn(i,j)
+                    self.mp[a][b]["burning"]-=1
+                    if self.mp[a][b]["burning"]==0:
+                        self.burnUnturn(a,b)
 
 class BossScene(Mapper):
     status:int # boss 招式
     count:int # boss 当前招式剩余时间
     content:list # 当前招式暂存的内容
-    def __init__(self, c:int, r:int, style=1):
+    def __init__(self, c:int, r:int, style:int=1):
         super().__init__(c,r,style)
         self.status=0
-    def decide(self):
+    def decide(self)->None:
         self.status=random.randrange(0,3)
         self.count=c.BossDefaultCount
-    def preAction1(self):
+    def preAction1(self)->None:
         tcnt=0;self.content=[]
         while tcnt<10:
             x=random.randrange(0,self.C)
@@ -168,9 +169,9 @@ class BossScene(Mapper):
                         flag=False
             if flag:
                 self.content.append((x,y));tcnt+=1
-    def doAction1(self):
+    def doAction1(self)->None:
         pass
-    def clock(self):
+    def clock(self)->None:
         self.count-=1
         if self.count==0 : self.decide()
         match self.status:

@@ -3,6 +3,7 @@ import constants as c
 from imageclass import (myImage)
 from entity import (entityLike,creature)
 from scene import (Mapper)
+import pygame.surface
 import random
 class bomb(entityLike):
     author:creature
@@ -21,11 +22,11 @@ class bomb(entityLike):
         self.image=myImage(f"assets/scene/bomb{skin}.png")
         self.kicked=False
         self.speed=c.BombKickedSpeed
-    def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):
+    def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win:pygame.Surface)->None:
         super().draw(layer,fpscnt,camera,win)
         if self.layer==layer:
             self.image.draw(self.rx,self.ry,camera,win)
-    def clock(self, moveUpdate:Callable, mapper:Mapper):
+    def clock(self, moveUpdate:Callable, mapper:Mapper)->None:
         super().clock(moveUpdate)
         if self.count <=0:
             self.delete(mapper)
@@ -34,18 +35,18 @@ class bomb(entityLike):
             if not self.tryMove(self.dx,self.dy,mapper.moveRequest) and self.moving==0 :
                 self.kicked=False # 停止后不再移动
     
-    def walkInto(self, other:entityLike|creature):
+    def walkInto(self, other:entityLike|creature)->bool:
         if isinstance(other,creature)  and other.cankick == True :
             self.dx=self.gx-other.gx
             self.dy=self.gy-other.gy
             self.kicked=True
         return super().walkInto(other)
 
-    def delete(self, mapper:Mapper):
+    def delete(self, mapper:Mapper)->None:
         # 执行炸弹爆炸 (应该写在这里呢还是写在Mapper里？)
         xx,yy,stp=self.gx,self.gy,self.range
-        def __set(x:int,y:int,burnimg:myImage,pointer:List[List[int]]):
-            def upPointer():
+        def __set(x:int,y:int,burnimg:myImage,pointer:List[List[int]])->bool:
+            def upPointer()->None:
                 pointer[0][0]=x;pointer[1][0]=y
                 mapper.mp[x][y].pop("burnCenter",None)
                 if mapper.mp[x][y]["burning"]!=0 :
@@ -111,7 +112,7 @@ class monster(creature):
         self.aiWalkCount=c.FPS//2
         self.aiBombCount=c.FPS//2
         self.movQ=queue.deque()
-    def _aiFindDangerousGird(self, mapper:Mapper):
+    def _aiFindDangerousGird(self, mapper:Mapper)->Set[Tuple[int,int]]:
         dangerous=[]
         for e in mapper.entities:
             if isinstance(e,bomb):
@@ -119,7 +120,7 @@ class monster(creature):
                 dangerous+=[(i,e.gy) for i in range(e.gx-e.range,e.gx+e.range+1)]
         dangerouses=set(dangerous)
         return dangerouses
-    def _check(self, x:int, y:int, mapper:Mapper):
+    def _check(self, x:int, y:int, mapper:Mapper)->bool:
         if mapper.invaild_coord(x,y):return False
         if mapper.mp[x][y]["type"] in ["wall","obstacle"]:
             return False
@@ -127,7 +128,7 @@ class monster(creature):
         for i in mapper.mp[x][y]["entity"]:
             if not i.walkInto(self) : return False
         return True
-    def aiFindSafeGird(self, mapper:Mapper): # 不知道ai运行效率如何
+    def aiFindSafeGird(self, mapper:Mapper)->None: # 不知道ai运行效率如何
         dangerous=self._aiFindDangerousGird(mapper)
         # bfs
         q=queue.Queue()
@@ -155,7 +156,7 @@ class monster(creature):
                     vis[(nx,ny)]=True
                     b=[nx,ny,(a,d[0],d[1])]
                     q.put(b)
-    def walk1step(self, mapper:Mapper):
+    def walk1step(self, mapper:Mapper)->bool:
         dangerous=self._aiFindDangerousGird(mapper)
         dir=[(-1,0),(1,0),(0,-1),(0,1)]
         random.shuffle(dir)
@@ -166,7 +167,7 @@ class monster(creature):
                 return True
         return False
         
-    def walk(self, mapper:Mapper):
+    def walk(self, mapper:Mapper)->None:
         if self.moving>0:return
         if len(self.movQ)>0:
             dx,dy=self.movQ[0][0],self.movQ[0][1]
@@ -181,7 +182,7 @@ class monster(creature):
                 self.aiFindSafeGird(mapper)
             self.aiWalkCount=c.FPS//4
 
-    def ai(self, mapper:Mapper):
+    def ai(self, mapper:Mapper)->None:
         a=random.randrange(-1,10)
         if a<0:return
         if a<7 or len(self.movQ)>0:
@@ -201,7 +202,7 @@ class monster(creature):
             case 4:self.tryMove(0, 1,mapper.moveRequest)
             # case 5:self.putBomb(mapper.addEntity) # only for test
 
-    def clock(self, moveUpdate:Callable, mapper):
+    def clock(self, moveUpdate:Callable, mapper:Any)->None:
         return super().clock(moveUpdate)
 
 

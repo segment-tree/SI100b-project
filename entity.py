@@ -1,9 +1,10 @@
 from __future__ import annotations
 from typing import *
 import constants as c
+import pygame.surface
 from imageclass import (myImage)
 entityIdCount:int=0
-def genEntityId(): # from 1(0 id is for player)
+def genEntityId()->int: # from 1(0 id is for player)
     global entityIdCount
     entityIdCount+=1
     return entityIdCount
@@ -18,13 +19,13 @@ class entityLike:
     allowOverlap:bool # 允许其他entity与之重叠
     layer:int # 当前实体所在图层
     #image
-    def gxy2rxy(self): # 通过gxy生成rxy
+    def gxy2rxy(self)->None: # 通过gxy生成rxy
         self.rx=self.gx*c.CellSize+c.CellSize//2
         self.ry=self.gy*c.CellSize+c.CellSize//2
-    def rxy2gxy(self):
+    def rxy2gxy(self)->None:
         self.gx=self.rx//c.CellSize
         self.gy=self.ry//c.CellSize
-    def reRegister(self , gx:int ,gy:int ,initInMap:Callable[[int,int,entityLike,bool],bool], force:bool=False): # 重新注册entity，切换地图时使用
+    def reRegister(self , gx:int ,gy:int ,initInMap:Callable[[int,int,entityLike,bool],bool], force:bool=False)->bool: # 重新注册entity，切换地图时使用
         self.gx,self.gy = gx,gy
         self.gxy2rxy()
         self.moving=0
@@ -56,7 +57,7 @@ class entityLike:
             self.moving=c.CellSize//self.speed+1
             return True
         return False
-    def clock(self, moveUpdate:Callable[[int,int,int,int,entityLike],None]):
+    def clock(self, moveUpdate:Callable[[int,int,int,int,entityLike],None],mapper:Any=None)->None:
         # moveUpdate 为地图的更新当前实体所在网格的函数
         # moveUpdate(oldx:int, oldy:int, newx:int, newy:int, entity:entityLike)
         if self.moving>0 :
@@ -68,16 +69,16 @@ class entityLike:
             if self.gx!=oldx or self.gy!=oldy:
                 moveUpdate(oldx,oldy,self.gx,self.gy,self)
         if self.moving<=1:self.gxy2rxy()#及时跑一下这个转换，试图消除一些左键和下键交替按有盖率卡在两个格中间的bug
-    def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):...
+    def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win:pygame.Surface)->None:...
         # do nothing
-    def hpMinus(self, _:int=1):...#占位符,防止误调用
+    def hpMinus(self, _:int=1)->None:...#占位符,防止误调用
     def walkInto(self, other:entityLike)->bool:
         if self.id==other.id : return True
         if not self.allowOverlap or not other.allowOverlap:
             return False
         return True
-    def overlap(self, other:entityLike):...
-    def delete(self):
+    def overlap(self, other:entityLike)->None:...
+    def delete(self)->None:
         self.id=-1
 
 class creature(entityLike):
@@ -88,7 +89,7 @@ class creature(entityLike):
     bombSum:int # 炸弹数量
     bombRange:int # 爆炸范围
     cankick:bool # 踢炸弹
-    def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=False):
+    def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=False)->bool:
         self.immune=0
         return super().reRegister(gx,gy,initInMap,force) 
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:Callable, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
@@ -107,18 +108,18 @@ class creature(entityLike):
                     self.imagesMoving[(tx,ty)]=[]
                     for i in range(1,c.WalkingFpsLoop+1):
                         self.imagesMoving[(tx,ty)].append(myImage(imagesdir+f"moving-({tx},{ty})-{i}.png"))
-    def hpMinus(self, n:int=1):
+    def hpMinus(self, n:int=1)->None:
         if self.immune>0:return
         self.hp-=n
         if self.hp<=0 : self.delete()
         else : self.immune=c.ImmuneFrame
-    def hpPlus(self, n:int=1):
+    def hpPlus(self, n:int=1)->None:
         self.hp+=n
         self.immune=0# 清理无敌帧
-    def clock(self, moveUpdate:Callable):
+    def clock(self, moveUpdate:Callable,mapper:Any=None)->None:
         super().clock(moveUpdate)
         self.immune-=1
-    def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):
+    def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win:pygame.Surface)->None:
         super().draw(layer,fpscnt,camera,win)
         if(self.layer==layer):
             w=None
@@ -128,7 +129,7 @@ class creature(entityLike):
             else:w=self.imagesStanding[(self.dx,self.dy)]
             if self.immune<=0 or fpscnt%3!=0:
                 w.draw(self.rx,self.ry,camera,win)
-    def putBomb(self, initInMap:Callable,bomb):
+    def putBomb(self, initInMap:Callable,bomb:Callable)->None: # WARNING bomb:Callable is not very safe
         if self.bombSum>0:
             try:
                 t=bomb(genEntityId(),self.gx,self.gy,initInMap,self,layer=2)

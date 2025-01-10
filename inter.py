@@ -11,7 +11,7 @@ dialoger=dialog()
 class player(creature):
     money:int
     readToInteract:bool
-    def keyboard(self, keys:pygame.key.ScancodeWrapper): # 捕捉键盘信息
+    def keyboard(self, keys:pygame.key.ScancodeWrapper)->None: # 捕捉键盘信息
         allowF=thisMap.moveRequest
         if c.alwaysAllow:allowF=lambda x,y,entity : True
         #python有for-else语句但没有 elfor 有什么让这段代码美观的方案吗？？
@@ -55,7 +55,7 @@ class player(creature):
 
         for i in c.KeyboardBomb:
             if keys[i]:self.putBomb(thisMap.addEntity,bomb);break
-    def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=True):
+    def reRegister(self, gx:int, gy:int, initInMap:Callable, force:bool=True)->bool:
         return super().reRegister(gx,gy,initInMap,force)
     def __init__(self, id:int, gx:int, gy:int, imagesdir:str, initInMap:Callable|None =None, speed:int=c.IntialSpeed, hp:int=c.IntialHp, layer:int=9):
         if initInMap==None : initInMap=thisMap.addEntity# player切换地图的时候不要忘了重新在地图注册
@@ -65,7 +65,7 @@ class player(creature):
         self.cankick=False
         self.hp+=c.IntialPlayerHp-c.IntialHp
 
-    def pickup(self, w:List[List[dict[str,Any]]]):#捡东西
+    def pickup(self, w:List[List[dict[str,Any]]])->None:#捡东西
         if w[self.gx][self.gy]["type"]=="object":
             match w[self.gx][self.gy]["content"]:
                 case 0:print('???a empty object???')
@@ -77,7 +77,7 @@ class player(creature):
                 case 6:self.cankick=True
             w[self.gx][self.gy]["type"]="field"
             w[self.gx][self.gy]["render"]=None# Warning
-    def clock(self, mapper:Mapper):
+    def clock(self, mapper:Mapper)->None:
         self.pickup(mapper.mp)
         super().clock(mapper.moveUpdate)
         if mapper.mp[self.gx][self.gy].get("teleportTo") :
@@ -90,17 +90,17 @@ class player(creature):
             t=thisMap.mp[self.gx][self.gy]["interact"]
             if 'function'in str(type(t[0])) : dialoger(t[0](self,mapper),t[1])
             else : dialoger(*t)
-    def overlap(self, other:entityLike):
+    def overlap(self, other:entityLike)->None:
         super().overlap(other)
         if (self.gx,self.gy)==(other.gx,other.gy):
             if "monster" in str(type(other)) :# 只有与monster接触时扣血
                 self.hpMinus()
-    def delete(self):
+    def delete(self)->None:
         super().delete()
         raise Exception("GAMEOVER")
 
 maps:List[Mapper]=[]
-def changeMap(mapid:int, gx:int, gy:int):
+def changeMap(mapid:int, gx:int, gy:int)->None:
     global thisMap
     mee=thisMap.me
     thisMap.mp[thisMap.me.gx][thisMap.me.gy]["entity"].remove(mee)
@@ -110,7 +110,7 @@ def changeMap(mapid:int, gx:int, gy:int):
     thisMap.me=mee
     changeMusic(mapid)
 
-def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
+def catchKeyboard(nowplayer:player, nowdialog:dialog)->None: # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
     keys = pygame.key.get_pressed()
     if nowdialog.content==None:
         nowplayer.keyboard(keys)
@@ -119,7 +119,7 @@ def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输�
             else : nowplayer.readToInteract=False
     nowdialog.keyboard(keys)
 
-def changeMusic(mapid):
+def changeMusic(mapid:int)->None:
     # 更换背景音乐
     if mapid == 0:
         for i in range(0, len(backgroundMusic)):
@@ -134,14 +134,14 @@ def changeMusic(mapid):
             stop_music(backgroundMusic[i])
         play_music(backgroundMusic[1])
 
-def play_music(music:pygame.mixer.Sound):
+def play_music(music:pygame.mixer.Sound)->None:
     # asyncio.sleep(2)
     music.play(-1)
 
-def stop_music(music:pygame.mixer.Sound, time=1000):
+def stop_music(music:pygame.mixer.Sound, time:int=1000)->None:
     music.fadeout(time)
 
-def play_sound(sound:pygame.mixer.Sound):
+def play_sound(sound:pygame.mixer.Sound)->None:
     sound.play(1)
 
 """

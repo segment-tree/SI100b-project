@@ -7,7 +7,7 @@ class myImage:
     mode:int
     # mode==0:以当前格子左下为基准绘制
     # mode==1:以当前格子中心为基准绘制
-    def __init__(self,imgdir,zoom=1,mode=0):
+    def __init__(self, imgdir:str, zoom:float=1, mode:int=0):
         self.image=pygame.image.load(imgdir)
         rect_t=self.image.get_rect()
         h=(rect_t.height*c.CellSize*zoom//rect_t.width)//c.CellRatio
@@ -15,9 +15,9 @@ class myImage:
         self.rect=self.image.get_rect()
         self.mode=mode
 
-    def reload(self,imgdir):
-        self.__init__(imgdir)
-    def draw(self,rx:int,ry:int,camera:Tuple[int,int],win):
+    # def reload(self, imgdir:str)->None:
+    #     self.__init__(imgdir)
+    def draw(self, rx:int, ry:int, camera:Tuple[int,int], win:pygame.Surface)->None:
         self.rect=self.image.get_rect()
         match self.mode:
             case 0:
@@ -31,7 +31,7 @@ class myImage:
                     ( ry-self.rect.height*c.CellRatio//2 -camera[1] )//c.CellRatio
                 )
         win.blit(self.image,self.rect)
-    def drawG(self,gx:int,gy:int,camera:Tuple[int,int],win): # 按网格坐标渲染
+    def drawG(self, gx:int, gy:int, camera:Tuple[int,int], win:pygame.Surface)->None: # 按网格坐标渲染
         self.rect=self.image.get_rect()
         match self.mode:
             case 0:
@@ -53,12 +53,12 @@ class dialog:
     inputs:str # llm的用户输入暂存在此
     
     keysleepcnt:int
-    def __init__(self):
+    def __init__(self)->None:
         self.content=None
         self.usellm=False
         self.keysleepcnt=c.FPS//2
         self.inputs=">"
-    def __call__(self, funclist, usellm:bool):
+    def __call__(self, funclist:Generator[str,str|None,None], usellm:bool)->None:
         self.funclist=funclist;self.usellm=usellm
         assert self.funclist is not None 
         self.content=next(self.funclist)#self.funclist.send(None)
@@ -68,7 +68,7 @@ class dialog:
     # 2.在用户输入c.KeyboardConDialog时调用包含协程的funclist,切换下一条对话
     #    funclist参考makescene.py中mapGenerTown的子函数
     # 3.在用户输入c.KeyboardEscDialog时退出对话框
-    def keyboard(self,keys:pygame.key.ScancodeWrapper):
+    def keyboard(self,keys:pygame.key.ScancodeWrapper)->None:
         if self.content==None or self.funclist==None:
             pygame.event.clear()# trick防止之前输入的内容(wasdf)被检查到
             return
@@ -127,8 +127,9 @@ class dialog:
             self.funclist=None
         # print(self.inputs)
     # 画对话框，以及对话中的内容，以及还没按c.KeyboardConDialog发送的input
-    def draw(self,win):
+    def draw(self, win:pygame.Surface)->None:
         if self.content==None:return
+        assert self.content is not None 
         image=pygame.image.load('./assets/utils/dialog.png')
         rect_t=image.get_rect()
         w=c.WinWidth*c.CellSize-c.CellSize
@@ -155,7 +156,7 @@ class dialog:
         if self.usellm:self.draw_Input(win)
 
 
-    def draw_Input(self, win):
+    def draw_Input(self, win:pygame.Surface)->None:
         if self.inputs==None:return
         font = pygame.font.SysFont(c.DefaultFont, 32//c.CellRatio)
         #font.set_bold(True)
@@ -173,7 +174,7 @@ class dialog:
 class segmentDraw:
     # 在网格边界画线的class
     @classmethod
-    def drawR(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win):
+    def drawR(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win:pygame.Surface)->None:
         color = (255,0,0)
         segment=pygame.Surface((c.CellSize*length//c.CellRatio, c.CellSize//10//c.CellRatio))
         segment.fill(color)
@@ -181,7 +182,7 @@ class segmentDraw:
         rect.move_ip((gx*c.CellSize-camera[0])//c.CellRatio,(gy*c.CellSize-camera[1])//c.CellRatio)
         win.blit(segment,rect)
     @classmethod
-    def drawC(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win):
+    def drawC(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win:pygame.Surface)->None:
         color = (255,0,0)
         segment=pygame.Surface((c.CellSize//10//c.CellRatio, c.CellSize*length//c.CellRatio))
         segment.fill(color)
@@ -189,7 +190,7 @@ class segmentDraw:
         rect.move_ip((gx*c.CellSize-camera[0])//c.CellRatio,(gy*c.CellSize-camera[1])//c.CellRatio)
         win.blit(segment,rect)
     @classmethod
-    def drawSqure(self,gx,gy,width,height,camera,win):
+    def drawSqure(self, gx:int, gy:int, width:int, height:int, camera:Tuple[int,int], win:pygame.Surface)->None:
         self.drawR(gx,gy,width,camera,win)
         self.drawR(gx,gy+height,width,camera,win)
         self.drawC(gx,gy,height,camera,win)
@@ -197,13 +198,14 @@ class segmentDraw:
 
 
 # 创建窗口
-def displayCreateWin():
+def displayCreateWin()->pygame.Surface:
     if pygame.display.Info().current_w >= 2000:
         c.CellRatio=1
     win = pygame.display.set_mode((c.WinWidth*c.CellSize//c.CellRatio,c.WinHeight*c.CellSize//c.CellRatio))
     return win
 
 #test
+'''
 import sys
 from nine_ai import *
 if __name__ == "__main__":
@@ -235,4 +237,4 @@ if __name__ == "__main__":
 
         pygame.display.update()
         # print(tree.rect)
-
+'''
