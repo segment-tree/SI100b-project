@@ -329,13 +329,17 @@ TODO
 
 ### 7.4 类型检查
 
-前面说到因为entity.py后半部分mapper参数的类型为Mapper，其实依赖与scene.py但是因为python的动态类型是这个依赖可以不import，这样借助动态类型实现了类似于互相import。
+前面说到因为entity.py后半部分mapper参数的类型为Mapper，其实依赖与scene.py但是因为python的动态类型是这个依赖可以不import，这样借助动态类型实现了类似于互相import。（采用了`c.LostType`标注这些Mapper签名）
 
 这样显然是类型不安全的，为了尝试是否可以让他们变的类型安全，笔者从 tag 0.0.1 拉出一个分支进行测试。
 
 目前[type-test](https://github.com/segment-tree/SI100b-project/tree/type-test)分支提供了一种修改方法，拆分了entity.py的前后部分，解决了entity后半部分（拆出为 entityfamily ）隐形依赖的问题，[这个commit](https://github.com/segment-tree/SI100b-project/commit/4eda9e9dfa4754ea69dc9b4110a3f6a173fa3ddf)可以看到拆分所做的一些修改，实际上地图部分和实体部分耦合度仍然较大，这也算是不使用事件队列只使用直接互调函数的缺点。
 
-TODO
+对master分支使用mypy（`--disable_error_code=override`）~~除了那个标准库queue不知道发生了什么（修好了）~~，顺利通过了类型检查。
+
+然后对type-test分支使用mypy（`--disable_error_code=override --disallow-untyped-defs`）发现一堆类型签名没有加，加了半天，最坑人的一点是笔者发现python循环变量的生命周期是整个函数，在`disallow-untyped-defs`时就没法改变不同循环循环变量的类型了，好坑人！
+
+使用mypyc编译出现了一堆奇怪的问题，遂放弃。
 
 ### 7.5 性能分析
 
