@@ -27,10 +27,10 @@ def decision(user_Input):
     assistant_reply = response.choices[0].message.content
     messages.append({"role": "assistant", "content": assistant_reply})
     return assistant_reply
-
+"""
 if __name__ == "__main__":
     while(1):
         count = input()
         if count == "quit":break
         print(decision(count))
-
+"""

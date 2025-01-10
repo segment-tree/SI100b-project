@@ -1,4 +1,3 @@
-#问题：ai太愚蠢有概率死循环，数学太烂好感度会随时蹦迪
 from openai import OpenAI
 from typing import List, Dict
 client = OpenAI(
@@ -29,9 +28,6 @@ def shop(words):
 
     user_input = "Now chat with me as the shop owner, and do not give me the number in the output."+words
 
-    # if "quit" in user_input.lower() or "exit" in user_input.lower():#退出聊天
-    #     print("chat ends.")
-        
     messages.append({"role": "user", "content": user_input})
 
     response = client.chat.completions.create(

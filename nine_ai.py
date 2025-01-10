@@ -1,4 +1,3 @@
-#问题：ai听不懂人话，话说多了会逐渐忘记初指令
 from openai import OpenAI
 from typing import List, Dict
 client = OpenAI(
@@ -22,8 +21,6 @@ messages : List[Dict] = [
 import constants as c
 def nine(user_Input):
     if not c.LLMavailability: return "Meow~ (LLM not available)"
-    # if user_Input.lower() in ['exit','quit']:#退出聊天
-    #     return None    
     messages.append({"role": "user", "content": user_Input})
     response = client.chat.completions.create(
         model="llama3.2",      
