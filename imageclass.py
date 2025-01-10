@@ -3,7 +3,7 @@ from typing import *
 import constants as c
 class myImage:
     image:pygame.Surface
-    rect:Any
+    rect:pygame.Rect
     mode:int
     # mode==0:以当前格子左下为基准绘制
     # mode==1:以当前格子中心为基准绘制
@@ -48,7 +48,7 @@ class myImage:
 
 class dialog:
     content:str|None
-    funclist:Any #
+    funclist:Generator[str,str|None,None]|None #
     usellm:bool
     inputs:str # llm的用户输入暂存在此
     
@@ -60,7 +60,8 @@ class dialog:
         self.inputs=">"
     def __call__(self, funclist, usellm:bool):
         self.funclist=funclist;self.usellm=usellm
-        self.content=next(self.funclist)
+        assert self.funclist is not None 
+        self.content=next(self.funclist)#self.funclist.send(None)
         self.keysleepcnt=c.FPS//2
     # dialog的keyboard
     # 1.用于捕获用户输入(llm)，
@@ -68,9 +69,10 @@ class dialog:
     #    funclist参考makescene.py中mapGenerTown的子函数
     # 3.在用户输入c.KeyboardEscDialog时退出对话框
     def keyboard(self,keys:pygame.key.ScancodeWrapper):
-        if self.content==None:
+        if self.content==None or self.funclist==None:
             pygame.event.clear()# trick防止之前输入的内容(wasdf)被检查到
             return
+        assert self.funclist is not None 
         # 检查键盘输入，用于llm，如果有的话
         self.keysleepcnt-=1
         conDialogFlag=False

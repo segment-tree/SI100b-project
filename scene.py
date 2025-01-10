@@ -50,7 +50,7 @@ class Mapper: # Map is some keyword use Mapper instead
             self.entities.append(entity)
         self.mp[gx][gy]['entity'].add(entity)
         return True
-    def addEitityEx(self, gx:int, gy:int, imgdir:str,entitytype:type)->Any:
+    def addEitityEx(self, gx:int, gy:int, imgdir:str,entitytype:Type[creature])->creature:
         return entitytype(genEntityId(),gx,gy,imgdir, self.addEntity,layer=3)
     def moveRequest(self, x:int, y:int, entity:entityLike)->bool: # entity调用这个来判断地图是否允许移动
         if self.invaild_coord(x,y):return False

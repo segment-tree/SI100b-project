@@ -1,7 +1,8 @@
 from entityfamily import *
 from scene import *
-from nine_ai import *
+from nine_ai import (nine)
 from shopowner_ai import (shop)
+from inter import (player)
 import random
 
 def tempMapGener(nowmp:Mapper):
@@ -182,7 +183,7 @@ def mapGenerShop(nowmp):
         return l
 
 
-    def sale(nowplayer:Any,_:Mapper):
+    def sale(nowplayer:player,_:Mapper):
         # nowplayer.money+=100
         while True:
             price=getPrice()
