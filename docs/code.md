@@ -283,7 +283,7 @@ TODO
 我们在 entityLike 基类（entity.py开头）中存储了 gx gy 和 rx ry 两套坐标体系。 g 是 grid 的缩写 r 是 render 或 real 的缩写，g坐标表示格点坐标，r坐标表示在画布上的坐标。`gxy2rxy` 和 `rxy2gxy` 提供这两种坐标的转换。
 
 **预移动：**
-在 `tryMove` 函数中，如果得到地图的肯定回复 （`allowF`） ，会修改 `self.moving` 值，表示在 `self.moving=c.CellSize//self.speed+1` 帧内完成移动。同时，这里 `allowF(Mapper.moveRequest)`同时在 `mp[x][y]["entity_lock"]` 注册，占据这个移动的目标格子，防止在当前实体尚未移动完成时其他不可与之碰撞的实体向该格子移动。
+在 `tryMove` 函数中，如果得到地图的肯定回复 （`allowF`） ，会修改 `self.moving` 值，表示在 `self.moving=c.CellSize//self.speed+1` 帧内完成移动。同时，这里 `allowF`(`Mapper.moveRequest`)同时在 `mp[x][y]["entity_lock"]` 注册，占据这个移动的目标格子，防止在当前实体尚未移动完成时其他不可与之碰撞的实体向该格子移动。
 
 **移动：** 然后在`clock`中进行真正的移动，每一帧移动一点点。如果跑过了两个格子的分界线，执行地图提供的`moveUpdate`函数更新字典中的 `"entity_lock"`和`"entity"`。在最后（moving=1时）跑`self.gxy2rxy()`，纠正使实体移动到目标格子中央。
 
@@ -291,25 +291,51 @@ TODO
 
 #### 7.3.2 玩家动图的绘制
 
-传入 fpscnt 表示当前为游戏的第几帧，根据其 mod 8 的值决定渲染走路的哪一帧。
+在`moving`成员变量$>0$ 是渲染玩家移动的图片，其他时候渲染玩家静止的图片，怪物只有移动的图片（因为是史莱姆）。传入 `fpscnt` 表示当前为游戏的第几帧，根据其 mod 8 的值决定渲染走路的哪一帧。
 
-#### 7.3.3 myImage类的封装
+此外，在 `entityLike.tryMove` 中，将 `self.moving` 与`1`比较而不是与`0`比较是为了避免在连续移动时中间有一帧 `self.moving==0` 渲染了玩家站立的图像。
 
-由于不少物品高度不只一格子（树，人），但是他们“站”在下面这一格，于是封装 `myImage.draw` 根据所“站”位置的 r 坐标画； `myImage.drawG`根据所“站”位置的 r 坐标画。提供方便的接口配合 `Mapper.draw` 实现图层的正确渲染
+#### 7.3.3 镜头移动
 
-#### 7.3.4 dialog类的封装
+Mapper类中有一个 me 指针指向玩家，成员函数 genCamera 根据玩家坐标和地图长宽生成偏移量 camera ，myImage 类的所有渲染均会处理此偏移量。
+
+#### 7.3.4 myImage类的封装
+
+由于不少物品高度不只一格子（树，人），但是他们“站”在下面这一格，于是封装 `myImage.draw` 根据所“站”位置的 r 坐标画； `myImage.drawG`根据所“站”位置的 g 坐标画。提供方便的接口配合 `Mapper.draw` 实现图层的正确渲染
+
+#### 7.3.5 dialog类的封装
 
 TODO
 
-#### 7.3.5 使用协程与npc交互
+#### 7.3.6 使用协程与npc交互
 
 考虑到对于不接入llm的npc需要循环说话，接入llm的npc则是每次根据用户的输入反应，正好那天讲了强有力的协程，正好用过来了，协程在 makescene.py 中实现，装到地图的`"interact"`字段中，在`dialog.keyboard`中按一下enter触发一下协程。
 
-### 7.4 类型检查
+关于`xxx_ai.py`中 LLM 的部分，参见 _5-LLM_ 。
+
+#### 7.3.7 怪物的ai
+
+使用bfs：存在一个移动队列。每次移动队列空或根据移动队列移动受阻的时候，进行下一步移动的搜索，通过成员函数 `_aiFindDangerousGird` 找到所有在炸弹爆炸范围内的格子，bfs搜寻离当前格子最近的安全格子，并更新移动队列。
+
+为了防止当前格子安全时怪物不动，添加了 `walk1step` 成员函数，内容为走向一步能走到的安全格子，让怪物喜欢动起来。`walk1step`具体的触发参见 `monster.walk` 。
+
+如果移动队列为空 ai 还有一定概率选择扔炸弹，设置怪物视野，在距离玩家 Manhattan 距离 $\le 6$ (`c.MonsterBombDis`) 时才扔。减少怪物炸死自己可能，同时防止过多障碍被怪物炸开。
+
+效果：怪物能很有效的躲避炸弹，在没有玩家参与时几乎不会自己死亡，只是偶尔会被自己扔的炸弹封在死胡同里。一般来说，玩家正常游玩的话能够在怪物炸死自己前找到并杀死地图中所有的怪物，这已经是很好的效果了。
+
+#### 7.3.8 炸弹的爆炸
 
 TODO
 
-目前[type-test](https://github.com/segment-tree/SI100b-project/tree/type-test)分支为结构更清晰的代码，拆分了entity.py的前后部分(因为entity.py)后半部分mapper参数的类型为Mapper，其实依赖与scene.py但是因为python的动态类型是这个依赖可以不import，这样借助动态类型实现了类似于互相import，[这个commit](https://github.com/segment-tree/SI100b-project/commit/4eda9e9dfa4754ea69dc9b4110a3f6a173fa3ddf)可以看到拆分所做的一些修改，实际上地图部分和实体部分耦合度仍然较大，这也算是不使用事件队列只使用直接互调函数的缺点
+### 7.4 类型检查
+
+前面说到因为entity.py后半部分mapper参数的类型为Mapper，其实依赖与scene.py但是因为python的动态类型是这个依赖可以不import，这样借助动态类型实现了类似于互相import。
+
+这样显然是类型不安全的，为了尝试是否可以让他们变的类型安全，笔者从 tag 0.0.1 拉出一个分支进行测试。
+
+目前[type-test](https://github.com/segment-tree/SI100b-project/tree/type-test)分支提供了一种修改方法，拆分了entity.py的前后部分，解决了entity后半部分（拆出为 entityfamily ）隐形依赖的问题，[这个commit](https://github.com/segment-tree/SI100b-project/commit/4eda9e9dfa4754ea69dc9b4110a3f6a173fa3ddf)可以看到拆分所做的一些修改，实际上地图部分和实体部分耦合度仍然较大，这也算是不使用事件队列只使用直接互调函数的缺点。
+
+TODO
 
 ### 7.5 性能分析
 
