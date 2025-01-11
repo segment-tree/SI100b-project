@@ -379,7 +379,7 @@ draw 部分负责绘制，先画对话框，然后画文字，支持输入将要
 
 这样显然是类型不安全的，为了尝试是否可以让他们变的类型安全，笔者从 tag 0.0.1 拉出一个分支进行测试。
 
-目前[type-test](https://github.com/segment-tree/SI100b-project/tree/type-test)分支提供了一种修改方法，拆分了entity.py的前后部分，解决了entity后半部分（拆出为 entityfamily ）隐形依赖的问题，[这个commit](https://github.com/segment-tree/SI100b-project/commit/4eda9e9dfa4754ea69dc9b4110a3f6a173fa3ddf)可以看到拆分所做的一些修改，实际上地图部分和实体部分耦合度仍然较大，这也算是不使用事件队列只使用直接互调函数的缺点。
+目前[type-test](https://github.com/segment-tree/bubbles-valley/tree/type-test)分支提供了一种修改方法，拆分了entity.py的前后部分，解决了entity后半部分（拆出为 entityfamily ）隐形依赖的问题，[这个commit](https://github.com/segment-tree/bubbles-valley/commit/4eda9e9dfa4754ea69dc9b4110a3f6a173fa3ddf)可以看到拆分所做的一些修改（主要是`Mapper.addEntityEx` 和 `creature.putBomb`），实际上地图部分和实体部分耦合度仍然较大，这也算是不使用事件队列只使用直接互调函数的缺点。
 
 对master分支使用mypy（`--disable_error_code=override`）~~除了那个标准库queue不知道发生了什么（修好了）~~，顺利通过了类型检查。
 
@@ -391,7 +391,7 @@ draw 部分负责绘制，先画对话框，然后画文字，支持输入将要
 
 关于耦合度仍然较大，这导致了依赖的复杂性，如果项目复杂度非常大的画或许会出现像下图中的演变。
 ![](./img/依赖麻花.jpeg)
-即便是经过精巧的设计也恐怕无法避免类的继承和派生带来的依赖问题。
+即便是经过精巧的设计也恐怕无法避免类的继承和派生带来的复杂依赖问题。
 
 除了上述问题，在开发中还出现了类成员函数参数个数的膨胀，如 `myImage.__init__` 的 zoom 和 mode 参数都是后加的，因为要处理更多的情况，可以预见随着项目的开发很多类的成员函数的参数都会不可避免的膨胀。
 
