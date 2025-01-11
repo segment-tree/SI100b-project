@@ -143,11 +143,12 @@ class creature(entityLike):
 # 分界线，上面部分几乎完全不依赖于scene.py，下面几乎完全依赖
 
 class bomb(entityLike):
-    author:creature
-    damage:int
-    range:int
+    author:creature # 放炸弹的实体
+    damage:int # 未使用，所有伤害均为1
+    range:int # 爆炸范围
+    count:int # 炸弹倒计时
     image:myImage
-    kicked:bool
+    kicked:bool # 是否处于被踢状态
     def __init__(self, id:int, gx:int, gy:int, initInMap:Callable, author:creature, speed:int=c.IntialSpeed, layer:int=9, skin:int=0):
         super().__init__(id,gx,gy,initInMap,speed,layer)
         self.author=author
