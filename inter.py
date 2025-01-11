@@ -1,6 +1,6 @@
 # 包含属于entity player monster等
 # 因为这部分代码需要访问scene所以不在entity.py里
-import asyncio
+# import asyncio
 import pygame
 
 import constants as c
@@ -67,9 +67,9 @@ class player(creature):
         self.cankick=False
         self.hp+=c.IntialPlayerHp-c.IntialHp
 
-    def pickup(self, w:List[List[dict[str,Any]]]):#捡东西
+    def pickup(self, w:List[List[dict[str,Any]]]):# 捡东西
         if w[self.gx][self.gy]["type"]=="object":
-            match w[self.gx][self.gy]["content"]:
+            match w[self.gx][self.gy]["content"]: # content 对应掉落物类型
                 case 0:print('???a empty object???')
                 case 1:self.bombSum+=1
                 case 2:self.hpPlus()
@@ -84,14 +84,15 @@ class player(creature):
         super().clock(mapper.moveUpdate)
         if mapper.mp[self.gx][self.gy].get("teleportTo") :
             tmp=mapper.mp[self.gx][self.gy]["content"]
-            # 如果 content为-1必须按f交互才能切换
+            # 如果 content为-1必须按f交互才能切换 ; 传送的两种形式:交互(按F)传送和直接传送
             if tmp!=-1 or tmp==-1 and self.readToInteract:
-                changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])
+                changeMap(*mapper.mp[self.gx][self.gy]["teleportTo"])# 参数为传到哪里
         # print(self.readToInteract)
+        # 处理对话交互
         if self.readToInteract and mapper.mp[self.gx][self.gy].get("interact") and dialoger.content==None: # 只有在没有绘制对话框时才可交互
             t=thisMap.mp[self.gx][self.gy]["interact"]
-            if 'function'in str(type(t[0])) : dialoger(t[0](self,mapper),t[1])
-            else : dialoger(*t)
+            if 'function'in str(type(t[0])) : dialoger(t[0](self,mapper),t[1]) # 这种应该没用到,协程需要访问地图的备选方案
+            else : dialoger(*t) # 将协程iter传进去
     def overlap(self, other:entityLike):
         super().overlap(other)
         if (self.gx,self.gy)==(other.gx,other.gy):
@@ -99,25 +100,25 @@ class player(creature):
                 self.hpMinus()
     def delete(self):
         super().delete()
-        raise Exception("GAMEOVER")
+        raise Exception("GAMEOVER") # 通过异常处理死亡和结局
 
 maps:List[Mapper]=[]
 def changeMap(mapid:int, gx:int, gy:int):
     global thisMap
     mee=thisMap.me
-    thisMap.mp[thisMap.me.gx][thisMap.me.gy]["entity"].remove(mee)
+    thisMap.mp[thisMap.me.gx][thisMap.me.gy]["entity"].remove(mee) # 在原地图删除
     thisMap.me=None
     thisMap=maps[mapid]
-    mee.reRegister(gx,gy,thisMap.addEntity)
+    mee.reRegister(gx,gy,thisMap.addEntity) # player切换地图的时候重新在地图注册
     thisMap.me=mee
     changeMusic(mapid)
     # thisMapId = mapid  # 表示当前地图的id 用于changeMusic
 
 def catchKeyboard(nowplayer:player, nowdialog:dialog): # 处理所有键盘输入的函数，集合player.keyboard() dialog.keyboard()
     keys = pygame.key.get_pressed()
-    if nowdialog.content==None:
+    if nowdialog.content==None: # 没有对话时才接收其他输入
         nowplayer.keyboard(keys)
-    for i in c.KeyboardInteract:
+    for i in c.KeyboardInteract: # readToInteract 的设置
             if keys[i] : nowplayer.readToInteract=True;break
             else : nowplayer.readToInteract=False
     nowdialog.keyboard(keys)

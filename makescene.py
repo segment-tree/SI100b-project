@@ -234,7 +234,7 @@ def mapGenerShop(nowmp):
                 yield "I mean..."
                 yield "I'm a bit obsessed with you."
                 yield "Are you willing to take over my shop?"
-                raise Exception("Ending2")
+                raise Exception("Ending2")  # 通过异常处理死亡和结局
             # if t == None:
             #     break
         yield None
@@ -262,7 +262,7 @@ def mapGenerDeep(nowmp:Mapper):
         yield "Oh my goodness!!!!!"
         yield "I thought I was going to die here."
         yield "Take me away, my hero."
-        raise Exception("Ending1")
+        raise Exception("Ending1")  # 通过异常处理死亡和结局
     nowmp.style=0
     def genWall(x,y,iid):
         nowmp.mp[x][y]["type"]="wall"

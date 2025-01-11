@@ -74,14 +74,14 @@ class entityLike:
     def draw(self, layer:int, fpscnt:int, camera:Tuple[int,int], win):...
         # do nothing
     def hpMinus(self, _:int=1):...#占位符,防止误调用
-    def walkInto(self, other:entityLike)->bool:
+    def walkInto(self, other:entityLike)->bool: # other向self所在格子请求移动
         if self.id==other.id : return True
         if not self.allowOverlap or not other.allowOverlap:
             return False
         return True
-    def overlap(self, other:entityLike):...
+    def overlap(self, other:entityLike):... # other和self重叠了
     def delete(self):
-        self.id=-1
+        self.id=-1 # id=-1标记为删除,会在Mapper.clock里把它从地图删掉
 
 class creature(entityLike):
     hp:int
@@ -103,6 +103,7 @@ class creature(entityLike):
         self.cankick=False
         self.imagesStanding,self.imagesMoving={},{}
         t=("monster"in str(type(self)))#trick # 用于处理怪物静止时也动的问题
+        # 贴图处理
         for tx in range(-1,2):
             for ty in range(-1,2):
                 if abs(tx)+abs(ty)<2:
@@ -129,7 +130,7 @@ class creature(entityLike):
             if self.moving>0 or t:
                 w=self.imagesMoving[(self.dx,self.dy)][fpscnt%c.WalkingFpsLoop]
             else:w=self.imagesStanding[(self.dx,self.dy)]
-            if self.immune<=0 or fpscnt%3!=0:
+            if self.immune<=0 or fpscnt%3!=0: # 受击闪烁
                 w.draw(self.rx,self.ry,camera,win)
     def putBomb(self, initInMap:Callable):
         if self.bombSum>0:
@@ -184,7 +185,8 @@ class bomb(entityLike):
         # 执行炸弹爆炸 (应该写在这里呢还是写在Mapper里？)
         xx,yy,stp=self.gx,self.gy,self.range
         def __set(x:int,y:int,burnimg:myImage,pointer:List[List[int]]):
-            def upPointer():
+            # __set 执行对爆炸扫到的格子的处理
+            def upPointer(): # 尖端 pointer 用于定位爆炸十字的尖端
                 pointer[0][0]=x;pointer[1][0]=y
                 mapper.mp[x][y].pop("burnCenter",None)
                 if mapper.mp[x][y]["burning"]!=0 :
@@ -220,6 +222,7 @@ class bomb(entityLike):
         colimg=myImage("./assets/scene/burning3.png")
         rowimg=myImage("./assets/scene/burning2.png")
         u,d,l,r,_=[yy],[yy],[xx],[xx],[0]
+        # 四个方向
         for _x in range(xx,xx+stp+1):
             if not __set(_x,yy,rowimg,[r,_]):break
         for _x in reversed(range(xx-stp,xx+1)):
@@ -228,13 +231,13 @@ class bomb(entityLike):
             if not __set(xx,_y,colimg,[_,d]):break
         for _y in reversed(range(yy-stp,yy+1)):
             if not __set(xx,_y,colimg,[_,u]):break
-        #炸弹边缘
+        # 炸弹边缘
         uu,dd,ll,rr=u[0],d[0],l[0],r[0]
         if uu!=-1 :mapper.burnTurn(xx,uu,myImage("./assets/scene/burning6.png"))
         if dd!=-1 :mapper.burnTurn(xx,dd,myImage("./assets/scene/burning4.png"))
         if ll!=-1 :mapper.burnTurn(ll,yy,myImage("./assets/scene/burning5.png"))
         if rr!=-1 :mapper.burnTurn(rr,yy,myImage("./assets/scene/burning7.png"))
-        #炸弹中心
+        # 炸弹中心
         mapper.burnTurn(xx,yy,myImage("./assets/scene/burning1.png",zoom=1.4,mode=1),center=True)
         # 归还炸弹
         self.author.bombSum+=1
@@ -251,7 +254,7 @@ class monster(creature):
         self.aiWalkCount=c.FPS//2
         self.aiBombCount=c.FPS//2
         self.movQ=deque()
-    def _aiFindDangerousGird(self, mapper:c.LostType):
+    def _aiFindDangerousGird(self, mapper:c.LostType): # 找到所有危险格子
         dangerous=[]
         for e in mapper.entities:
             if "bomb" in str(type(e)):
@@ -259,7 +262,7 @@ class monster(creature):
                 dangerous+=[(i,e.gy) for i in range(e.gx-e.range,e.gx+e.range+1)]
         dangerouses=set(dangerous)
         return dangerouses
-    def _check(self, x:int, y:int, mapper:c.LostType):
+    def _check(self, x:int, y:int, mapper:c.LostType): # 坐标是否可达
         if mapper.invaild_coord(x,y):return False
         if mapper.mp[x][y]["type"] in ["wall","obstacle"]:
             return False
@@ -267,17 +270,17 @@ class monster(creature):
         for i in mapper.mp[x][y]["entity"]:
             if not i.walkInto(self) : return False
         return True
-    def aiFindSafeGird(self, mapper:c.LostType): # 不知道ai运行效率如何
+    def aiFindSafeGird(self, mapper:c.LostType): # 找安全的格子并更新移动队列(MovQ)
         dangerous=self._aiFindDangerousGird(mapper)
         # bfs
         q:queue.Queue[List[Any]]=queue.Queue()
         q.put([self.gx,self.gy,tuple()])
         dir=[(-1,0),(1,0),(0,-1),(0,1)]
-        vis:dict[Tuple[int,int],bool]={}
+        vis:dict[Tuple[int,int],bool]={} # bfs vis数组
         cnt=0
         while not q.empty():
             a=q.get()
-            cnt+=1 # cnt 防止怪喜欢站着不动
+            cnt+=1 # cnt 防止怪喜欢站着不动 已弃用,由walk1step防止怪喜欢站着不动
             print(q.qsize(),(a[0],a[1]),{(a[0],a[1])} & dangerous!= {(a[0],a[1])})
             if {(a[0],a[1])} & dangerous != {(a[0],a[1])} and (cnt>1 or random.randrange(0,9)<9):
                 movQ_t=[]
@@ -295,7 +298,7 @@ class monster(creature):
                     vis[(nx,ny)]=True
                     b=[nx,ny,(a,d[0],d[1])]
                     q.put(b)
-    def walk1step(self, mapper:c.LostType):
+    def walk1step(self, mapper:c.LostType): # 只走一步,防止怪喜欢站着不动
         dangerous=self._aiFindDangerousGird(mapper)
         dir=[(-1,0),(1,0),(0,-1),(0,1)]
         random.shuffle(dir)
@@ -315,20 +318,20 @@ class monster(creature):
                 if t==True:self.movQ.popleft()
                 else : self.movQ=deque() # 防止怪物卡死
                 return
-        self.aiWalkCount-=1
+        self.aiWalkCount-=1 # aiWalkCount 防止怪物过于频繁的进行安全位置的搜索,其实大概率没用
         if self.aiWalkCount==0:
-            if not self.walk1step(mapper):
+            if not self.walk1step(mapper): # 如果只走一步摆脱不了危险就 bfs
                 self.aiFindSafeGird(mapper)
             self.aiWalkCount=c.FPS//4
 
     def ai(self, mapper:c.LostType):
         a=random.randrange(-1,10)
-        if a<0:return
-        if a<7 or len(self.movQ)>0:
+        if a<0:return # 怪物发呆,增加此分支的概率可以使怪物变傻
+        if a<7 or len(self.movQ)>0: # 走路
             self.walk(mapper)
-        else:
+        else: # 扔炸弹
             self.aiBombCount-=1
-            if self.aiBombCount==0:
+            if self.aiBombCount==0: # 防止ai过于频繁的扔炸弹
                 if abs(self.gx-mapper.me.gx)+abs(self.gy-mapper.me.gy) <= c.MonsterBombDis :
                     self.putBomb(mapper.addEntity)
                 self.aiBombCount=c.FPS//2
@@ -343,38 +346,3 @@ class monster(creature):
 
     def clock(self, moveUpdate:Callable, mapper):
         return super().clock(moveUpdate)
-
-
-# test
-'''
-if __name__ == "__main__":
-    a=entityLike(1,1,1)
-    b=entityLike(2,2,2)
-    cc=entityLike(1,1,1)
-    d={a,b}
-    print(cc in d)
-    pygame.init()
-    back_ground_color=(200, 200, 200)
-    clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
-    win = pygame.display.set_mode((c.WinWidth*c.CellSize,c.WinHeight*c.CellSize))
-    fpscnt=0
-    me=creature(id=1,gx=2,gy=2,imagesdir='./assets/player/')
-    while True:
-        win.fill(back_ground_color)
-        clock.tick(c.FPS)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        me.dx=1
-        me.dy=0
-        me.moving=10
-        def tmpf(a,b,c):return True
-        def tmpff(a,b,c,d,e):pass
-        #if(fpscnt%40==0):me.tryMove(1,0,tmpf)
-        #me.clock(tmpff)
-        me.draw(9,fpscnt,(0,0),win)
-        #print(me.rx,me.ry)
-        fpscnt+=1
-        pygame.display.update()
-'''

@@ -12,8 +12,8 @@ class Mapper: # Map is some keyword use Mapper instead
     C:int # Column
     R:int # Row
     me:Any #指向玩家实体
-    style:int # 0 森林， ？ boss房
-    backGround:myImage|None
+    style:int # 0 森林(田野)，1 城镇 ，2 商店，3 "山洞"，？ boss房(无)
+    backGround:myImage|None # 有无背景(田野山洞无背景)
     def __init__(self, c:int, r:int,style=0): # It's in CHAOS!
         self.C,self.R=c,r
         self.style=style
@@ -35,13 +35,13 @@ class Mapper: # Map is some keyword use Mapper instead
         pass
     def invaild_coord(self, x:int, y:int):
         return x<0 or x >= self.C or y<0 or y >= self.R
-    def genCamera(self):
+    def genCamera(self): # 生成镜头偏移量
         basex=self.me.rx-c.WinWidth*c.CellSize//2
         basey=self.me.ry-c.WinHeight*c.CellSize//2
         basex=min(max(basex,0),self.C*c.CellSize-c.WinWidth *c.CellSize)
         basey=min(max(basey,0),self.R*c.CellSize-c.WinHeight*c.CellSize)
         return (basex,basey)
-    def addEntity(self, gx:int, gy:int, entity, force:bool=False)->bool:
+    def addEntity(self, gx:int, gy:int, entity, force:bool=False)->bool: # 在地图中添加实体
         if not force:
             for i in self.mp[gx][gy]['entity']:
                 if i.allowOverlap==False:
@@ -65,10 +65,10 @@ class Mapper: # Map is some keyword use Mapper instead
         self.mp[x][y]["entity_locked"].add(entity)
         return True
     
-    def moveUpdate(self, oldx:int, oldy:int, newx:int, newy:int, entity:entityLike):
+    def moveUpdate(self, oldx:int, oldy:int, newx:int, newy:int, entity:entityLike): # 移动超过两个格子的中线更新坐标
         # set 移除元素： remove 不存在会返回错误；discard不会
         self.mp[oldx][oldy]["entity"].remove(entity)
-        self.mp[newx][newy]["entity_locked"].discard(entity)  # 原版本为remove
+        self.mp[newx][newy]["entity_locked"].discard(entity)  # 原版本为remove,有时不会创建lock故改为discard
         self.mp[newx][newy]["entity"].add(entity)
     
     def draw(self, fpscnt:int, camera:Tuple[int,int],win):
@@ -76,7 +76,7 @@ class Mapper: # Map is some keyword use Mapper instead
         for layer in range(6):
             for j in range(self.R):
                 for i in range(self.C):
-                    nowlay=0
+                    nowlay=0 # 当前格子本身的layer
                     match self.mp[i][j]["type"]:
                         case "field":
                             nowlay=0
@@ -94,9 +94,9 @@ class Mapper: # Map is some keyword use Mapper instead
                         self.mp[i][j]["render"].drawG(i,j,camera,win)
                     elif layer==0: # 即使不是空地，图层底层也要渲染空地
                        self.fieldimg.drawG(i,j,camera,win)
-                    if layer==1 and self.mp[i][j].get("render!"):
+                    if layer==1 and self.mp[i][j].get("render!"): # 对爆炸的特殊处理
                         self.mp[i][j]["render!"].drawG(i,j,camera,win)
-                    if layer==2 and self.mp[i][j].get("burnCenter") and self.mp[i][j].get("render!") :
+                    if layer==2 and self.mp[i][j].get("burnCenter") and self.mp[i][j].get("render!") :  # 对爆炸的特殊处理
                         self.mp[i][j]["render!"].drawG(i,j,camera,win)
                     for k in self.mp[i][j]["entity"]:
                         k.draw(layer,fpscnt,camera,win)
@@ -137,6 +137,7 @@ class Mapper: # Map is some keyword use Mapper instead
         # 碰撞伤害
         for i in self.entities:
             self.me.overlap(i)
+        # 爆炸的倒计时,数到0消除爆炸效果
         for j in range(self.R):
             for i in range(self.C):
                 if self.mp[i][j]["burning"]>0:

@@ -17,7 +17,7 @@ class myImage:
 
     def reload(self,imgdir):
         self.__init__(imgdir)
-    def draw(self,rx:int,ry:int,camera:Tuple[int,int],win):
+    def draw(self,rx:int,ry:int,camera:Tuple[int,int],win): # 按实体脚下画布上的坐标画
         self.rect=self.image.get_rect()
         match self.mode:
             case 0:
@@ -47,12 +47,12 @@ class myImage:
         win.blit(self.image,self.rect)
 
 class dialog:
-    content:str|None
-    funclist:Any #
-    usellm:bool
+    content:str|None # npc输出内容
+    funclist:Any # 协程函数
+    usellm:bool # 是否允许玩家输入(玩家输入由“>”提示)
     inputs:str # llm的用户输入暂存在此
     
-    keysleepcnt:int
+    keysleepcnt:int # 长按键盘时要隔若干帧再重新触发
     def __init__(self):
         self.content=None
         self.usellm=False
@@ -152,7 +152,7 @@ class dialog:
         
         if self.usellm:self.draw_Input(win)
 
-
+    # 玩家输入的渲染
     def draw_Input(self, win):
         if self.inputs==None:return
         font = pygame.font.SysFont(c.DefaultFont, 32//c.CellRatio)
@@ -170,8 +170,9 @@ class dialog:
             win.blit(surfaces[i-1], (int((c.WinWidth-12.5)*c.CellSize/c.CellRatio),int((c.WinHeight-2+i*0.5)*c.CellSize/c.CellRatio)))
 class segmentDraw:
     # 在网格边界画线的class
+    # 本来打算在boss用来,but...
     @classmethod
-    def drawR(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win):
+    def drawR(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win): # 画横线
         color = (255,0,0)
         segment=pygame.Surface((c.CellSize*length//c.CellRatio, c.CellSize//10//c.CellRatio))
         segment.fill(color)
@@ -179,7 +180,7 @@ class segmentDraw:
         rect.move_ip((gx*c.CellSize-camera[0])//c.CellRatio,(gy*c.CellSize-camera[1])//c.CellRatio)
         win.blit(segment,rect)
     @classmethod
-    def drawC(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win):
+    def drawC(self, gx:int, gy:int, length:int, camera:Tuple[int,int], win): # 画横线
         color = (255,0,0)
         segment=pygame.Surface((c.CellSize//10//c.CellRatio, c.CellSize*length//c.CellRatio))
         segment.fill(color)
@@ -187,7 +188,7 @@ class segmentDraw:
         rect.move_ip((gx*c.CellSize-camera[0])//c.CellRatio,(gy*c.CellSize-camera[1])//c.CellRatio)
         win.blit(segment,rect)
     @classmethod
-    def drawSqure(self,gx,gy,width,height,camera,win):
+    def drawSqure(self,gx,gy,width,height,camera,win): # 画矩形
         self.drawR(gx,gy,width,camera,win)
         self.drawR(gx,gy+height,width,camera,win)
         self.drawC(gx,gy,height,camera,win)
@@ -200,37 +201,3 @@ def displayCreateWin():
         c.CellRatio=1
     win = pygame.display.set_mode((c.WinWidth*c.CellSize//c.CellRatio,c.WinHeight*c.CellSize//c.CellRatio))
     return win
-
-#test
-import sys
-from nine_ai import *
-if __name__ == "__main__":
-    pygame.init()
-    clock = pygame.time.Clock() # 用于控制循环刷新频率的对象
-    win = pygame.display.set_mode((c.WinWidth*c.CellSize,c.WinHeight*c.CellSize))
-    def nineNineCat():
-        c=nine('')
-        while True:
-            t = yield c 
-            c= nine(str(t))
-            # if t == None:
-            #     break
-        yield None
-    aaa=dialog()
-    aaa(nineNineCat(),True)
-    while True:
-        clock.tick(c.FPS)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        # tree=myImage('./assets/t/54px-Pine_Stage_4.png')
-        # tree.drawG(1,0,win)
-        # tree.draw(c.CellSize//2,c.CellSize+c.CellSize//2,(0,0),win)
-        
-        aaa.keyboard(pygame.key.get_pressed())
-        aaa.draw(win)
-
-        pygame.display.update()
-        # print(tree.rect)
-
