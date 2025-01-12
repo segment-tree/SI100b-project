@@ -6,7 +6,10 @@ AIdecisionEnbled=False
 LLMavailability=True
 AllowCheat=True
 AllowTranslucence=True # 允许在有遮挡时进行半透明绘制
-AllowBottomBar=True
+BottomBarMode=2 
+# ==0 不渲染血量
+# ==1 在BottomBar渲染血量
+# ==2 在左上角渲染血量
 
 if LLMavailability==False:
     AIdecisionEnbled=False

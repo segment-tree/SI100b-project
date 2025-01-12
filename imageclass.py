@@ -203,17 +203,18 @@ class segmentDraw:
 class bottomBar:
     @classmethod
     def draw(self,con:List[str],win):
-        if not c.AllowBottomBar:return
+        if c.BottomBarMode==0:return
         barcolor=(200, 200, 200)
         image=pygame.Surface((c.WinWidth*c.CellSize//c.CellRatio,c.CellSize//2//c.CellRatio))
         image.fill(barcolor)
         rect=image.get_rect()
         rect.move_ip(0,c.WinHeight*c.CellSize//c.CellRatio)
         win.blit(image,rect)
+        t=(c.WinHeight*c.CellSize) if c.BottomBarMode==1 else 0
         for i in range(len(con)):
             myImage(con[i],0.5,0).draw(
                 (i*c.CellSize//2+c.CellSize//2),
-                (c.WinHeight*c.CellSize),
+                t,
                 (0,0),win)
     @classmethod
     def drawHP(self,hp:int,win):
@@ -223,6 +224,6 @@ class bottomBar:
 def displayCreateWin():
     if pygame.display.Info().current_w >= 2000:
         c.CellRatio=1
-    dt = c.CellSize//2//c.CellRatio if c.AllowBottomBar else 0
+    dt = c.CellSize//2//c.CellRatio if c.BottomBarMode==1 else 0
     win = pygame.display.set_mode((c.WinWidth*c.CellSize//c.CellRatio,c.WinHeight*c.CellSize//c.CellRatio+dt))
     return win
