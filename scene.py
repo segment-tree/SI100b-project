@@ -77,6 +77,7 @@ class Mapper: # Map is some keyword use Mapper instead
             for j in range(self.R):
                 for i in range(self.C):
                     nowlay=0 # 当前格子本身的layer
+                    trans=255
                     match self.mp[i][j]["type"]:
                         case "field":
                             nowlay=0
@@ -85,13 +86,12 @@ class Mapper: # Map is some keyword use Mapper instead
                         case "wall":nowlay=3#5
                         case "obstacle":nowlay=2
                         case "object":nowlay=2
-                    '''
-                    if len(self.mp[i][j]["entity_locked"])!=0:
-                        nowlay=100###
-                        print(i,j,self.mp[i][j]["entity_locked"])###
-                    '''
+                    if self.mp[i][j]["type"]=="wall" and self.mp[i][j]["render"].overheight() and\
+                        j>0 and self.mp[i][j-1]["type"]=="object" and self.mp[i][j-1]["content"]!=0 :
+                            trans=128+64
+                    
                     if layer==nowlay:
-                        self.mp[i][j]["render"].drawG(i,j,camera,win)
+                        self.mp[i][j]["render"].drawG(i,j,camera,win,transparent=trans)
                     elif layer==0: # 即使不是空地，图层底层也要渲染空地
                        self.fieldimg.drawG(i,j,camera,win)
                     if layer==1 and self.mp[i][j].get("render!"): # 对爆炸的特殊处理

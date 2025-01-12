@@ -17,7 +17,7 @@ class myImage:
 
     def reload(self,imgdir):
         self.__init__(imgdir)
-    def draw(self,rx:int,ry:int,camera:Tuple[int,int],win): # 按实体脚下画布上的坐标画
+    def draw(self,rx:int,ry:int,camera:Tuple[int,int],win,transparent:int=255): # 按实体脚下画布上的坐标画
         self.rect=self.image.get_rect()
         match self.mode:
             case 0:
@@ -30,8 +30,10 @@ class myImage:
                     ( rx-self.rect.width *c.CellRatio//2 -camera[0] )//c.CellRatio,
                     ( ry-self.rect.height*c.CellRatio//2 -camera[1] )//c.CellRatio
                 )
+        if c.AllowTranslucence: self.image.set_alpha(transparent)
         win.blit(self.image,self.rect)
-    def drawG(self,gx:int,gy:int,camera:Tuple[int,int],win): # 按网格坐标渲染
+        if c.AllowTranslucence: self.image.set_alpha(255)
+    def drawG(self,gx:int,gy:int,camera:Tuple[int,int],win,transparent:int=255): # 按网格坐标渲染
         self.rect=self.image.get_rect()
         match self.mode:
             case 0:
@@ -44,7 +46,11 @@ class myImage:
                     ( gx*c.CellSize+c.CellSize//2-self.rect.width *c.CellRatio//2 -2 -camera[0] )//c.CellRatio,
                     ( gy*c.CellSize+c.CellSize//2-self.rect.height*c.CellRatio//2 -2 -camera[1] )//c.CellRatio
                 )
+        if c.AllowTranslucence: self.image.set_alpha(transparent)
         win.blit(self.image,self.rect)
+        if c.AllowTranslucence: self.image.set_alpha(255)
+    def overheight(self): # 高度是否超过一格半
+        return self.rect.height*c.CellRatio>=1.5*c.CellSize
 
 class dialog:
     content:str|None # npc输出内容

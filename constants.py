@@ -5,6 +5,7 @@ Difficulty=0
 AIdecisionEnbled=False
 LLMavailability=True
 AllowCheat=True
+AllowTranslucence=True # 允许在有遮挡时进行半透明绘制
 
 if LLMavailability==False:
     AIdecisionEnbled=False
