@@ -35,6 +35,7 @@ def loop(me,clock,win):
 
         # dialoger.keyboard()
         dialoger.draw(win)
+        bottomBar.drawHP(me.hp,win)
         # print(car)
         # print(me.hp)
         # print(me.gx, me.gy)
@@ -115,6 +116,7 @@ def main(win):
             win.blit(cc.arrowImg, cc.arrowRect1)
         elif button == 1:
             win.blit(cc.arrowImg, cc.arrowRect2)
+        bottomBar.draw([f'./assets/scene/obstacle0.{i}.png' for i in range(1,12)]+[f'./assets/scene/object{i}.png' for i in range(1,6)],win)
         pygame.display.update()
     # 开始界面 End
 
@@ -145,6 +147,7 @@ def main(win):
                 for t in backgroundMusic:stop_music(t)
                 break
             win.blit(Img,Img.get_rect())
+            if str(inst)=="GAMEOVER": bottomBar.draw(['./assets/scene/bomb0.png']*3,win)
             pygame.display.update()
     """重新启动程序"""
     import os

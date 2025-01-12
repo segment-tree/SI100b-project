@@ -200,10 +200,29 @@ class segmentDraw:
         self.drawC(gx,gy,height,camera,win)
         self.drawC(gx+width,gy ,height,camera,win)
 
+class bottomBar:
+    @classmethod
+    def draw(self,con:List[str],win):
+        if not c.AllowBottomBar:return
+        barcolor=(200, 200, 200)
+        image=pygame.Surface((c.WinWidth*c.CellSize//c.CellRatio,c.CellSize//2//c.CellRatio))
+        image.fill(barcolor)
+        rect=image.get_rect()
+        rect.move_ip(0,c.WinHeight*c.CellSize//c.CellRatio)
+        win.blit(image,rect)
+        for i in range(len(con)):
+            myImage(con[i],0.5,0).draw(
+                (i*c.CellSize//2+c.CellSize//2),
+                (c.WinHeight*c.CellSize),
+                (0,0),win)
+    @classmethod
+    def drawHP(self,hp:int,win):
+        self.draw(['./assets/utils/heart.png']*hp,win)
 
 # 创建窗口
 def displayCreateWin():
     if pygame.display.Info().current_w >= 2000:
         c.CellRatio=1
-    win = pygame.display.set_mode((c.WinWidth*c.CellSize//c.CellRatio,c.WinHeight*c.CellSize//c.CellRatio))
+    dt = c.CellSize//2//c.CellRatio if c.AllowBottomBar else 0
+    win = pygame.display.set_mode((c.WinWidth*c.CellSize//c.CellRatio,c.WinHeight*c.CellSize//c.CellRatio+dt))
     return win
