@@ -78,7 +78,7 @@ def mapGener(nowmp:Mapper):
     nowmp.addMonster(6,23,"./assets/monster/")
     
     def genMos(x,y):
-        nowmp.addMonster(x,y,"./assets/monster/")
+        (nowmp.addMonster(x,y,"./assets/monster/")).bombRange+=random.randrange(0,c.Difficulty+1)
         for i in range(x-2,x+2+1):
             for j in range(y-2,y+2+1):
                 if nowmp.mp[i][j]["type"]=="obstacle" and abs(i-x)+abs(j-y)<=2:
