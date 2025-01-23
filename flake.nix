@@ -28,15 +28,17 @@
         name = "bubbles-valley";
         src = ./.;
         buildInputs = with pkgs; [
+          which
           (python312.withPackages (ps: [ ps.pygame ps.openai ]))
         ];
         buildPhase = "";
         installPhase = ''
           name=bubbles-valley
+          PYTHON=`which python`
           
           mkdir -p $out/bin/
           cp -r $src $out/src
-          echo "python $out/src/main.py" > $out/bin/$name
+          echo "cd $out/src; $PYTHON main.py" > $out/bin/$name
           chmod +x $out/bin/$name
         '';
       };
