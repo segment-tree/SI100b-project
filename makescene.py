@@ -85,7 +85,7 @@ def mapGener(nowmp:Mapper):
                     genField(i,j)
     tmpvis:Dict[Tuple[int,int],bool]={}
     cnt=0
-    while cnt<=7+c.Difficulty*2:
+    while cnt<=5+c.Difficulty*2:
         x=random.randrange(1,nowmp.C-2)
         y=random.randrange(1,nowmp.R-2)
         if not tmpvis.get((x,y)) and nowmp.mp[x][y]["type"]!="wall":

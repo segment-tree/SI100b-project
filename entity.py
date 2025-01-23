@@ -332,8 +332,9 @@ class monster(creature):
         else: # 扔炸弹
             self.aiBombCount-=1
             if self.aiBombCount==0: # 防止ai过于频繁的扔炸弹
-                if abs(self.gx-mapper.me.gx)+abs(self.gy-mapper.me.gy) <= c.MonsterBombDis :
-                    self.putBomb(mapper.addEntity)
+                if abs(self.gx-mapper.me.gx)+abs(self.gy-mapper.me.gy) <= c.MonsterBombDis : # 离玩家近距离时才扔炸弹
+                    if c.Difficulty<=0 or self.moving<=(c.CellSize//self.speed+1)//2-1: # 移动好再放炸弹 c.Difficulty==0时不采用
+                        self.putBomb(mapper.addEntity)
                 self.aiBombCount=c.FPS//2
 
         return

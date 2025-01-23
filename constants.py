@@ -1,7 +1,7 @@
 import pygame
 import os
 # 常量用大驼峰命名法吧
-Difficulty=0
+Difficulty=1
 AIdecisionEnbled=False
 LLMavailability=True
 AllowCheat=True
@@ -25,8 +25,8 @@ IntialSpeed=8 # 所有entity的速度初值
 IncreasedSpeed=14 # 小人吃到加速道具后的速度
 BombKickedSpeed=5*IntialSpeed
 IntialBombRange=1 # 所有creature的炸弹的初始爆炸范围
-IntialHp=2
-IntialPlayerHp=5
+IntialHp=2 +Difficulty//2 # 初始血量（除player生物（怪物）的血量）
+IntialPlayerHp=5 # player血量
 ImmuneFrame=int(FPS*2) # 受击后无敌帧数
 WalkingFpsLoop=8 # 走路完整完成一步的帧数
 # 用fpscnt（帧数总计数器）mod WalkingFpsLoop 得出要渲染哪一帧
