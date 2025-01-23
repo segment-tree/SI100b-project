@@ -24,41 +24,22 @@
         inherit system;
       };
     in rec {
-      packages.default = let
-      # 定义 Python 环境
-      pythonEnv = pkgs.python3Packages.buildPythonPackage {
-        pname = "bubbles-valley";
-        version = "0.0.2";
-
-        # 设置项目源码目录
+      packages.default = pkgs.stdenv.mkDerivation{
+        name = "bubbles-valley";
         src = ./.;
-        # 引入 requirements.txt
-        nativeBuildInputs = with pkgs; [ (python312.withPackages (ps: [ ps.pygame ps.openai ps.setuptools ])) ];
-        propagateBuildInputs = with pkgs; [ (python312.withPackages (ps: [ ps.pygame ps.openai ps.setuptools ])) ];
-        buildInputs = with pkgs; [ (python312.withPackages (ps: [ ps.pygame ps.openai ps.setuptools ])) ];
+        buildInputs = with pkgs; [
+          (python312.withPackages (ps: [ ps.pygame ps.openai ]))
+        ];
+        buildPhase = "";
         installPhase = ''
-          mkdir -p $out/bin
+          name=bubbles-valley
+          
+          mkdir -p $out/bin/
+          cp -r $src $out/src
+          echo "python $out/src/main.py" > $out/bin/$name
+          chmod +x $out/bin/$name
         '';
-
-        # 测试代码运行
-        doCheck = false;
-        checkPhase = ''
-          python -m unittest discover tests
-        '';
-
-        meta = with pkgs.lib; {
-          description = "A Python project packaged with Flakes and requirements.txt";
-          homepage = "https://github.com/user/my-python-project";
-          license = licenses.mit;
-          maintainers = [ maintainers.yourname ];
-        };
       };
-    in
-      pythonEnv;
-      apps.default = {
-          type = "app";
-          program = "${packages.default}/bin/main";
-        };
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [ (python312.withPackages (ps: [ ps.pygame ps.openai ps.mypy ps.setuptools ps.pyinstrument])) ];
       };
