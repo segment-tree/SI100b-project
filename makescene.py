@@ -81,7 +81,7 @@ def mapGener(nowmp:Mapper):
         nowmp.addMonster(x,y,"./assets/monster/")
         for i in range(x-2,x+2+1):
             for j in range(y-2,y+2+1):
-                if nowmp.mp[i][j]["type"]=="obstacle":
+                if nowmp.mp[i][j]["type"]=="obstacle" and abs(i-x)+abs(j-y)<=2:
                     genField(i,j)
     tmpvis:Dict[Tuple[int,int],bool]={}
     cnt=0
