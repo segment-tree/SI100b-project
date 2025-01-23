@@ -34,7 +34,7 @@ class Mapper: # Map is some keyword use Mapper instead
         self.backGround=None
         pass
     def invaild_coord(self, x:int, y:int):
-        return x<0 or x >= self.C or y<0 or y >= self.R
+        return x<-1 or x > self.C or y<-1 or y > self.R
     def genCamera(self): # 生成镜头偏移量
         basex=self.me.rx-c.WinWidth*c.CellSize//2
         basey=self.me.ry-c.WinHeight*c.CellSize//2
@@ -54,6 +54,8 @@ class Mapper: # Map is some keyword use Mapper instead
         return monster(genEntityId(),gx,gy,imgdir, self.addEntity,layer=3)
     def moveRequest(self, x:int, y:int, entity:entityLike)->bool: # entity调用这个来判断地图是否允许移动
         if self.invaild_coord(x,y):return False
+        if self.mp[x][y].get("teleportTo") and not "player" in str(type(entity)):
+            return False
         if self.mp[x][y]["type"] in ["wall","obstacle"]:
             return False
         for i in self.mp[x][y]["entity"]:

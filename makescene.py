@@ -93,8 +93,8 @@ def mapGener(nowmp:Mapper):
             genMos(x,y)
             cnt+=1
 
-    nowmp.mp[0][28]["teleportTo"]=(1,40,11)
-    nowmp.mp[40][2]["teleportTo"]=(3,0,4)
+    nowmp.mp[-1][28]["teleportTo"]=(1,40,12)
+    nowmp.mp[41][2]["teleportTo"]=(3,0,4)
 
 def mapGenerTown(nowmp:Mapper):
     nowmp.style=1
@@ -102,7 +102,8 @@ def mapGenerTown(nowmp:Mapper):
     nowmp.R=31
     nowmp.backGround=myImage(f'./assets/scene/scene{nowmp.style}.png',zoom=nowmp.C)
     # 进入田野
-    nowmp.mp[40][12]["teleportTo"]=(0,1,28)
+    nowmp.mp[41][12]["teleportTo"]=(0,0,28)
+    # nowmp.mp[41][12]["type"]="field"
     #进入商店
     nowmp.mp[23][25]["teleportTo"]=nowmp.mp[24][25]["teleportTo"]=\
         nowmp.mp[25][25]["teleportTo"]=(2,5,14)
@@ -279,6 +280,8 @@ def mapGenerDeep(nowmp:Mapper):
             genWall(i,j,random.randrange(1,13))
     for i in range(0,8):
         genField(i,4)
+    
+    nowmp.mp[-1][4]["type"]="wall" # 阻止返回
     nowmp.mp[7][4]["type"]="wall"
     nowmp.mp[7][4]["render"]=myImage(f'./assets/scene/beauty.png')
     nowmp.mp[6][4]["interact"]=(end1(),False)
