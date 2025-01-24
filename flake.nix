@@ -38,7 +38,7 @@
           
           mkdir -p $out/bin/
           cp -r $src $out/src
-          echo "cd $out/src; $PYTHON main.py" > $out/bin/$name
+          echo -e "#!/bin/sh\ncd $out/src; $PYTHON main.py" > $out/bin/$name
           chmod +x $out/bin/$name
         '';
       };
