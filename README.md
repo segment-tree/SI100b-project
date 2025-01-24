@@ -4,7 +4,7 @@
 
 ## 运行
 
-需要按照 pygame 和 openai 两个包，在项目根目录运行 `python main.py`
+需要安装 pygame 和 openai 两个包，在项目根目录运行 `python main.py`
 
  - 特别的，对于 nix 用户，只需 `nix run github:segment-tree/bubbles-valley` （仅在aarch64-linux下测试过，不过应该没问题吧）
 
